@@ -20,14 +20,24 @@ server {
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 
     location / {
+        etag off;
+        if_modified_since off;
+        add_header Last-Modified "";
+        add_header Cache-Control no-cache;    
         try_files $uri $uri/ /index.php?_url=$uri&$args;
         #try_files $uri $uri/ =404;
     }
 
     location ~ \.php {
+        etag off;
+        if_modified_since off;    
+        add_header Last-Modified "";
+        add_header Cache-Control no-cache;
         try_files   $uri =404;
         fastcgi_pass {{ .Env.UPSTREAM }};
+        fastcgi_cache off;
     }
+
 
     location ~ /\.ht {
         deny all;

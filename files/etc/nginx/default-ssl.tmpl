@@ -38,7 +38,7 @@ server {
         add_header Cache-Control no-cache;
         try_files   $uri =404;
         fastcgi_pass {{ .Env.UPSTREAM }};
-        fastcgi_cache off
+        fastcgi_cache off;
     }
 
     location ~ /\.ht {
