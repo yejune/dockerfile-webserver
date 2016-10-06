@@ -11,14 +11,12 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 ENV DOCKERIZE_VERSION 0.2.0
 
 ENV NGINX_VERSION 1.11.4
-RUN echo "NGINX version = ${NGINX_VERSION}"
 
-ENV PHP_VERSION 7.0.10
-RUN echo "PHP version = ${PHP_VERSION}"
+ENV PHP_VERSION 7.0.11
 
-ENV PHP_LIB redis-3.0.0 yaml-2.0.0RC8 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.2
+ENV PHP_LIB redis-3.0.0 yaml-2.0.0 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.3
 
-ENV PHALCON_VER 3.0.0
+ENV PHALCON_VER 3.0.1
 
 ENV LIBV8_VERSION 5.4
 
@@ -219,7 +217,7 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
 
 RUN apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y \
     && apt-get update \
-    && apt-get install libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated
+    && apt-get install php-v8 libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated
 
 # Install dockerize
 RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
