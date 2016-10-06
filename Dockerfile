@@ -232,8 +232,6 @@ RUN bash -c "wget https://phar.phpunit.de/phpunit.phar && chmod +x phpunit.phar 
 
 COPY files /
 
-ADD index.php /var/www/public/
-
 RUN bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" && rm -rf /usr/src/pecl/*
 
 VOLUME ["/var/www", "/etc/nginx", "/etc/php"]
