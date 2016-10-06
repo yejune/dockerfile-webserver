@@ -217,7 +217,7 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
 
 RUN apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y \
     && apt-get update \
-    && apt-get install php-v8 libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated
+    && apt-get install libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated
 
 # Install dockerize
 RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
