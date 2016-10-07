@@ -83,7 +83,8 @@ ENV PHP_BUILD_DEPS \
         libyaml-dev \
         librabbitmq-dev \
         libsasl2-dev \
-        libicu-dev
+        libicu-dev \
+        libgmp-dev
 
 ENV PHP_EXTRA_BUILD_DEPS \
         re2c \
@@ -136,7 +137,8 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --disable-cgi \
         --disable-short-tags \
         --disable-fileinfo \
-        --disable-posix
+        --disable-posix \
+		--with-gmp
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
@@ -174,6 +176,7 @@ RUN userdel www-data && groupadd -r www-data -g 433 && \
 # Install php
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
+    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
     && rm -r /var/lib/apt/lists/*
 
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
