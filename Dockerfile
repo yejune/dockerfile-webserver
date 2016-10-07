@@ -14,7 +14,7 @@ ENV NGINX_VERSION 1.11.4
 
 ENV PHP_VERSION 7.0.11
 
-ENV PHP_LIB redis-3.0.0 yaml-2.0.0 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.3
+ENV PHP_LIB redis-3.0.0 yaml-2.0.0 amqp-1.7.1 memcached-2.2.0 apcu-5.1.5 v8js-1.3.3 zip-1.13.4
 
 ENV PHALCON_VER 3.0.1
 
