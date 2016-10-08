@@ -27,8 +27,6 @@ ENV LIBRABBITMQ_VERSION 0.8.0
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --sbin-path=/usr/sbin \
         --conf-path=/etc/nginx/nginx.conf \
-        --with-md5=/usr/lib \
-        --with-sha1=/usr/lib \
         --with-http_ssl_module \
         --with-http_dav_module \
         --without-mail_pop3_module \
@@ -145,6 +143,8 @@ RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 ENV PHP5_KEY "6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1"
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 
+COPY files /
+
 # Install nginx
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NGINX_BUILD_DEPS} ${NGINX_EXTRA_BUILD_DEPS} \
@@ -213,8 +213,6 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
 # Install composer
 RUN bash -c "wget http://getcomposer.org/composer.phar && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer" \
     && bash -c "wget https://phar.phpunit.de/phpunit.phar && chmod +x phpunit.phar && mv phpunit.phar /usr/local/bin/phpunit"
-
-COPY files /
 
 # Install dockerize
 RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
