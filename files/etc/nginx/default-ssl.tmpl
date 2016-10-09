@@ -8,8 +8,8 @@ server {
 
     server_name {{ .Env.DOMAIN }};
 
-    access_log  /var/log/nginx/{{ replace .Env.DOMAIN " " "_" 1 }}-access.log;
-    error_log   /var/log/nginx/{{ replace .Env.DOMAIN " " "_" 1 }}-error.log error;
+    access_log  /var/log/nginx/{{ replace .Env.DOMAIN " " "_" -1 }}-access.log;
+    error_log   /var/log/nginx/{{ replace .Env.DOMAIN " " "_" -1 }}-error.log error;
 
     root {{ .Env.WEBROOT }};
 
