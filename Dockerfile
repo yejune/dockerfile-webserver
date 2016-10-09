@@ -1,11 +1,4 @@
-#
-# - Base nginx
-#
 FROM ubuntu:16.04
-
-#
-# Prepare the container
-#
 
 ENV DOCKERIZE_VERSION 0.2.0
 
@@ -57,6 +50,7 @@ ENV NGINX_BUILD_DEPS \
         libxml2 \
         git \
         wget
+
 #       libreadline6-dev \
 
 ENV NGINX_EXTRA_BUILD_DEPS \
@@ -80,6 +74,7 @@ ENV PHP_BUILD_DEPS \
         libicu-dev \
         libgmp-dev \
         libsodium-dev
+
 #       bzip2 \
 #       file \
 #       libbz2-dev \
@@ -131,6 +126,7 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --disable-fileinfo \
         --disable-posix \
         --with-gmp
+
 #       --with-curl \
 #       --with-gd \
 #       --with-mysql \
@@ -147,8 +143,11 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
 #       --enable-zip \
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
+
 ENV PHP5_KEY "6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1"
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
+
+COPY files/ /
 
 # Install nginx & php
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -183,21 +182,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && make -j"$(nproc)" \
     && make install \
     && make clean \
-    && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; }
-
-RUN userdel www-data && groupadd -r www-data -g 433 \
-    && mkdir /home/www-data \
-    && mkdir -p /var/www \
-    && mkdir -p /var/www/public \
-    && useradd -u 431 -r -g www-data -d /home/www-data -s /sbin/nologin -c "Docker image user for web application" www-data \
-    && chown -R www-data:www-data /home/www-data /var/www \
-    && chmod 700 /home/www-data \
-    && chmod 711 /var/www \
-    && mkdir -p /etc/nginx/conf.d/
-
-RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
-
-RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
+    && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
+    && mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VER}.tar.gz \
     && tar zxvf v${PHALCON_VER}.tar.gz \
     && cd /usr/src/pecl/cphalcon-${PHALCON_VER}/build \
@@ -215,9 +201,29 @@ RUN mkdir -p /usr/src/pecl && cd /usr/src/pecl \
     && wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb \
     && dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb \
     && wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb \
-    && dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb
+    && dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb \
+    && bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" \
+    && rm -rf /usr/src/pecl/* \
+    && apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y \
+    && apt-get update \
+    && apt-get install libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS
 
-# Install composer
+RUN userdel www-data && groupadd -r www-data -g 433 \
+    && mkdir /home/www-data \
+    && mkdir -p /var/www \
+    && mkdir -p /var/www/public \
+    && useradd -u 431 -r -g www-data -d /home/www-data -s /sbin/nologin -c "Docker image user for web application" www-data \
+    && chown -R www-data:www-data /home/www-data /var/www \
+    && chmod 700 /home/www-data \
+    && chmod 711 /var/www \
+    && mkdir -p /etc/nginx/conf.d/
+
+RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
+
+# Install composer & phpunit
 RUN bash -c "wget http://getcomposer.org/composer.phar && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer" \
     && bash -c "wget https://phar.phpunit.de/phpunit.phar && chmod +x phpunit.phar && mv phpunit.phar /usr/local/bin/phpunit"
 
@@ -225,18 +231,6 @@ RUN bash -c "wget http://getcomposer.org/composer.phar && chmod +x composer.phar
 RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
     && rm -f /dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz
-
-RUN apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y \
-    && apt-get update \
-    && apt-get install libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated
-
-COPY files/ /
-
-RUN bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" \
-    && apt-get clean \
-    && rm -rf /usr/src/pecl/* \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS
 
 VOLUME ["/var/www", "/etc/nginx", "/etc/php"]
 
