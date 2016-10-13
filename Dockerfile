@@ -21,7 +21,6 @@ ENV PHP_LIB \
         memcached-2.2.0 \
         apcu-5.1.5 \
         v8js-1.3.3 \
-        zip-1.13.4 \
         libsodium-1.0.6
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
@@ -51,8 +50,6 @@ ENV NGINX_BUILD_DEPS \
         git \
         wget
 
-#       libreadline6-dev \
-
 ENV NGINX_EXTRA_BUILD_DEPS \
         gcc \
         libc-dev \
@@ -73,19 +70,11 @@ ENV PHP_BUILD_DEPS \
         libsasl2-dev \
         libicu-dev \
         libgmp-dev \
-        libsodium-dev
+        libsodium-dev \
+        libreadline6-dev
 
-#       bzip2 \
-#       file \
-#       libbz2-dev \
-#       libcurl4-openssl-dev \
 #       libjpeg-dev \
-#       libmcrypt-dev \
 #       libpng12-dev \
-#       libreadline6-dev \
-#       libssl-dev \
-#       libxslt1-dev \
-#       libxml2-dev \
 
 ENV PHP_EXTRA_BUILD_DEPS \
         re2c \
@@ -111,6 +100,9 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-openssl \
         --with-xsl \
         --with-zlib \
+        --with-bz2 \
+        --with-gmp \
+        --with-readline \
         --enable-fpm \
         --enable-opcache \
         --enable-sockets \
@@ -118,33 +110,25 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --enable-mbstring \
         --enable-intl \
         --enable-mysqlnd \
-        --without-sqlite3 \
-        --without-pdo-sqlite \
-        --disable-tokenizer \
+        --enable-zip \
+        --enable-pcntl \
+        --enable-calendar \
         --disable-cgi \
-        --disable-short-tags \
-        --disable-fileinfo \
-        --disable-posix \
-        --with-gmp
+        --disable-short-tags
 
-#       --with-curl \
-#       --with-gd \
+#       --without-sqlite3 \
+#       --without-pdo-sqlite \
+#       --disable-fileinfo \
+#       --disable-posix
+#       --disable-tokenizer \
 #       --with-mysql \
 #       --with-mysqli \
-#       --with-bz2 \
 #       --with-gd \
-#       --with-jpeg-dir \
-#       --with-mysqli \
-#       --with-pdo-mysql \
-#       --with-readline \
-#       --enable-pcntl \
 #       --enable-gd-native-ttf \
-#       --enable-calendar \
-#       --enable-zip \
+#       --with-jpeg-dir \
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
-ENV PHP5_KEY "6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1"
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 
 COPY files/ /
@@ -202,11 +186,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb \
     && wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb \
     && dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb \
-    && bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" \
-    && rm -rf /usr/src/pecl/* \
     && apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y \
     && apt-get update \
     && apt-get install libv8-${LIBV8_VERSION}-dev -y --allow-unauthenticated \
+    && bash -c "/usr/local/bin/docker-pecl-install ${PHP_LIB}" \
+    && cd /usr/src/pecl \
+    && wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
+    && rm -rf /usr/src/pecl/* \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS
@@ -226,11 +213,6 @@ RUN cp /usr/src/php/php.ini-production ${PHP_INI_DIR}/php.ini
 # Install composer & phpunit
 RUN bash -c "wget http://getcomposer.org/composer.phar && chmod +x composer.phar && mv composer.phar /usr/local/bin/composer" \
     && bash -c "wget https://phar.phpunit.de/phpunit.phar && chmod +x phpunit.phar && mv phpunit.phar /usr/local/bin/phpunit"
-
-# Install dockerize
-RUN wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz \
-    && rm -f /dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz
 
 VOLUME ["/var/www", "/etc/nginx", "/etc/php"]
 

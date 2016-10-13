@@ -2,12 +2,13 @@
 
 export UPSTREAM=${UPSTREAM:-"localhost:9000"}
 export DOMAIN=${DOMAIN:-"_"}
-export LOCATION=${LOCATION:-"#ADD_LOCATION"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
+export NGINX_LOCATION=${NGINX_LOCATION:-"#ADD_LOCATION"}
+export NGINX_HEADER=${NGINX_HEADER:-"#ADD_HEADER"}
 
 export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
-export EXTRACONF=${EXTRACONF:-";"}
+export PHP_EXTRACONF=${PHP_EXTRACONF:-";ADD_EXTRACONF"}
 
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 export FPM_USER=${FPM_USER:-"www-data"}
@@ -16,7 +17,7 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 dockerize -template ${PHP_INI_DIR}/php-fpm.tmpl > ${PHP_INI_DIR}/php-fpm.conf
 
 # Display Version Details or not
-if [ "$SHOW_VERSION" == "1" ] ; then
+if [ -z "$SHOW_VERSION" ] ; then
     sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
     sed -i "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
 else
@@ -25,14 +26,16 @@ else
 fi
 
 if [ ! -z "$TIMEZONE" ] ; then
-    sed -i "s/;date.timezone/date.timezone = ${TIMEZONE}/g" ${PHP_INI_DIR}/php.ini
+    sed -i -e "s/.*date.timezone.*/date.timezone = ${TIMEZONE}/g" ${PHP_INI_DIR}/php.ini
+else
+    sed -i -e "s/.*date.timezone.*/date.timezone = Asia\/Seoul/g" ${PHP_INI_DIR}/php.ini
 fi
 
 # Display PHP error's or not
-if [ "$DEBUG" != "1" ] ; then
-    echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.conf
-else
+if [ ! -z "$DEBUG" ] ; then
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.conf
+else
+    echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.conf
 fi
 
 # Increase the memory_limit

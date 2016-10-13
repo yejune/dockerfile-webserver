@@ -1,46 +1,38 @@
 
 server {
 
-    listen 80 ;
-
+    listen      80;
     server_name {{ .Env.DOMAIN }};
+    root        {{ .Env.WEBROOT }};
+    index       index.html index.php index.htm;
+    charset     utf-8;
 
     access_log  /var/log/nginx/{{ replace .Env.DOMAIN " " "_" -1 }}-access.log;
     error_log   /var/log/nginx/{{ replace .Env.DOMAIN " " "_" -1 }}-error.log error;
 
-    root {{ .Env.WEBROOT }};
-
-    index index.html index.php index.htm;
-    fastcgi_split_path_info ^(.+\.php)(/.+)$;
-    fastcgi_index /index.php;
-    include fastcgi_params;
-    fastcgi_split_path_info       ^(.+\.php)(/.+)$;
-    fastcgi_param PATH_INFO       $fastcgi_path_info;
-    fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-
     location / {
-        etag off;
-        if_modified_since off;
-        add_header Last-Modified "";
-        add_header Cache-Control no-cache;    
         try_files $uri $uri/ /index.php?_url=$uri&$args;
-        #try_files $uri $uri/ =404;
     }
 
     location ~ \.php {
-        etag off;
-        if_modified_since off;    
-        add_header Last-Modified "";
-        add_header Cache-Control no-cache;
         try_files   $uri =404;
-        fastcgi_pass {{ .Env.UPSTREAM }};
-        fastcgi_cache off;
-    }
 
+        fastcgi_pass {{ .Env.UPSTREAM }};
+        fastcgi_index /index.php;
+
+        {{ .Env.NGINX_HEADER }}
+
+        include fastcgi_params;
+        fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+        fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
 
     location ~ /\.ht {
         deny all;
     }
-    {{ .Env.LOCATION }}
+
+    {{ .Env.NGINX_LOCATION }}
+
 }

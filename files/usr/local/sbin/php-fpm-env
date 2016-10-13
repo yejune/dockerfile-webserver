@@ -127,7 +127,7 @@ class PhpFpmEnvironment {
      * @return bool true if the variable must be ignored; otherwise, false.
      */
     public static function mustIgnoreVariable ($variableName) {
-        return in_array($variableName, static::VARIABLES_TO_DISCARD);
+        return in_array($variableName, static::VARIABLES_TO_DISCARD) || preg_match('#VERSION#i', $variableName);
     }
 
     /**
