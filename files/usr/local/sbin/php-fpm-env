@@ -53,7 +53,7 @@ class PhpFpmEnvironment {
         'TEMP',
         'TMPDIR',
         'USE_DOCKERIZE',
-        'EXTRACONF',
+        'PHP_EXTRACONF',
         'PHALCON_VER',
         'PHP_VERSION',
         'PHP5_KEY',
@@ -65,7 +65,8 @@ class PhpFpmEnvironment {
         'NGINX_EXTRA_CONFIGURE_ARGS',
         'NGINX_EXTRA_BUILD_DEPS',
         'UPSTREAM',
-        'LOCATION',
+        'NGINX_LOCATION',
+        'NGINX_HEADER',
         'WEBROOT',
         'NGINX_VERSION'
     ];
