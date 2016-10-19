@@ -21,7 +21,8 @@ ENV PHP_LIB \
         memcached-2.2.0 \
         apcu-5.1.5 \
         v8js-1.3.3 \
-        libsodium-1.0.6
+        libsodium-1.0.6 \
+        uuid-1.0.4
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --sbin-path=/usr/sbin \
@@ -71,7 +72,8 @@ ENV PHP_BUILD_DEPS \
         libicu-dev \
         libgmp-dev \
         libsodium-dev \
-        libreadline6-dev
+        libreadline6-dev \
+        uuid-dev
 
 #       libjpeg-dev \
 #       libpng12-dev \
