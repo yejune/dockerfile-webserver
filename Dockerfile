@@ -38,7 +38,6 @@ ENV NGINX_BUILD_DEPS \
         file \
         libbz2-dev \
         libcurl4-openssl-dev \
-        libmcrypt-dev \
         openssl \
         ca-certificates \
         libssl-dev \
@@ -77,6 +76,7 @@ ENV PHP_BUILD_DEPS \
 
 #       libjpeg-dev \
 #       libpng12-dev \
+#       libmcrypt-dev \
 
 ENV PHP_EXTRA_BUILD_DEPS \
         re2c \
@@ -98,7 +98,6 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-curl \
         --with-iconv \
         --with-pdo-mysql \
-        --with-mcrypt \
         --with-openssl \
         --with-xsl \
         --with-zlib \
@@ -128,6 +127,7 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
 #       --with-gd \
 #       --enable-gd-native-ttf \
 #       --with-jpeg-dir \
+#       --with-mcrypt \
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
