@@ -2,9 +2,9 @@ FROM ubuntu:16.04
 
 ENV DOCKERIZE_VERSION 0.2.0
 
-ENV NGINX_VERSION 1.11.4
+ENV NGINX_VERSION 1.11.5
 
-ENV PHP_VERSION 7.0.11
+ENV PHP_VERSION 7.0.12
 
 ENV PHALCON_VER 3.0.1
 
@@ -19,7 +19,7 @@ ENV PHP_LIB \
         yaml-2.0.0 \
         amqp-1.7.1 \
         memcached-2.2.0 \
-        apcu-5.1.5 \
+        apcu-5.1.7 \
         v8js-1.3.3 \
         libsodium-1.0.6 \
         uuid-1.0.4
