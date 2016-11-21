@@ -17,7 +17,7 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 dockerize -template ${PHP_INI_DIR}/php-fpm.tmpl > ${PHP_INI_DIR}/php-fpm.conf
 
 # Display Version Details or not
-if [ -z "$SHOW_VERSION" ] ; then
+if [ ! -z "$SHOW_VERSION" ] ; then
     sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
     sed -i "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
 else
