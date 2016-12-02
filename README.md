@@ -1,6 +1,6 @@
 # Docker Phalcon Webserver
 
-This is a Phalcon application server image based on Nginx (with SSL support) and PHP7. 
+This is a Phalcon application server image based on Nginx (with SSL support) and PHP7.
 
 ## mount
 -   /var/www
@@ -53,7 +53,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.0.12
-    -   phalcon 3.0.1
+    -   phalcon 3.0.2
     -   redis 3.0.0
     -   yaml 2.0.0
     -   amqp 1.7.1
@@ -62,7 +62,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   v8js 1.3.3
     -   libsodium 1.0.6
     -   uuid 1.0.4
-    
+
 ## Examples
 -   run
     -   ``docker run -p 80:80 -d yejune/webserver``
