@@ -4,7 +4,7 @@ ENV DOCKERIZE_VERSION 0.2.0
 
 ENV NGINX_VERSION 1.11.6
 
-ENV PHP_VERSION 7.0.13
+ENV PHP_VERSION 7.1.0
 
 ENV PHALCON_VER 3.0.2
 
@@ -81,6 +81,7 @@ ENV PHP_BUILD_DEPS \
 ENV PHP_EXTRA_BUILD_DEPS \
         re2c \
         g++ \
+        bison \
         python-software-properties \
         software-properties-common
 
@@ -118,8 +119,8 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --disable-short-tags
 
 #       --without-sqlite3 \
-#       --without-pdo-sqlite \
 #       --disable-fileinfo \
+#       --without-pdo-sqlite \
 #       --disable-posix
 #       --disable-tokenizer \
 #       --with-mysql \
@@ -139,12 +140,12 @@ COPY files/ /
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NGINX_BUILD_DEPS} ${NGINX_EXTRA_BUILD_DEPS} \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
-    && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
+#    && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
     && mkdir -p /var/log/nginx \
     && set -x \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -o nginx.tar.bz2 \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz.asc" -o nginx.tar.bz2.asc \
-    && gpg --verify nginx.tar.bz2.asc \
+#    && gpg --verify nginx.tar.bz2.asc \
     && mkdir -p /usr/src/nginx \
     && tar -xof nginx.tar.bz2 -C /usr/src/nginx --strip-components=1 \
     && rm nginx.tar.bz2* \
@@ -153,12 +154,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && make -j"$(nproc)" \
     && make install \
     && make clean \
-    && gpg --keyserver pool.sks-keyservers.net --recv-keys ${PHP7_KEY} \
+#    && gpg --keyserver pool.sks-keyservers.net --recv-keys ${PHP7_KEY} \
     && mkdir -p ${PHP_INI_DIR}/conf.d \
     && set -x \
     && curl -SL "http://php.net/get/php-${PHP_VERSION}.tar.bz2/from/this/mirror" -o php.tar.bz2 \
     && curl -SL "http://php.net/get/php-${PHP_VERSION}.tar.bz2.asc/from/this/mirror" -o php.tar.bz2.asc \
-    && gpg --verify php.tar.bz2.asc \
+#    && gpg --verify php.tar.bz2.asc \
     && mkdir -p /usr/src/php \
     && tar -xof php.tar.bz2 -C /usr/src/php --strip-components=1 \
     && rm php.tar.bz2* \
@@ -201,12 +202,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS
 
 RUN userdel www-data && groupadd -r www-data -g 433 \
-    && mkdir /home/www-data \
     && mkdir -p /var/www \
     && mkdir -p /var/www/public \
-    && useradd -u 431 -r -g www-data -d /home/www-data -s /sbin/nologin -c "Docker image user for web application" www-data \
-    && chown -R www-data:www-data /home/www-data /var/www \
-    && chmod 700 /home/www-data \
+    && useradd -u 431 -r -g www-data -d /var/www -s /sbin/nologin -c "Docker image user for web application" www-data \
+    && chown -R www-data:www-data /var/www \
     && chmod 711 /var/www \
     && mkdir -p /etc/nginx/conf.d/
 
