@@ -43,7 +43,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 ## version
 -   UBUNTU 16.04
 -   DOCKERIZE 0.2.0
--   NGINX 1.11.6
+-   NGINX 1.11.7
 -   LIBV8 5.4
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
