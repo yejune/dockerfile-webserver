@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -e
-# 
+#
 # PHP_LIB="$1"
 # extDir="/usr/src/php/ext/$ext"
 # if [ -z "$ext" -o ! -d "$extDir" ]; then
@@ -12,7 +12,7 @@
 # 	exit 1
 # fi
 # shift
-# 
+#
 # set -x
 # cd "$extDir"
 # phpize
@@ -31,7 +31,7 @@ function print_w(){
 
 	local msg=$(trim ${@});
 	printf "${BWhite} ${msg} ${RESET}\n";
-#	printf "${BWhite}  ${@} ${RESET}\n";	
+#	printf "${BWhite}  ${@} ${RESET}\n";
 }
 
 function PrintOK() {
@@ -74,8 +74,8 @@ echo "install lib list : $PHP_LIB";
 
 for lib in $PHP_LIB
 do
-	rm -rf ${lib}.tgz 		
-	rm -rf ${lib} 		
+	rm -rf ${lib}.tgz
+	rm -rf ${lib}
 	print_w "Installing - PHP lib :: ${lib}"
 	if [ $lib == "memcached-2.2.0" ]
 	then
@@ -83,32 +83,32 @@ do
 		pushd php-memcached
 	else
 		wget -q -c http://pecl.php.net/get/${lib}.tgz
-	
+
 		wget -q -c http://pecl.php.net/get/${lib}.tgz
-	#	PrintOK "Download check  ${lib}.tgz" $?	
-		find ${lib}.tgz   # file command는 STDERR가 없다	
+	#	PrintOK "Download check  ${lib}.tgz" $?
+		find ${lib}.tgz   # file command는 STDERR가 없다
 		PrintOK "File check  ${lib}.tgz" $?
 		tar zxf ${lib}.tgz
-	   	pushd ${lib}		
-	fi 
+	   	pushd ${lib}
+	fi
 
-	phpize	
-	./configure   > /dev/null 
+	phpize
+	./configure   > /dev/null
 	PrintOK "PHPLib ${lib} :: ./configure" $?
-	make -j"$(nproc)"    > /dev/null 
+	make -j"$(nproc)"    > /dev/null
 	PrintOK "PHPLib ${lib} :: make " $?
-	make install    > /dev/null 
+	make install    > /dev/null
 	PrintOK "PHPLib ${lib} :: make install " $?
 
 	checkfile=`echo ${lib}| cut -d "-" -f1`
 	find "${extension_path}/${checkfile}.so" >>/dev/null
 	PrintOK "PHPLib file check ${extension_path}/${checkfile}.so" $?
-	
+
 	if [ ! -f "$extension_ini/${checkfile}.ini" ]
 	then
-		echo "extension=${checkfile}.so" > $extension_ini/${checkfile}.ini 		
+		echo "extension=${checkfile}.so" > $extension_ini/${checkfile}.ini
 	fi
-		
+
 
 	popd
 

@@ -14,7 +14,8 @@ export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
-dockerize -template ${PHP_INI_DIR}/php-fpm.tmpl > ${PHP_INI_DIR}/php-fpm.conf
+dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
+rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
 
 # Display Version Details or not
 if [ ! -z "$SHOW_VERSION" ] ; then
@@ -33,9 +34,17 @@ fi
 
 # Display PHP error's or not
 if [ ! -z "$DEBUG" ] ; then
-    echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.conf
+    echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
 else
-    echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.conf
+    echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" ${PHP_INI_DIR}/php.ini
+fi
+
+if [ "$STAGE" != "production" ]; then
+    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
+else
+    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" ${PHP_INI_DIR}/php.ini
 fi
 
 # Increase the memory_limit
@@ -60,14 +69,15 @@ mkdir -p /etc/nginx/sites-available
 if [ ! -z "$USE_SSL" ];
 then
     dockerize -template /etc/nginx/default-ssl.tmpl > /etc/nginx/sites-available/default-ssl
+    rm -rf /etc/nginx/default-ssl.tmpl
 fi
 
 if [ "$USE_SSL" != "only" ];
 then
     dockerize -template /etc/nginx/default.tmpl > /etc/nginx/sites-available/default
+    rm -rf /etc/nginx/default.tmpl
 fi
 
-nginx &
+/usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.d/www.conf
 
-/usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.conf
-/usr/local/sbin/php-fpm -c ${PHP_INI_DIR} --nodaemonize
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf

@@ -4,7 +4,8 @@
 /**
  * Allows to get the content of a php-fpm environment configuration file
  */
-class PhpFpmEnvironment {
+class PhpFpmEnvironment
+{
     /**
      * The temporary directory, used in TMP, TEMP and TMPDIR environment variables
      * @var string
@@ -27,6 +28,9 @@ class PhpFpmEnvironment {
         'TERM',        // Not pertinent in server context
         'HOSTNAME',
         'PHP_INI_DIR',
+        'PHP_DATA_DIR',
+        'PHP_LOG_DIR',
+        'PHP_RUN_DIR',
         'FPM_GROUP',
         'LS_COLORS',
         'PHP_LIB',
@@ -68,7 +72,7 @@ class PhpFpmEnvironment {
         'NGINX_LOCATION',
         'NGINX_HEADER',
         'WEBROOT',
-        'NGINX_VERSION'
+        'NGINX_VERSION',
     ];
 
     /**
@@ -77,7 +81,8 @@ class PhpFpmEnvironment {
      *
      * @return Array
      */
-    public static function getEnvironmentVariables () {
+    public static function getEnvironmentVariables()
+    {
         $variables = [];
 
         foreach ($_SERVER as $key => $value) {
@@ -88,6 +93,7 @@ class PhpFpmEnvironment {
 
         //static::addHardcodedEnvironmentVariables($variables);
         ksort($variables);
+
         return $variables;
     }
 
@@ -97,9 +103,10 @@ class PhpFpmEnvironment {
      *
      * @paran array $variables the array to add the variables to
      */
-    public static function addHardcodedEnvironmentVariables (&$variables) {
-        static::addTempEnvironmentVariables ($variables);
-        static::addPathEnvironmentVariables ($variables);
+    public static function addHardcodedEnvironmentVariables(&$variables)
+    {
+        static::addTempEnvironmentVariables($variables);
+        static::addPathEnvironmentVariables($variables);
     }
 
     /**
@@ -107,7 +114,8 @@ class PhpFpmEnvironment {
      *
      * @paran array $variables the array to add the variables to
      */
-    public static function addTempEnvironmentVariables (&$variables) {
+    public static function addTempEnvironmentVariables(&$variables)
+    {
         $variables['TMP'] = static::TMP;
         $variables['TEMP'] = static::TMP;
         $variables['TMPDIR'] = static::TMP;
@@ -118,7 +126,8 @@ class PhpFpmEnvironment {
      *
      * @paran array $variables the array to add the variables to
      */
-    public static function addPathEnvironmentVariables (&$variables) {
+    public static function addPathEnvironmentVariables(&$variables)
+    {
         $variables['PATH'] = static::PATH;
     }
 
@@ -127,18 +136,20 @@ class PhpFpmEnvironment {
      *
      * @return bool true if the variable must be ignored; otherwise, false.
      */
-    public static function mustIgnoreVariable ($variableName) {
+    public static function mustIgnoreVariable($variableName)
+    {
         return in_array($variableName, static::VARIABLES_TO_DISCARD) || preg_match('#VERSION#i', $variableName);
     }
 
     /**
      * Prints the environment
      */
-    public static function printConfig () {
+    public static function printConfig()
+    {
         $variables = static::getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            if($key && $value) {
+            if ($key && $value) {
                 echo 'env[', $key, '] = ', $value, '', PHP_EOL;
             }
         }

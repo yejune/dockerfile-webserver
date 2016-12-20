@@ -1,7 +1,9 @@
-[app]
+[www]
+
 listen =  {{ .Env.FPM_LISTEN }}
 user = {{ .Env.FPM_USER }}
 group = {{ .Env.FPM_GROUP }}
+
 pm = ondemand
 pm.max_children = 10
 pm.process_idle_timeout = 60
@@ -10,7 +12,7 @@ pm.max_requests = 500
 ;listen.mode = 0666
 
 php_admin_flag[log_errors] = on
-php_admin_value[error_log] = /var/log/nginx/fpm-php.www.log
+;php_admin_value[error_log] = /var/log/nginx/fpm-php.www.log
 ;php_admin_value[memory_limit] = 128M
 
 php_value[session.save_handler] = files
@@ -24,7 +26,7 @@ php_value[session.save_path] = /var/lib/php/session
 ;pm.max_requests = 500
 ;ping.path = /ping
 
+; Ensure worker stdout and stderr are sent to the main error log.
 catch_workers_output = yes
 
 {{ .Env.PHP_EXTRACONF }}
-
