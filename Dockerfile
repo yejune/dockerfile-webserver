@@ -142,6 +142,8 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
 
+ENV NGINX_KEY "A1C052F8"
+
 ENV PHP7_KEY "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 
 COPY files/ /
@@ -151,7 +153,7 @@ RUN set -x && \
     ${NGINX_BUILD_DEPS} ${NGINX_EXTRA_BUILD_DEPS} \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
     # Install nginx
-    && gpg --keyserver pgpkeys.mit.edu --recv-key A1C052F8 \
+    && gpg --keyserver pgpkeys.mit.edu --recv-key ${NGINX_KEY} \
     && mkdir -p /var/log/nginx \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -o nginx.tar.bz2 \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz.asc" -o nginx.tar.bz2.asc \
