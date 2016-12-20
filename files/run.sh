@@ -35,10 +35,8 @@ fi
 # Display PHP error's or not
 if [ ! -z "$DEBUG" ] ; then
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
 else
     echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" ${PHP_INI_DIR}/php.ini
 fi
 
 if [ "$STAGE_NAME" != "production" ]; then
