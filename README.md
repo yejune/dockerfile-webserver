@@ -36,11 +36,6 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   yes, null
 -   TIMEZONE
     -   default Asia/Seoul
--   DATABASE_URL
-    -   optionally
-    -   database url
-    -   convert arrays to json
-    -   '''{"api":"mysql://root:root@mysql:3306/api","pms":"mysql://root:root@mysql:3306/pms"}'''
 -   PHP_MEM_LIMIT
 -   PHP_POST_MAX_SIZE
 -   PHP_UPLOAD_MAX_FILESIZE
@@ -54,7 +49,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.0.14
     -   phalcon 3.0.2
-    -   redis 3.0.0
+    -   redis 3.1.0
     -   yaml 2.0.0
     -   amqp 1.7.1
     -   memcached 2.2.0

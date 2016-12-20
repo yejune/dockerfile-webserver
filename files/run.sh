@@ -41,7 +41,7 @@ else
     sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" ${PHP_INI_DIR}/php.ini
 fi
 
-if [ "$STAGE" != "production" ]; then
+if [ "$STAGE_NAME" != "production" ]; then
     sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
 else
     sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/g" ${PHP_INI_DIR}/php.ini
