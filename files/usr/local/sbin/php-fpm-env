@@ -60,6 +60,7 @@ class PhpFpmEnvironment
         'PHP_EXTRACONF',
         'PHALCON_VER',
         'PHP_VERSION',
+        'NGINX_KEY',
         'PHP5_KEY',
         'PHP7_KEY',
         'PHP_BUILD_DEPS',

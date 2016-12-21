@@ -245,4 +245,6 @@ WORKDIR /var/www/
 
 EXPOSE 80 443
 
-CMD ["/run.sh"]
+RUN chmod +x /run.sh
+
+ENTRYPOINT ["/run.sh"]
