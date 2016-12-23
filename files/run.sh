@@ -19,6 +19,13 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
 
+if [[ $FPM_GROUP == "unix:"* ]]; then
+else
+    sed -i -e "s/listen.owner*/;listen.owner/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/listen.group*/;listen.group/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/listen.mode*/;listen.mode/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+fi
+
 # Display Version Details or not
 if [ ! -z "$SHOW_VERSION" ] ; then
     sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
