@@ -1,16 +1,18 @@
 #!/bin/bash
 
-export UPSTREAM=${UPSTREAM:-"localhost:9000"}
 export DOMAIN=${DOMAIN:-"_"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
 export NGINX_LOCATION=${NGINX_LOCATION:-"#ADD_LOCATION"}
 export NGINX_HEADER=${NGINX_HEADER:-"#ADD_HEADER"}
 
-export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-";ADD_EXTRACONF"}
 
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
+
+export UPSTREAM=${UPSTREAM:-"localhost:9000"}
+export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
+
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
@@ -60,21 +62,22 @@ if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
     sed -i -e "s/.*upload_max_filesize\s*=\s*.*/upload_max_filesize= ${PHP_UPLOAD_MAX_FILESIZE}/g" ${PHP_INI_DIR}/php.ini
 fi
 
-rm -rf /etc/nginx/sites-available/default
-rm -rf /etc/nginx/sites-available/default-ssl
-mkdir -p /etc/nginx/sites-available
+rm -rf /etc/nginx/site.d/default
+rm -rf /etc/nginx/site.d/default-ssl
+mkdir -p /etc/nginx/site.d
 
 if [ ! -z "$USE_SSL" ];
 then
-    dockerize -template /etc/nginx/default-ssl.tmpl > /etc/nginx/sites-available/default-ssl
-    rm -rf /etc/nginx/default-ssl.tmpl
+    dockerize -template /etc/nginx/site.d/default-ssl.tmpl > /etc/nginx/site.d/default-ssl.conf
 fi
 
 if [ "$USE_SSL" != "only" ];
 then
-    dockerize -template /etc/nginx/default.tmpl > /etc/nginx/sites-available/default
-    rm -rf /etc/nginx/default.tmpl
+    dockerize -template /etc/nginx/site.d/default.tmpl > /etc/nginx/site.d/default.conf
 fi
+
+rm -rf /etc/nginx/site.d/default-ssl.tmpl
+rm -rf /etc/nginx/site.d/default.tmpl
 
 /usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.d/www.conf
 

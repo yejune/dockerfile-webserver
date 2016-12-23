@@ -13,27 +13,40 @@ server {
     ssl_certificate /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.cert;
     ssl_certificate_key /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.key;
 
-    location / {
-        try_files $uri $uri/ /index.php?_url=$uri&$args;
+    location ~ /\.ht {
+        deny all;
     }
 
-    location ~ \.php {
-        try_files   $uri =404;
+    location = /favicon.ico
+    {
+        log_not_found off;
+        access_log off;
+    }
 
-        fastcgi_pass {{ .Env.UPSTREAM }};
-        fastcgi_index /index.php;
+    location = /robots.txt
+    {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
 
-        {{ .Env.NGINX_HEADER }}
+    location /
+    {
+        try_files $uri $uri/ /index.php?$args;
+    }
 
+    location ~ \.php$
+    {
+        try_files $uri =404;
         include fastcgi_params;
         fastcgi_split_path_info       ^(.+\.php)(/.+)$;
         fastcgi_param PATH_INFO       $fastcgi_path_info;
         fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    }
 
-    location ~ /\.ht {
-        deny all;
+        {{ .Env.NGINX_HEADER }}
+
+	    fastcgi_pass {{ .Env.FPM_LISTEN }};
     }
 
     {{ .Env.NGINX_LOCATION }}

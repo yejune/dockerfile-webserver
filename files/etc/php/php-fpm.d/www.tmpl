@@ -1,6 +1,10 @@
 [www]
 
-listen =  {{ .Env.FPM_LISTEN }}
+listen = {{ .Env.FPM_LISTEN }}
+listen.owner = {{ .Env.FPM_USER }}
+listen.group = {{ .Env.FPM_GROUP }}
+listen.mode = 0666
+
 user = {{ .Env.FPM_USER }}
 group = {{ .Env.FPM_GROUP }}
 
@@ -8,8 +12,6 @@ pm = ondemand
 pm.max_children = 10
 pm.process_idle_timeout = 60
 pm.max_requests = 500
-
-;listen.mode = 0666
 
 php_admin_flag[log_errors] = on
 ;php_admin_value[error_log] = /var/log/nginx/fpm-php.www.log
