@@ -46,7 +46,7 @@ server {
 
         {{ .Env.NGINX_HEADER }}
 
-	    fastcgi_pass {{ .Env.FPM_LISTEN }};
+	    fastcgi_pass {{ .Env.FASTCGI_PASS }};
     }
 
     {{ .Env.NGINX_LOCATION }}
