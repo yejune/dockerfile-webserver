@@ -32,6 +32,7 @@ class PhpFpmEnvironment
         'PHP_LOG_DIR',
         'PHP_RUN_DIR',
         'FPM_GROUP',
+        'FASTCGI_PASS',
         'LS_COLORS',
         'PHP_LIB',
         'DOCKERIZE_VERSION',
@@ -117,8 +118,8 @@ class PhpFpmEnvironment
      */
     public static function addTempEnvironmentVariables(&$variables)
     {
-        $variables['TMP'] = static::TMP;
-        $variables['TEMP'] = static::TMP;
+        $variables['TMP']    = static::TMP;
+        $variables['TEMP']   = static::TMP;
         $variables['TMPDIR'] = static::TMP;
     }
 
@@ -136,6 +137,7 @@ class PhpFpmEnvironment
      * Determines if the variable name must be ignored
      *
      * @return bool true if the variable must be ignored; otherwise, false.
+     * @param mixed $variableName
      */
     public static function mustIgnoreVariable($variableName)
     {

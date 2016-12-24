@@ -16,10 +16,13 @@ export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
+export STAGE_NAME=${STAGE_NAME:-"production"}
+
 dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
 
-if [[ $FPM_GROUP == "unix:"* ]]; then
+if [[ $FASTCGI_PASS == "unix:"* ]]; then
+    echo "";
 else
     sed -i -e "s/listen.owner*/;listen.owner/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     sed -i -e "s/listen.group*/;listen.group/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
@@ -66,8 +69,11 @@ fi
 
 # Increase the upload_max_filesize
 if [ ! -z "$PHP_UPLOAD_MAX_FILESIZE" ]; then
-    sed -i -e "s/.*upload_max_filesize\s*=\s*.*/upload_max_filesize= ${PHP_UPLOAD_MAX_FILESIZE}/g" ${PHP_INI_DIR}/php.ini
+    sed -i -e "s/.*upload_max_filesize\s*=\s*.*/upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}/g" ${PHP_INI_DIR}/php.ini
 fi
+
+# cgi.fix_pathinfo off
+sed -i -e "s/.*cgi.fix_pathinfo\s*=\s*.*/cgi.fix_pathinfo = 0/g" ${PHP_INI_DIR}/php.ini
 
 rm -rf /etc/nginx/site.d/default
 rm -rf /etc/nginx/site.d/default-ssl
@@ -86,6 +92,6 @@ fi
 rm -rf /etc/nginx/site.d/default-ssl.tmpl
 rm -rf /etc/nginx/site.d/default.tmpl
 
-/usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+php /usr/local/sbin/php-fpm-env >> ${PHP_INI_DIR}/php-fpm.d/www.conf
 
 /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf

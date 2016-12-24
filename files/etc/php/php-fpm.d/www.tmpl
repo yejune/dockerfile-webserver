@@ -31,4 +31,6 @@ php_value[session.save_path] = /var/lib/php/session
 ; Ensure worker stdout and stderr are sent to the main error log.
 catch_workers_output = yes
 
+security.limit_extensions = .php
+
 {{ .Env.PHP_EXTRACONF }}
