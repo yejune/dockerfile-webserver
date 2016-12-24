@@ -37,6 +37,9 @@ server {
 
     location ~ [^/]\.php(/|$)
     {
+        if (!-f $document_root$fastcgi_script_name) {
+            return 404;
+        }
         include fastcgi_params;
         fastcgi_index                 index.php;
         fastcgi_split_path_info       ^(.+\.php)(/.+)$;
