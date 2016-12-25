@@ -13,7 +13,7 @@ server {
     ssl_certificate /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.cert;
     ssl_certificate_key /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.key;
 
-    include     /etc/nginx/conf.d/*.conf;
+    include     /etc/nginx/common.d/*.conf;
 
     location ~ [^/]\.php(/|$)
     {

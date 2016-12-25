@@ -10,7 +10,7 @@ server {
     access_log  /var/log/nginx/access.log;
     error_log   /var/log/nginx/error.log error;
 
-    include     /etc/nginx/conf.d/*.conf;
+    include     /etc/nginx/common.d/*.conf;
 
     location ~ [^/]\.php(/|$)
     {
