@@ -13,27 +13,7 @@ server {
     ssl_certificate /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.cert;
     ssl_certificate_key /var/certs/{{ replace .Env.DOMAIN " " "_" -1 }}.key;
 
-    location ~ /\.ht {
-        deny all;
-    }
-
-    location = /favicon.ico
-    {
-        log_not_found off;
-        access_log off;
-    }
-
-    location = /robots.txt
-    {
-        allow all;
-        log_not_found off;
-        access_log off;
-    }
-
-    location /
-    {
-        try_files $uri $uri/ /index.php$uri?$args;
-    }
+    include     /etc/nginx/conf.d/*.conf;
 
     location ~ [^/]\.php(/|$)
     {
