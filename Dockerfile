@@ -27,7 +27,9 @@ ENV PHP_LIB \
         apcu-5.1.7 \
         v8js-1.3.3 \
         libsodium-1.0.6 \
-        uuid-1.0.4
+        uuid-1.0.4 \
+        ev-1.0.4 \
+        uv-0.1.1
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --sbin-path=/usr/sbin \
@@ -53,7 +55,9 @@ ENV NGINX_BUILD_DEPS \
         libc6 \
         libxml2 \
         git \
-        wget
+        wget \
+        libev-dev \
+        libuv1-dev
 
 ENV NGINX_EXTRA_BUILD_DEPS \
         gcc \

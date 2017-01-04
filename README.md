@@ -48,7 +48,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.0.14
-    -   phalcon 3.0.2
+    -   phalcon 3.0.3
     -   redis 3.1.0
     -   yaml 2.0.0
     -   amqp 1.7.1
@@ -57,6 +57,8 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   v8js 1.3.3
     -   libsodium 1.0.6
     -   uuid 1.0.4
+    -   ev 1.0.4
+    -   uv 0.1.1
 
 ## Examples
 -   run
