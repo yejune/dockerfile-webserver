@@ -158,7 +158,7 @@ RUN set -x && \
     ${NGINX_BUILD_DEPS} ${NGINX_EXTRA_BUILD_DEPS} \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
     # Install nginx
-    && gpg --keyserver pgpkeys.mit.edu --recv-key ${NGINX_KEY} \
+    && gpg --keyserver keys.gnupg.net --recv-key ${NGINX_KEY} \
     && mkdir -p /var/log/nginx \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" -o nginx.tar.bz2 \
     && curl -SL "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz.asc" -o nginx.tar.bz2.asc \
@@ -172,7 +172,7 @@ RUN set -x && \
     && make install \
     && make clean \
     # Install php
-    && gpg --keyserver pool.sks-keyservers.net --recv-keys ${PHP7_KEY} \
+    && gpg --keyserver keys.gnupg.net --recv-keys ${PHP7_KEY} \
     && mkdir -p ${PHP_INI_DIR}/conf.d \
     && curl -SL "http://php.net/get/php-${PHP_VERSION}.tar.bz2/from/this/mirror" -o php.tar.bz2 \
     && curl -SL "http://php.net/get/php-${PHP_VERSION}.tar.bz2.asc/from/this/mirror" -o php.tar.bz2.asc \
