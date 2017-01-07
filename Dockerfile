@@ -13,11 +13,11 @@ ENV PHP_VERSION 7.0.14
 
 ENV PHALCON_VER 3.0.3
 
-ENV LIBV8_VERSION 5.4
-
 ENV LIBMEMCACHED_VERSION 1.0.18
 
 ENV LIBRABBITMQ_VERSION 0.8.0
+
+ENV LIBV8_VERSION 5.7
 
 ENV PHP_LIB \
         redis-3.1.0 \
@@ -25,7 +25,8 @@ ENV PHP_LIB \
         amqp-1.7.1 \
         memcached-2.2.0 \
         apcu-5.1.7 \
-        v8js-1.3.3 \
+        v8js-1.3.3 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
+        v8-0.1.1 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         libsodium-1.0.6 \
         uuid-1.0.4 \
         ev-1.0.4 \
