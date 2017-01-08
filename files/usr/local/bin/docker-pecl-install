@@ -86,8 +86,8 @@ for ((index=0; index < c; index++)); do
     #IN="$lib"
     #arrIN=(${lib//-/ })
     #libname="${arrIN[0]}"
-    if [ -f "pecl/$lib" ]; then
-        source "pecl/$lib"
+    if [ -f "/usr/local/bin/pecl/$lib" ]; then
+        source "/usr/local/bin/pecl/$lib"
     else
         wget -q -c http://pecl.php.net/get/${lib}.tgz
 
