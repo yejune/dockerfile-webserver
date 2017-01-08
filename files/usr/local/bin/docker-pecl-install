@@ -1,22 +1,11 @@
 #!/bin/bash
 #set -e
-#
-# PHP_LIB="$1"
-# extDir="/usr/src/php/ext/$ext"
-# if [ -z "$ext" -o ! -d "$extDir" ]; then
-#     echo >&2 "usage: $0 ext-name [configure flags]"
-#     echo >&2 "   ie: $0 gd --with-jpeg-dir=/usr/local/something"
-#     echo >&2
-#     echo >&2 'Possible values for ext-name:'
-#     echo >&2 $(find /usr/src/php/ext -mindepth 2 -maxdepth 2 -type f -name 'config.m4' | cut -d/ -f6 | sort)
-#     exit 1
-# fi
-# shift
-#
-# set -x
-# cd "$extDir"
-# phpize
-# ./configure "$@"
+
+RESET='\e[0m'
+IRed='\e[0;91m'
+IGreen='\e[0;92m'
+IBlue='\e[94m';
+
 
 function trim() {
     local var=${@}
@@ -26,32 +15,23 @@ function trim() {
 }
 
 function print_w(){
-    RESET='\e[0m'  # RESET
-    BWhite='\e[7m';    # backgroud White
-
     local msg=$(trim ${@});
-    printf "${BWhite} ${msg} ${RESET}\n";
-#    printf "${BWhite}  ${@} ${RESET}\n";
+    printf "${IBlue}${msg} ${RESET}\n";
 }
 
 function PrintOK() {
-    IRed='\e[0;91m'         # Rosso
-    IGreen='\e[0;92m'       # Verde
-    RESET='\e[0m'  # RESET
     MSG=${1}
     CHECK=${2:-0}
 
     if [ ${CHECK} == 0 ];
     then
-        printf "${IGreen} [OK] ${CHECK},  ${MSG} ${RESET} \n"
+        printf "${IGreen}[OK] ${MSG} ${RESET} \n"
     else
-        printf "${IRed} [FAIL] ${CHECK},  ${MSG} ${RESET} \n"
-        printf "${IRed} [FAIL] Stopped script ${RESET} \n"
+        printf "${IRed}[FAIL] ${MSG} ${RESET} \n"
+        printf "${IRed}[FAIL] Stopped script ${RESET} \n"
         exit 0;
     fi
 }
-
-
 
 PHP_LIB="$@";
 
@@ -59,7 +39,6 @@ extension_path=`php-config --extension-dir`
 extension_ini="/etc/php/conf.d"
 
 WORK_DIR="/usr/src/pecl";
-
 
 if [ ! -d "$WORK_DIR" ]
 then
@@ -102,19 +81,13 @@ for ((index=0; index < c; index++)); do
 
     rm -rf ${lib}.tgz
 	rm -rf ${lib}
-	print_w "Installing - PHP lib :: ${lib}"
+	print_w "PHP PECL Installing : ${lib}"
 
-    IN="$lib"
-    arrIN=(${lib//-/ })
-    libname="${arrIN[0]}"
-    echo $libname
-    echo "================="
-    if [ "$libname" = "v8js" ]; then
-        git clone -b php7 https://github.com/phpv8/v8js ${lib}
-    elif [ "$libname" = "v8" ]; then
-        git clone https://github.com/pinepain/php-v8.git ${lib}
-    elif [ "$libname" = "memcached" ]; then
-        git clone -b php7 https://github.com/php-memcached-dev/php-memcached ${lib}
+    #IN="$lib"
+    #arrIN=(${lib//-/ })
+    #libname="${arrIN[0]}"
+    if [ -f "pecl/$lib" ]; then
+        source "pecl/$lib"
     else
         wget -q -c http://pecl.php.net/get/${lib}.tgz
 
@@ -124,23 +97,26 @@ for ((index=0; index < c; index++)); do
         PrintOK "File check ${lib}.tgz" $?
         tar zxf ${lib}.tgz
     fi
+
     pushd ${lib}
+
     phpize
     ./configure ${opt}   > /dev/null
-    PrintOK "PHPLib ${lib} :: ./configure ${opt}" $?
+    PrintOK "PHP PECL ${lib} : ./configure ${opt}" $?
     make -j"$(nproc)"    > /dev/null
-    PrintOK "PHPLib ${lib} :: make " $?
+    PrintOK "PHP PECL ${lib} : make " $?
     make install         > /dev/null
-    PrintOK "PHPLib ${lib} :: make install " $?
+    PrintOK "PHP PECL ${lib} : make install " $?
 
     checkfile=`echo ${lib}| cut -d "-" -f1`
     find "${extension_path}/${checkfile}.so" >>/dev/null
-    PrintOK "PHPLib file check ${extension_path}/${checkfile}.so" $?
+    PrintOK "PHP PECL ${lib} : ${extension_path}/${checkfile}.so" $?
 
     if [ ! -f "$extension_ini/${checkfile}.ini" ]
     then
         echo "extension=${checkfile}.so" > $extension_ini/${checkfile}.ini
     fi
 	popd
+    rm -rf ${lib}
 
 done
