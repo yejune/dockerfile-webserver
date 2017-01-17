@@ -233,6 +233,8 @@ RUN set -x && \
     # clean
     && { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; } \
     && rm -rf /usr/src/pecl/* \
+    && rm -rf /usr/src/php/* \
+    && rm -rf /usr/src/nginx/* \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && apt-get clean \
     && apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $NGINX_EXTRA_BUILD_DEPS $PHP_EXTRA_BUILD_DEPS
