@@ -81,7 +81,18 @@ mkdir -p /etc/nginx/site.d
 
 if [ ! -z "$USE_SSL" ];
 then
-    dockerize -template /etc/nginx/site.d/default-ssl.tmpl > /etc/nginx/site.d/default-ssl.conf
+    tmp=$DOMAIN
+    IN=$DOMAIN
+    domains=$(echo $IN | tr ";" "\n")
+    for domainName in $domains
+    do
+        if [ ! -z "$USE_SSL" ];
+        then
+            export DOMAIN=${domainName}
+            dockerize -template /etc/nginx/site.d/default-ssl.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
+        fi
+    done
+    export DOMAIN=${tmp}
 fi
 
 if [ "$USE_SSL" != "only" ];
