@@ -20,7 +20,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   USE_SSL
     -   optionally
     -   if you wish to use SSL with real keys /var/certs
-    -   /var/certs/${DOMAIN}.cert, /var/certs/${DOMAIN}.key
+    -   /var/certs/${DOMAIN}.crt, /var/certs/${DOMAIN}.key
     -   yes, only, null
 -   DEBUG
     -   optionally
