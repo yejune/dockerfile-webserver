@@ -105,4 +105,6 @@ rm -rf /etc/nginx/site.d/default.tmpl
 
 php /usr/local/bin/docker-php-env >> ${PHP_INI_DIR}/php-fpm.d/www.conf
 
+update-ca-certificates
+
 /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf
