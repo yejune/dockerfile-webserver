@@ -7,9 +7,9 @@ ENV PHP_RUN_DIR=/run/php \
 
 ENV DOCKERIZE_VERSION 0.2.0
 
-ENV NGINX_VERSION 1.11.7
+ENV NGINX_VERSION 1.11.8
 
-ENV PHP_VERSION 7.0.14
+ENV PHP_VERSION 7.0.15
 
 ENV PHALCON_VER 3.0.3
 
@@ -24,7 +24,7 @@ ENV PHP_LIB \
         yaml-2.0.0 \
         amqp-1.7.1 \
         memcached-3.0.0 \
-        apcu-5.1.7 \
+        apcu-5.1.8 \
         v8js-1.3.3 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
         v8-0.1.1 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         libsodium-1.0.6 \
