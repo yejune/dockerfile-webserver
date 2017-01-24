@@ -12,6 +12,9 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   /var/certs
     -   optionally
     -   if you wish to use SSL with real keys
+-   /usr/local/share/ca-certificates/local
+    -   optionally
+    -   Adding trusted local certificates
 
 ## Env variables
 -   DOMAIN
@@ -36,7 +39,14 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   yes, null
 -   TIMEZONE
     -   default Asia/Seoul
--   PHP_MEM_LIMIT
+-   FPM_LISTEN
+    -   optionally
+    -   default localhost:9000
+    -   /dev/shm/php-fpm.sock
+-   FASTCGI_PASS
+    -   optionally
+    -   default localhost:9000
+    -   unix:/dev/shm/php-fpm.sock
 -   PHP_POST_MAX_SIZE
 -   PHP_UPLOAD_MAX_FILESIZE
 
@@ -52,7 +62,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   redis 3.1.0
     -   yaml 2.0.0
     -   amqp 1.7.1
-    -   memcached 2.2.0
+    -   memcached 3.0.0b
     -   apcu 5.1.8
     -   v8js 1.3.3
     -   v8 0.1.1
@@ -65,7 +75,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   run
     -   ``docker run -p 80:80 -d yejune/webserver``
 -   only SSL
-    -   ``docker run -p 80:80 -p 443:443 -e USE_SSL=only -v `pwd`/var/certs:/var/certs -v `pwd`:/var/www/ -d yejune/webserver``
+    -   ``docker run -p 80:80 -p 443:443 -e USE_SSL=only -v `pwd`/var/certs:/var/certs -v `pwd`/var/certs:/usr/local/share/ca-certificates/local -v `pwd`:/var/www/ -d yejune/webserver``
 -   without SSL
     -   ``docker run -p 80:80 -v `pwd`:/var/www/ -d yejune/webserver``
 -   using non-standard ports

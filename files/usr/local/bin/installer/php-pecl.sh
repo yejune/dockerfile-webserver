@@ -1,11 +1,26 @@
 #!/bin/bash
-#set -e
+set -e
 
 RESET='\e[0m'
 IRed='\e[0;91m'
 IGreen='\e[0;92m'
 IBlue='\e[94m';
 
+function pecl() {
+    local lib=${@}
+
+    mkdir -p /usr/src/pecl
+
+    cd /usr/src/pecl
+
+    wget -q -c http://pecl.php.net/get/${lib}.tgz
+
+    #	PrintOK "Download check  ${lib}.tgz" $?
+    find ${lib}.tgz
+
+    PrintOK "File check ${lib}.tgz" $?
+    tar zxf ${lib}.tgz
+}
 
 function trim() {
     local var=${@}
@@ -32,8 +47,6 @@ function PrintOK() {
         exit 0;
     fi
 }
-
-PHP_LIB="$@";
 
 extension_path=`php-config --extension-dir`
 extension_ini="/etc/php/conf.d"
@@ -83,19 +96,14 @@ for ((index=0; index < c; index++)); do
 	rm -rf ${lib}
 	print_w "PHP PECL Installing : ${lib}"
 
-    #IN="$lib"
-    #arrIN=(${lib//-/ })
-    #libname="${arrIN[0]}"
-    if [ -f "/usr/local/bin/pecl/$lib" ]; then
-        source "/usr/local/bin/pecl/$lib"
+    IN="$lib"
+    arrIN=(${lib//-/ })
+    libname="${arrIN[0]}"
+
+    if [ -f "/usr/local/bin/installer/pecl/${libname}.sh" ]; then
+        source "/usr/local/bin/installer/pecl/${libname}.sh"
     else
-        wget -q -c http://pecl.php.net/get/${lib}.tgz
-
-        #	PrintOK "Download check  ${lib}.tgz" $?
-        find ${lib}.tgz
-
-        PrintOK "File check ${lib}.tgz" $?
-        tar zxf ${lib}.tgz
+        pecl ${lib}
     fi
 
     pushd ${lib}
