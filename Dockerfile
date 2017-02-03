@@ -128,8 +128,9 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-jpeg-dir \
         --with-xpm-dir \
         --with-webp-dir \
-        --with-png-dir
-
+        --with-png-dir \
+        --enable-soap \
+        --with-libxml-dir
 #       --without-sqlite3 \
 #       --disable-fileinfo \
 #       --without-pdo-sqlite \
