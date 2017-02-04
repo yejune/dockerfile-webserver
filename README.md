@@ -49,6 +49,13 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   unix:/dev/shm/php-fpm.sock
 -   PHP_POST_MAX_SIZE
 -   PHP_UPLOAD_MAX_FILESIZE
+-   NGINX_CORS
+    -   optionally
+    -   enable CORS
+    -   yes, null
+-   NGINX_CORS_ORIGIN
+    -   optionally, default *
+    -   Access-Control-Allow-Origin
 
 ## version
 -   UBUNTU 16.04

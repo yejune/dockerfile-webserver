@@ -28,8 +28,9 @@ server {
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 
         {{ .Env.NGINX_HEADER }}
+        {{ .Env.NGINX_CORS_CONFIG }}
 
-	    fastcgi_pass {{ .Env.FASTCGI_PASS }};
+        fastcgi_pass {{ .Env.FASTCGI_PASS }};
     }
 
     {{ .Env.NGINX_LOCATION }}
