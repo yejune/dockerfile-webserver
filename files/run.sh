@@ -76,7 +76,7 @@ fi
 # cgi.fix_pathinfo off
 # sed -i -e "s/.*cgi.fix_pathinfo\s*=\s*.*/cgi.fix_pathinfo = 0/g" ${PHP_INI_DIR}/php.ini
 
-if [ ! -z "$NGINX_CORS"] ; then
+if [ ! -z "$NGINX_CORS" ] ; then
     export NGINX_CORS_CONFIG="include /etc/nginx/cors.conf;";
 else
     export NGINX_CORS_CONFIG="#include /etc/nginx/cors.conf;";

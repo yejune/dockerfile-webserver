@@ -76,7 +76,8 @@ class PhpFpmEnvironment
         'WEBROOT',
         'NGINX_VERSION',
         'NGINX_CORS',
-        'CORS_ORIGIN',
+        'NGINX_CORS_ORIGIN',
+        'NGINX_CORS_CONFIG',
     ];
 
     /**
