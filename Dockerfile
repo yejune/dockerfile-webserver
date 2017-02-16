@@ -5,9 +5,9 @@ ENV PHP_RUN_DIR=/run/php \
     PHP_INI_DIR=/etc/php \
     PHP_DATA_DIR=/var/lib/php
 
-ENV DOCKERIZE_VERSION 0.2.0
+ENV DOCKERIZE_VERSION 0.3.0
 
-ENV NGINX_VERSION 1.11.9
+ENV NGINX_VERSION 1.11.10
 
 ENV PHP_VERSION 7.0.15
 
@@ -20,10 +20,10 @@ ENV LIBRABBITMQ_VERSION 0.8.0
 ENV LIBV8_VERSION 5.7
 
 ENV PHP_LIB \
-        redis-3.1.0 \
+        redis-3.1.1 \
         yaml-2.0.0 \
         amqp-1.7.1 \
-        memcached-3.0.0 \
+        memcached-3.0.2 \
         apcu-5.1.8 \
         v8js-1.3.3 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
         v8-0.1.1 --with-v8=/opt/libv8-${LIBV8_VERSION} \

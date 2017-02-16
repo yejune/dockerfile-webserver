@@ -21,4 +21,6 @@ make install
 
 make clean
 
-git clone -b php7 https://github.com/php-memcached-dev/php-memcached ${lib}
+# git clone -b php7 https://github.com/php-memcached-dev/php-memcached ${lib}
+
+pecl ${lib}
