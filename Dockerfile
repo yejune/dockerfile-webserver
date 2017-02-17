@@ -99,16 +99,26 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-fpm-user=www-data \
         --with-fpm-group=www-data \
         --with-libdir=lib64 \
+        --with-libxml-dir \
         --with-openssl \
         --with-curl \
         --with-iconv \
         --with-pdo-mysql \
         --with-openssl \
         --with-xsl \
+        --with-xml \
         --with-zlib \
         --with-bz2 \
         --with-gmp \
         --with-readline \
+        --with-gd \
+        --with-gettext \
+        --with-freetype-dir \
+        --with-jpeg-dir \
+        --with-xpm-dir \
+        --with-webp-dir \
+        --with-png-dir \
+        --enable-gd-native-ttf \
         --enable-fpm \
         --enable-opcache \
         --enable-sockets \
@@ -119,18 +129,9 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --enable-zip \
         --enable-pcntl \
         --enable-calendar \
-        --disable-cgi \
-        --disable-short-tags \
-        --with-gd \
-        --with-gettext \
-        --enable-gd-native-ttf \
-        --with-freetype-dir \
-        --with-jpeg-dir \
-        --with-xpm-dir \
-        --with-webp-dir \
-        --with-png-dir \
         --enable-soap \
-        --with-libxml-dir
+        --disable-cgi \
+        --disable-short-tags
 #       --without-sqlite3 \
 #       --disable-fileinfo \
 #       --without-pdo-sqlite \
