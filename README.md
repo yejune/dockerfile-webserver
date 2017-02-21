@@ -77,6 +77,9 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   uuid 1.0.4
     -   ev 1.0.4
     -   uv 0.1.1
+    -   pdo_mysql
+    -   pdo_sqlite
+    -   pdo_pgsql
 
 ## Examples
 -   run

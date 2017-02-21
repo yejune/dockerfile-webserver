@@ -72,7 +72,8 @@ ENV NGINX_EXTRA_BUILD_DEPS \
 
 ENV PHP_BUILD_DEPS \
         mysql-client \
-        libmysqlclient-dev\
+        libmysqlclient-dev \
+        libpq-dev \
         libsasl2-dev \
         libicu-dev \
         libgmp-dev \
@@ -104,6 +105,7 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-curl \
         --with-iconv \
         --with-pdo-mysql \
+        --with-pdo-pgsql \
         --with-openssl \
         --with-xsl \
         --with-xml \
