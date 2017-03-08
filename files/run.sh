@@ -10,8 +10,8 @@ export PHP_EXTRACONF=${PHP_EXTRACONF:-";PHP_EXTRACONF"}
 
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 
-export FPM_LISTEN=${FPM_LISTEN:-"localhost:9000"}
-export FASTCGI_PASS=${FASTCGI_PASS:-"localhost:9000"}
+export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
+export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
@@ -19,8 +19,33 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
 
+export SLOWLOG_TIMEOUT=${SLOWLOG_TIMEOUT:-"10s"}
+export LOG_FORMAT=${LOG_FORMAT:-"main"}
+
+export TZ=${TZ:-"Asia/Seoul"}
+
 dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
+
+if [ ! -z "$SLOWLOG_TIMEOUT" ] ; then
+    sed -i -e "s/;slowlog/slowlog/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/;request_slowlog_timeout/request_slowlog_timeout/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+fi
+
+if [ ! -z "$PHP_ACCESS_LOG" ] ; then
+    sed -i -e "s/;access.log*/access.log/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    if [ "$LOG_FORMAT" = "json" ] ; then
+        sed -i -e "s/;json.access.format*/access.format/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    else
+        sed -i -e "s/;main.access.format*/access.format/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+fi
+
+if [ "$LOG_FORMAT" = "json" ] ; then
+    sed -i -e "s~{{ .Env.LOG }}~include /etc/nginx/log.json.conf;~g" /etc/nginx/nginx.conf
+else
+    sed -i -e "s~{{ .Env.LOG }}~include /etc/nginx/log.main.conf;~g" /etc/nginx/nginx.conf
+fi
 
 if [[ $FASTCGI_PASS == "unix:"* ]] ; then
     echo "";
@@ -32,18 +57,14 @@ fi
 
 # Display Version Details or not
 if [ ! -z "$SHOW_VERSION" ] ; then
-    sed -i "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
-    sed -i "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
+    sed -i -e "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
+    sed -i -e "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
 else
-    sed -i "s/server_tokens on;/server_tokens off;/g" /etc/nginx/nginx.conf
-    sed -i "s/expose_php = On/expose_php = Off/g" ${PHP_INI_DIR}/php.ini
+    sed -i -e "s/server_tokens on;/server_tokens off;/g" /etc/nginx/nginx.conf
+    sed -i -e "s/expose_php = On/expose_php = Off/g" ${PHP_INI_DIR}/php.ini
 fi
 
-if [ ! -z "$TIMEZONE" ] ; then
-    sed -i -e "s/.*date.timezone.*/date.timezone = ${TIMEZONE}/g" ${PHP_INI_DIR}/php.ini
-else
-    sed -i -e "s/.*date.timezone.*/date.timezone = Asia\/Seoul/g" ${PHP_INI_DIR}/php.ini
-fi
+sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
 
 # Display PHP error's or not
 if [ ! -z "$DEBUG" ] ; then

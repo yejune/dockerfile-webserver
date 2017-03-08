@@ -17,20 +17,20 @@ ENV LIBMEMCACHED_VERSION 1.0.18
 
 ENV LIBRABBITMQ_VERSION 0.8.0
 
-ENV LIBV8_VERSION 5.8
+ENV LIBV8_VERSION 5.9
 
 ENV PHP_LIB \
-        redis-3.1.1 \
-        yaml-2.0.0 \
-        amqp-1.8.0 \
-        memcached-3.0.3 \
-        apcu-5.1.8 \
-        v8js-1.3.3 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
-        v8-0.1.2 --with-v8=/opt/libv8-${LIBV8_VERSION} \
-        libsodium-1.0.6 \
         uuid-1.0.4 \
-        ev-1.0.4 \
-        uv-0.1.1
+        yaml-2.0.0 \
+        apcu-5.1.8 \
+        libsodium-1.0.6 \
+#        amqp-1.8.0 \
+#        memcached-3.0.3 \
+#        v8js-1.3.4 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
+#        v8-0.1.3 --with-v8=/opt/libv8-${LIBV8_VERSION} \
+#        ev-1.0.4 \
+#        uv-0.1.2 \
+         redis-3.1.1
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --sbin-path=/usr/sbin \
@@ -190,5 +190,7 @@ WORKDIR /var/www/
 EXPOSE 80 443
 
 RUN chmod +x /run.sh
+
+HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD wget -qO- localhost/healthcheck.php || exit 1
 
 ENTRYPOINT ["/run.sh"]
