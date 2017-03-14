@@ -24,13 +24,14 @@ ENV PHP_LIB \
         yaml-2.0.0 \
         apcu-5.1.8 \
         libsodium-1.0.6 \
-#        amqp-1.8.0 \
-#        memcached-3.0.3 \
-#        v8js-1.3.4 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
-#        v8-0.1.3 --with-v8=/opt/libv8-${LIBV8_VERSION} \
-#        ev-1.0.4 \
-#        uv-0.1.2 \
-         redis-3.1.1
+        memcached-3.0.3 \
+        amqp-1.8.0 \
+        v8js-1.3.4 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
+        v8-0.1.3 --with-v8=/opt/libv8-${LIBV8_VERSION} \
+        ev-1.0.4 \
+        uv-0.1.2 \
+        redis-3.1.1 \
+        gearman-2.0.3
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --sbin-path=/usr/sbin \
@@ -182,8 +183,6 @@ RUN userdel www-data && groupadd -r www-data -g 433 \
     && useradd -u 431 -r -g www-data -d /var/www -s /sbin/nologin -c "Docker image user for web application" www-data \
     && chown -Rf www-data:www-data /var/www \
     && chmod 711 /var/www
-
-VOLUME ["/var/www"]
 
 WORKDIR /var/www/
 

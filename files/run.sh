@@ -2,11 +2,11 @@
 
 export DOMAIN=${DOMAIN:-"_"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
-export NGINX_LOCATION=${NGINX_LOCATION:-"#ADD_LOCATION"}
-export NGINX_HEADER=${NGINX_HEADER:-"#NGINX_HEADER"}
+export NGINX_LOCATION=${NGINX_LOCATION:-""}
+export NGINX_HEADER=${NGINX_HEADER:-""}
 
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
-export PHP_EXTRACONF=${PHP_EXTRACONF:-";PHP_EXTRACONF"}
+export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 
@@ -19,7 +19,6 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
 
-export SLOWLOG_TIMEOUT=${SLOWLOG_TIMEOUT:-"10s"}
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
 export TZ=${TZ:-"Asia/Seoul"}
@@ -29,7 +28,7 @@ rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
 
 if [ ! -z "$SLOWLOG_TIMEOUT" ] ; then
     sed -i -e "s/;slowlog/slowlog/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
-    sed -i -e "s/;request_slowlog_timeout/request_slowlog_timeout/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
 fi
 
 if [ ! -z "$PHP_ACCESS_LOG" ] ; then
@@ -42,9 +41,7 @@ if [ ! -z "$PHP_ACCESS_LOG" ] ; then
 fi
 
 if [ "$LOG_FORMAT" = "json" ] ; then
-    sed -i -e "s~{{ .Env.LOG }}~include /etc/nginx/log.json.conf;~g" /etc/nginx/nginx.conf
-else
-    sed -i -e "s~{{ .Env.LOG }}~include /etc/nginx/log.main.conf;~g" /etc/nginx/nginx.conf
+    sed -i -e "s~include /etc/nginx/log.main.conf;~include /etc/nginx/log.json.conf;~g" /etc/nginx/nginx.conf
 fi
 
 if [[ $FASTCGI_PASS == "unix:"* ]] ; then
