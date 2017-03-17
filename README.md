@@ -64,14 +64,14 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBV8 5.9
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
--   PHP 7.0.16
+-   PHP 7.0.17
     -   phalcon 3.0.4
     -   redis 3.1.1
     -   yaml 2.0.0
     -   amqp 1.8.0
     -   memcached 3.0.3
     -   apcu 5.1.8
-    -   v8js 1.3.4
+    -   v8js 1.3.6
     -   v8 0.1.3
     -   libsodium 1.0.6
     -   uuid 1.0.4
