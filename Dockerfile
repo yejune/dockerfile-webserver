@@ -11,7 +11,7 @@ ENV NGINX_VERSION 1.11.10
 
 ENV PHP_VERSION 7.0.17
 
-ENV PHALCON_VER 3.0.4
+ENV PHALCON_VER 3.1.0
 
 ENV LIBMEMCACHED_VERSION 1.0.18
 
@@ -25,7 +25,7 @@ ENV PHP_LIB \
         apcu-5.1.8 \
         libsodium-1.0.6 \
         memcached-3.0.3 \
-        amqp-1.8.0 \
+        amqp-1.9.0 \
         v8js-1.3.6 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
         v8-0.1.3 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         ev-1.0.4 \
