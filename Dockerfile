@@ -184,7 +184,7 @@ RUN userdel www-data && groupadd -r www-data -g 433 \
     && chown -Rf www-data:www-data /var/www \
     && chmod 711 /var/www
 
-WORKDIR /var/www/
+WORKDIR /var/www
 
 EXPOSE 80 443
 
