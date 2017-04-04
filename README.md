@@ -60,13 +60,13 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 ## version
 -   UBUNTU 16.04
 -   DOCKERIZE 0.3.0
--   NGINX 1.11.10
+-   NGINX 1.11.12
 -   LIBV8 5.9
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.0.17
-    -   phalcon 3.1.0
-    -   redis 3.1.1
+    -   phalcon 3.1.1
+    -   redis 3.1.2
     -   yaml 2.0.0
     -   amqp 1.9.0
     -   memcached 3.0.3

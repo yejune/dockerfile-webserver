@@ -5,13 +5,13 @@ ENV PHP_RUN_DIR=/run/php \
     PHP_INI_DIR=/etc/php \
     PHP_DATA_DIR=/var/lib/php
 
-ENV DOCKERIZE_VERSION 0.3.0
+ENV DOCKERIZE_VERSION 0.4.0
 
-ENV NGINX_VERSION 1.11.10
+ENV NGINX_VERSION 1.11.12
 
 ENV PHP_VERSION 7.0.17
 
-ENV PHALCON_VER 3.1.0
+ENV PHALCON_VER 3.1.1
 
 ENV LIBMEMCACHED_VERSION 1.0.18
 
@@ -30,7 +30,7 @@ ENV PHP_LIB \
         v8-0.1.3 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         ev-1.0.4 \
         uv-0.1.2 \
-        redis-3.1.1 \
+        redis-3.1.2 \
         gearman-2.0.3
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
