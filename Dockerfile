@@ -57,7 +57,8 @@ ENV NGINX_BUILD_DEPS \
         libc6 \
         libxml2 \
         git \
-        wget
+        wget \
+        ssh
 
 ENV NGINX_EXTRA_BUILD_DEPS \
         gcc \
