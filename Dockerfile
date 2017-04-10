@@ -45,20 +45,20 @@ ENV NGINX_EXTRA_CONFIGURE_ARGS \
 ENV NGINX_BUILD_DEPS \
         bzip2 \
         file \
-        libbz2-dev \
-        libcurl4-openssl-dev \
         openssl \
         ca-certificates \
+        wget \
+        curl \
+        ssh \
+        libbz2-dev \
+        libcurl4-openssl-dev \
         libssl-dev \
         libxslt1-dev \
         libxml2-dev \
         libpcre3 \
         libpcre3-dev \
         libc6 \
-        libxml2 \
-        git \
-        wget \
-        ssh
+        libxml2
 
 ENV NGINX_EXTRA_BUILD_DEPS \
         gcc \
@@ -69,7 +69,7 @@ ENV NGINX_EXTRA_BUILD_DEPS \
         runit \
         nano \
         less \
-        curl \
+        git \
         tmux
 
 ENV PHP_BUILD_DEPS \
@@ -146,10 +146,6 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
 #       --with-mcrypt \
 
 RUN sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list
-
-ENV NGINX_KEY "A1C052F8"
-
-ENV PHP7_KEY "A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E"
 
 COPY files/ /
 

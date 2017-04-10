@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+NGINX_KEY="A1C052F8"
+
 gpg --keyserver keys.gnupg.net --recv-key ${NGINX_KEY}
 
 mkdir -p /var/log/nginx
