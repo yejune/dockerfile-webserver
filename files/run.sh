@@ -10,8 +10,10 @@ export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 
 export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
 
-export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
-export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
+#export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
+#export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
+export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
+export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
 
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
