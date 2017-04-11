@@ -50,6 +50,7 @@ ENV NGINX_BUILD_DEPS \
         wget \
         curl \
         ssh \
+        git \
         libbz2-dev \
         libcurl4-openssl-dev \
         libssl-dev \
@@ -69,7 +70,6 @@ ENV NGINX_EXTRA_BUILD_DEPS \
         runit \
         nano \
         less \
-        git \
         tmux
 
 ENV PHP_BUILD_DEPS \
