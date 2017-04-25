@@ -71,8 +71,8 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   amqp 1.9.0
     -   memcached 3.0.3
     -   apcu 5.1.8
-    -   v8js 1.3.6
-    -   v8 0.1.3
+    -   v8js 1.4.0
+    -   v8 0.1.4
     -   libsodium 1.0.6
     -   uuid 1.0.4
     -   ev 1.0.4
