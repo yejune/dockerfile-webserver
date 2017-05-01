@@ -156,7 +156,7 @@ class PhpFpmEnvironment
 
         foreach ($variables as $key => $value) {
             if ($key && $value) {
-                echo 'env[', $key, '] = ', $value, '', PHP_EOL;
+                echo 'env[', $key, '] = "', addcslashes($value, '"'), '"', PHP_EOL;
             }
         }
     }
