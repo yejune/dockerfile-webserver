@@ -43,6 +43,7 @@ ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --without-mail_smtp_module
 
 ENV NGINX_BUILD_DEPS \
+        tzdata \
         bzip2 \
         file \
         openssl \
