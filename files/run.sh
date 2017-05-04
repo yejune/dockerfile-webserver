@@ -130,7 +130,8 @@ fi
 rm -rf /etc/nginx/site.d/default-ssl.tmpl
 rm -rf /etc/nginx/site.d/default.tmpl
 
-php /usr/local/bin/docker-php-env.php >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+php /usr/local/bin/docker-php-env.php printFpmConfig >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+php /usr/local/bin/docker-php-env.php printEnvironmentConfig >> /etc/environment
 
 update-ca-certificates
 

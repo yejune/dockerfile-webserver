@@ -153,7 +153,7 @@ class PhpFpmEnvironment
     /**
      * Prints the environment
      */
-    public static function printConfig()
+    public static function printFpmConfig()
     {
         $variables = static::getEnvironmentVariables();
 
@@ -163,6 +163,23 @@ class PhpFpmEnvironment
             }
         }
     }
+
+    /**
+     * Prints the environment
+     */
+    public static function printEnvironmentConfig()
+    {
+        $variables = static::getEnvironmentVariables();
+
+        foreach ($variables as $key => $value) {
+            if ($key && $value) {
+                echo $key.'='.$value.PHP_EOL;
+            }
+        }
+    }
 }
 
-PhpFpmEnvironment::printConfig();
+if (true ===isset($argv[1])) {
+    $call = 'PhpFpmEnvironment::'.$argv[1];
+    $call();
+}
