@@ -27,7 +27,7 @@ ENV PHP_LIB \
         memcached-3.0.3 \
         amqp-1.9.0 \
         v8js-1.4.0 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
-        v8-0.1.4 --with-v8=/opt/libv8-${LIBV8_VERSION} \
+        v8-0.1.6 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         ev-1.0.4 \
         uv-0.1.2 \
         redis-3.1.2 \
