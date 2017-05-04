@@ -159,7 +159,7 @@ class PhpFpmEnvironment
 
         foreach ($variables as $key => $value) {
             if ($key && $value) {
-                echo 'env[', $key, '] = "', addcslashes($value, '"'), '"', PHP_EOL;
+                echo 'env['.$key.']="'.addcslashes($value, '"').'"'.PHP_EOL;
             }
         }
     }
@@ -173,7 +173,7 @@ class PhpFpmEnvironment
 
         foreach ($variables as $key => $value) {
             if ($key && $value) {
-                echo $key.'='.$value.PHP_EOL;
+                echo $key.'="'.addcslashes($value, '"').'"'.PHP_EOL;
             }
         }
     }
