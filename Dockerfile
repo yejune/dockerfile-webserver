@@ -31,6 +31,7 @@ ENV PHP_LIB \
         ev-1.0.4 \
         uv-0.2.1 \
         redis-3.1.2 \
+        ssh2-1.0 \
         gearman-2.0.3
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
