@@ -10,7 +10,7 @@ else
   PHP7_KEY="1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3"
 fi
 
-gpg --keyserver keys.gnupg.net --recv-keys ${PHP7_KEY}
+gpg --keyserver hkp://keys.gnupg.net --recv-keys ${PHP7_KEY}
 
 mkdir -p ${PHP_INI_DIR}/conf.d
 
