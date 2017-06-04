@@ -38,6 +38,11 @@ server {
         fastcgi_pass {{ .Env.FASTCGI_PASS }};
     }
 
+    location /protected/ {
+        internal;
+        alias   /var/www/protected/;
+    }
+
     {{ .Env.NGINX_LOCATION }}
 
 }
