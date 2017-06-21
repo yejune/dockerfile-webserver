@@ -68,8 +68,10 @@ sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
 # Display PHP error's or not
 if [ ! -z "$DEBUG" ] ; then
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
 else
     echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    sed -i -e "s/display_errors\s*=\s*.*/display_errors = Off/g" ${PHP_INI_DIR}/php.ini
 fi
 
 if [ "$STAGE_NAME" = "production" ] ; then
@@ -77,6 +79,8 @@ if [ "$STAGE_NAME" = "production" ] ; then
 else
     sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
 fi
+
+sed -i -e "s~;error_log = php_errors.log~error_log = /proc/self/fd/2~g" ${PHP_INI_DIR}/php.ini
 
 # Increase the memory_limit
 if [ ! -z "$PHP_MEM_LIMIT" ] ; then

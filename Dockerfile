@@ -17,7 +17,7 @@ ENV LIBMEMCACHED_VERSION 1.0.18
 
 ENV LIBRABBITMQ_VERSION 0.8.0
 
-ENV LIBV8_VERSION 6.0
+ENV LIBV8_VERSION 6.1
 
 ENV PHP_LIB \
         uuid-1.0.4 \
@@ -26,12 +26,12 @@ ENV PHP_LIB \
         libsodium-1.0.6 \
         memcached-3.0.3 \
         amqp-1.9.0 \
-        v8js-1.4.0 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
+#        v8js-1.4.0 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
         v8-0.1.6 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         ev-1.0.4 \
         uv-0.2.1 \
         redis-3.1.2 \
-        ssh2-1.0 \
+        ssh2-1.1 \
         gearman-2.0.3
 
 ENV NGINX_EXTRA_CONFIGURE_ARGS \
