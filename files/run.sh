@@ -68,7 +68,8 @@ sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
 # Display PHP error's or not
 if [ ! -z "$DEBUG" ] ; then
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
+#    sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
+    sed -i -e "s/display_errors\s*=\s*.*/display_errors = stderr/g" ${PHP_INI_DIR}/php.ini
 else
     echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     sed -i -e "s/display_errors\s*=\s*.*/display_errors = Off/g" ${PHP_INI_DIR}/php.ini
@@ -80,7 +81,27 @@ else
     sed -i -e "s/.*error_reporting\s*=\s*.*/error_reporting = E_ALL/g" ${PHP_INI_DIR}/php.ini
 fi
 
-sed -i -e "s~;error_log = php_errors.log~error_log = /proc/self/fd/2~g" ${PHP_INI_DIR}/php.ini
+#sed -i -e "s~;error_log = php_errors.log~error_log = /proc/self/fd/2~g" ${PHP_INI_DIR}/php.ini
+#sed -i -e "s~;error_log = php_errors.log~error_log = /dev/stderr~g" ${PHP_INI_DIR}/php.ini
+if [ ! -z "$LOG_STREAM" ] ; then
+    if [[ $LOG_STREAM == "php://"* ]] ; then
+        echo "";
+    else
+        mkfifo ${LOG_STREAM} && chmod 777 ${LOG_STREAM}
+        sed -i -e "s~;error_log = php_errors.log~error_log = ${LOG_STREAM}~g" ${PHP_INI_DIR}/php.ini
+
+        echo '
+[program:php7-cli-log]
+command = /usr/bin/tail -f /var/log/php/cli.log
+autostart = true
+autorestart = true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+' >> /etc/supervisor/conf.d/supervisor.conf
+    fi
+fi
 
 # Increase the memory_limit
 if [ ! -z "$PHP_MEM_LIMIT" ] ; then
