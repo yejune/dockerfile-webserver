@@ -92,7 +92,7 @@ if [ ! -z "$LOG_STREAM" ] ; then
 
         echo '
 [program:php7-cli-log]
-command = /usr/bin/tail -f /var/log/php/cli.log
+command = /usr/bin/tail -f ${LOG_STREAM}
 autostart = true
 autorestart = true
 stdout_logfile=/dev/stdout
