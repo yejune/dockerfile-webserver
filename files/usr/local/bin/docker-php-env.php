@@ -80,7 +80,6 @@ class PhpFpmEnvironment
         'NGINX_CORS_CONFIG',
         'SLOWLOG_TIMEOUT',
         'PHP_ACCESS_LOG',
-        'LOG_FORMAT',
     ];
 
     /**
