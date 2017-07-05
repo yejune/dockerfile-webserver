@@ -90,7 +90,7 @@ if [ ! -z "$LOG_STREAM" ] ; then
         mkfifo ${LOG_STREAM} && chmod 777 ${LOG_STREAM}
         sed -i -e "s~;error_log = php_errors.log~error_log = ${LOG_STREAM}~g" ${PHP_INI_DIR}/php.ini
 
-        echo '
+        echo "
 [program:php7-cli-log]
 command = /usr/bin/tail -f ${LOG_STREAM}
 autostart = true
@@ -99,7 +99,7 @@ stdout_logfile=/dev/stdout
 stdout_logfile_maxbytes=0
 stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
-' >> /etc/supervisor/conf.d/supervisor.conf
+" >> /etc/supervisor/conf.d/supervisor.conf
     fi
 fi
 
