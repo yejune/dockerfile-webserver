@@ -60,26 +60,27 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 ## version
 -   UBUNTU 16.04
 -   DOCKERIZE 0.5.0
--   NGINX 1.12.0
+-   NGINX 1.12.1
 -   LIBV8 6.1
 -   LIBMEMCACHED 1.0.18
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.1.7
-    -   phalcon 3.2.0
-    -   redis 3.1.2
+    -   phalcon 3.2.1
+    -   redis 3.1.3
     -   yaml 2.0.0
     -   amqp 1.9.1
     -   memcached 3.0.3
     -   apcu 5.1.8
     -   v8js 1.4.0
     -   v8 0.1.7
-    -   libsodium 1.0.6
+    -   libsodium 2.0.2
     -   uuid 1.0.4
     -   ev 1.0.4
     -   uv 0.2.2
     -   ssh2 1.1.1
     -   gearman 2.0.3
     -   pdo_mysql
+    -   pdo_sqlsrv
     -   pdo_sqlite
     -   pdo_pgsql
 

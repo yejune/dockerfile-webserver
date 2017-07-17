@@ -7,11 +7,11 @@ ENV PHP_RUN_DIR=/run/php \
 
 ENV DOCKERIZE_VERSION 0.5.0
 
-ENV NGINX_VERSION 1.12.0
+ENV NGINX_VERSION 1.12.1
 
 ENV PHP_VERSION 7.1.7
 
-ENV PHALCON_VER 3.2.0
+ENV PHALCON_VER 3.2.1
 
 ENV LIBMEMCACHED_VERSION 1.0.18
 
@@ -20,17 +20,18 @@ ENV LIBRABBITMQ_VERSION 0.8.0
 ENV LIBV8_VERSION 6.1
 
 ENV PHP_LIB \
+        pdo_sqlsrv-4.3.0 \
         uuid-1.0.4 \
         yaml-2.0.0 \
         apcu-5.1.8 \
-        libsodium-1.0.6 \
+        libsodium-2.0.2 \
         memcached-3.0.3 \
         amqp-1.9.1 \
 #        v8js-1.4.0 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
         v8-0.1.7 --with-v8=/opt/libv8-${LIBV8_VERSION} \
         ev-1.0.4 \
         uv-0.2.2 \
-        redis-3.1.2 \
+        redis-3.1.3 \
         ssh2-1.1.1 \
         gearman-2.0.3
 
@@ -44,6 +45,7 @@ ENV NGINX_EXTRA_CONFIGURE_ARGS \
         --without-mail_smtp_module
 
 ENV NGINX_BUILD_DEPS \
+        locales \
         tzdata \
         bzip2 \
         file \
@@ -153,8 +155,10 @@ COPY files/ /
 
 RUN set -x && \
     apt-get update && apt-get install -y --no-install-recommends \
+    apt-transport-https \
     ${NGINX_BUILD_DEPS} ${NGINX_EXTRA_BUILD_DEPS} \
     ${PHP_BUILD_DEPS} ${PHP_EXTRA_BUILD_DEPS} \
+    && locale-gen en_US.UTF-8 \
     # Install nginx
     && /usr/local/bin/installer/nginx.sh \
     # Install php
