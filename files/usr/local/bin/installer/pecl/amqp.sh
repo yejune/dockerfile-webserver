@@ -15,4 +15,4 @@ wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_$
 
 dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb
 
-pecl ${lib}
+phpize_install

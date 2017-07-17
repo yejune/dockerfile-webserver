@@ -68,21 +68,21 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   phalcon 3.2.1
     -   redis 3.1.3
     -   yaml 2.0.0
-    -   amqp 1.9.1
     -   memcached 3.0.3
     -   apcu 5.1.8
+    -   uuid 1.0.4
+    -   amqp 1.9.1
     -   v8js 1.4.0
     -   v8 0.1.7
-    -   libsodium 2.0.2
-    -   uuid 1.0.4
+    -   sodium 2.0.2
     -   ev 1.0.4
     -   uv 0.2.2
     -   ssh2 1.1.1
     -   gearman 2.0.3
     -   pdo_mysql
-    -   pdo_sqlsrv
     -   pdo_sqlite
     -   pdo_pgsql
+    -   pdo_sqlsrv
 
 ## Examples
 -   run

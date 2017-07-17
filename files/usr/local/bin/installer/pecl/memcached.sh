@@ -8,4 +8,4 @@ apt-get update && apt-get install -y --no-install-recommends --allow-unauthentic
 
 #git clone -b php7 https://github.com/php-memcached-dev/php-memcached ${lib}
 
-pecl ${lib}
+phpize_install

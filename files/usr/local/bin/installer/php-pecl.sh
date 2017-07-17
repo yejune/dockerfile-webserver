@@ -6,22 +6,6 @@ IRed='\e[0;91m'
 IGreen='\e[0;92m'
 IBlue='\e[94m';
 
-function pecl() {
-    local lib=${@}
-
-    mkdir -p /usr/src/pecl
-
-    cd /usr/src/pecl
-
-    wget -q -c http://pecl.php.net/get/${lib}.tgz
-
-    #	PrintOK "Download check  ${lib}.tgz" $?
-    find ${lib}.tgz
-
-    PrintOK "File check ${lib}.tgz" $?
-    tar zxf ${lib}.tgz
-}
-
 function trim() {
     local var=${@}
     var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
@@ -48,6 +32,55 @@ function PrintOK() {
     fi
 }
 
+
+function pecl_download() {
+    if [ ! -z $1 ]; then
+        local lib_fullname=$1
+    fi
+    #local lib_fullname=${@}
+
+    mkdir -p /usr/src/pecl
+
+    cd /usr/src/pecl
+
+    wget -q -c http://pecl.php.net/get/${lib_fullname}.tgz
+
+    #	PrintOK "Download check  ${lib_fullname}.tgz" $?
+    find ${lib_fullname}.tgz
+
+    PrintOK "File check ${lib_fullname}.tgz" $?
+    tar zxf ${lib_fullname}.tgz
+}
+
+function phpize_install() {
+    #local lib=$1
+    #local opt=$2
+
+    if [ ! -d "/usr/src/pecl/${lib_fullname}" ]; then
+        pecl_download
+    fi
+
+    pushd ${lib_fullname}
+
+    phpize
+    ./configure ${opt}   > /dev/null
+    PrintOK "PHP PECL ${lib_fullname} : ./configure ${opt}" $?
+    make -j"$(nproc)"    > /dev/null
+    PrintOK "PHP PECL ${lib_fullname} : make " $?
+    make install         > /dev/null
+    PrintOK "PHP PECL ${lib_fullname} : make install " $?
+
+    find "${extension_path}/${lib_shortname}.so" >>/dev/null
+    PrintOK "PHP PECL ${lib_fullname} : ${extension_path}/${lib_shortname}.so" $?
+
+    if [ ! -f "$extension_ini/${lib_shortname}.ini" ]
+    then
+        echo "extension=${lib_shortname}.so" > $extension_ini/${lib_shortname}.ini
+    fi
+	popd
+    rm -rf ${lib_fullname}
+}
+
 extension_path=`php-config --extension-dir`
 extension_ini="/etc/php/conf.d"
 
@@ -67,7 +100,7 @@ echo "install lib list : $PHP_LIB";
 a=($PHP_LIB)
 c=${#a[@]}
 for ((index=0; index < c; index++)); do
-    lib="${a[index]}"
+    lib_fullname="${a[index]}"
     opt=""
     n="${a[index+1]}"
 
@@ -92,39 +125,18 @@ for ((index=0; index < c; index++)); do
         fi
     fi
 
-    rm -rf ${lib}.tgz
-	rm -rf ${lib}
-	print_w "PHP PECL Installing : ${lib}"
+    rm -rf ${lib_fullname}.tgz
+	rm -rf ${lib_fullname}
+	print_w "PHP PECL Installing : ${lib_fullname}"
 
-    IN="$lib"
-    arrIN=(${lib//-/ })
-    libname="${arrIN[0]}"
+    IN="${lib_fullname}"
+    arrIN=(${lib_fullname//-/ })
+    lib_shortname="${arrIN[0]}"
 
-    if [ -f "/usr/local/bin/installer/pecl/${libname}.sh" ]; then
-        source "/usr/local/bin/installer/pecl/${libname}.sh"
+    if [ -f "/usr/local/bin/installer/pecl/${lib_shortname}.sh" ]; then
+        source "/usr/local/bin/installer/pecl/${lib_shortname}.sh"
     else
-        pecl ${lib}
+        phpize_install
     fi
-
-    pushd ${lib}
-
-    phpize
-    ./configure ${opt}   > /dev/null
-    PrintOK "PHP PECL ${lib} : ./configure ${opt}" $?
-    make -j"$(nproc)"    > /dev/null
-    PrintOK "PHP PECL ${lib} : make " $?
-    make install         > /dev/null
-    PrintOK "PHP PECL ${lib} : make install " $?
-
-    checkfile=`echo ${lib}| cut -d "-" -f1`
-    find "${extension_path}/${checkfile}.so" >>/dev/null
-    PrintOK "PHP PECL ${lib} : ${extension_path}/${checkfile}.so" $?
-
-    if [ ! -f "$extension_ini/${checkfile}.ini" ]
-    then
-        echo "extension=${checkfile}.so" > $extension_ini/${checkfile}.ini
-    fi
-	popd
-    rm -rf ${lib}
 
 done
