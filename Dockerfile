@@ -20,15 +20,15 @@ ENV LIBRABBITMQ_VERSION 0.8.0
 ENV LIBV8_VERSION 6.1
 
 ENV PHP_LIB \
-        pdo_sqlsrv-4.3.0 \
-        sodium-2.0.2 \
+#       pdo_sqlsrv-4.3.0 \
+#       sodium-2.0.2 \
 #       v8js-1.4.0 --with-v8js=/opt/libv8-${LIBV8_VERSION} \
-        v8-0.1.7 --with-v8=/opt/libv8-${LIBV8_VERSION} \
-        ev-1.0.4 \
-        uv-0.2.2 \
-        ssh2-1.1.1 \
-        gearman-2.0.3 \
-        amqp-1.9.1 \
+#       v8-0.1.7 --with-v8=/opt/libv8-${LIBV8_VERSION} \
+#       ev-1.0.4 \
+#       uv-0.2.2 \
+#       ssh2-1.1.1 \
+#       gearman-2.0.3 \
+#       amqp-1.9.1 \
         yaml-2.0.0 \
         apcu-5.1.8 \
         memcached-3.0.3 \
@@ -111,9 +111,9 @@ ENV PHP_EXTRA_CONFIGURE_ARGS \
         --with-curl \
         --with-iconv \
         --with-pdo-mysql \
-        --with-pdo-pgsql \
-#       --without-sqlite3 \
-#       --without-pdo-sqlite \
+#       --with-pdo-pgsql \
+        --without-sqlite3 \
+        --without-pdo-sqlite \
         --with-openssl \
         --with-xsl \
         --with-xml \
