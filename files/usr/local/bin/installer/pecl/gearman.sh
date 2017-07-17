@@ -8,6 +8,6 @@ mkdir -p /usr/src/pecl
 
 cd /usr/src/pecl
 
-git clone https://github.com/wcgallego/pecl-gearman.git ${lib}
+git clone https://github.com/wcgallego/pecl-gearman.git ${lib_fullname}
 
 phpize_install
