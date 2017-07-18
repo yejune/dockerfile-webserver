@@ -6,13 +6,13 @@ server {
     index       index.html index.php index.htm;
     charset     utf-8;
 
+    include     /etc/nginx/common.d/*.conf;
+
     access_log  /var/log/nginx/access.log logformat;
     error_log   /var/log/nginx/error.log error;
 
     ssl_certificate /var/certs/{{ .Env.DOMAIN }}.crt;
     ssl_certificate_key /var/certs/{{ .Env.DOMAIN }}.key;
-
-    include     /etc/nginx/common.d/*.conf;
 
     location ~ [^/]\.php(/|$)
     {
