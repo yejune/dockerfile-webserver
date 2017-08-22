@@ -122,9 +122,9 @@ fi
 # sed -i -e "s/.*cgi.fix_pathinfo\s*=\s*.*/cgi.fix_pathinfo = 0/g" ${PHP_INI_DIR}/php.ini
 
 if [ ! -z "$NGINX_CORS" ] ; then
-    export NGINX_CORS_CONFIG="include /etc/nginx/cors.conf;";
+    export INCLUDE_NGINX_CORS_CONF="include /etc/nginx/cors.conf;";
 else
-    export NGINX_CORS_CONFIG="#include /etc/nginx/cors.conf;";
+    export INCLUDE_NGINX_CORS_CONF="#include /etc/nginx/cors.conf;";
 fi
 
 dockerize -template /etc/nginx/cors.tmpl > /etc/nginx/cors.conf
@@ -155,8 +155,8 @@ fi
 rm -rf /etc/nginx/site.d/default-ssl.tmpl
 rm -rf /etc/nginx/site.d/default.tmpl
 
-php /usr/local/bin/docker-php-env.php printFpmConfig >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-php /usr/local/bin/docker-php-env.php printEnvironmentConfig >> /etc/environment
+php /usr/local/bin/docker-php-env fpm >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+php /usr/local/bin/docker-php-env environment >> /etc/environment
 
 update-ca-certificates
 

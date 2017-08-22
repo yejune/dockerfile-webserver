@@ -28,9 +28,13 @@ class PhpFpmEnvironment
         'TERM',        // Not pertinent in server context
         'HOSTNAME',
         'PHP_INI_DIR',
-        'PHP_DATA_DIR',
-        'PHP_LOG_DIR',
         'PHP_RUN_DIR',
+        'PHP_LOG_DIR',
+        'PHP_DATA_DIR',
+        'PHP_SRC_DIR',
+        'PHP_CONF_DIR',
+        'PECL_SRC_DIR',
+        'SRC_DIR',
         'FPM_GROUP',
         'FASTCGI_PASS',
         'LS_COLORS',
@@ -61,15 +65,14 @@ class PhpFpmEnvironment
         'PHP_EXTRACONF',
         'PHALCON_VER',
         'PHP_VERSION',
+        'NGINX_VERSION',
         'NGINX_KEY',
         'PHP5_KEY',
         'PHP7_KEY',
-        'PHP_BUILD_DEPS',
-        'PHP_EXTRA_CONFIGURE_ARGS',
-        'PHP_EXTRA_BUILD_DEPS',
-        'NGINX_BUILD_DEPS',
-        'NGINX_EXTRA_CONFIGURE_ARGS',
-        'NGINX_EXTRA_BUILD_DEPS',
+        'DEPS',
+        'DEV_DEPS',
+        'INCLUDE_NGINX_CORS_CONF',
+        'DEBIAN_FRONTEND',
         'UPSTREAM',
         'NGINX_LOCATION',
         'NGINX_HEADER',
@@ -80,6 +83,11 @@ class PhpFpmEnvironment
         'NGINX_CORS_CONFIG',
         'SLOWLOG_TIMEOUT',
         'PHP_ACCESS_LOG',
+        'PHP_URL',
+        'PHP_SHA256',
+        'PHP_ASC_URL',
+        'PHP_GPGKEYS',
+        'NGINX_GPGKEY',
     ];
 
     /**
@@ -152,7 +160,7 @@ class PhpFpmEnvironment
     /**
      * Prints the environment
      */
-    public static function printFpmConfig()
+    public static function fpm()
     {
         $variables = static::getEnvironmentVariables();
 
@@ -166,7 +174,7 @@ class PhpFpmEnvironment
     /**
      * Prints the environment
      */
-    public static function printEnvironmentConfig()
+    public static function environment()
     {
         $variables = static::getEnvironmentVariables();
 

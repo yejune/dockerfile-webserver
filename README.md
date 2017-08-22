@@ -37,16 +37,16 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   optionally
     -   php, nginx show version
     -   yes, null
--   TIMEZONE
+-   TZ
     -   default Asia/Seoul
 -   FPM_LISTEN
     -   optionally
-    -   default localhost:9000
-    -   /dev/shm/php-fpm.sock
+    -   default /dev/shm/php-fpm.sock
+    -   localhost:9000
 -   FASTCGI_PASS
     -   optionally
-    -   default localhost:9000
-    -   unix:/dev/shm/php-fpm.sock
+    -   default unix:/dev/shm/php-fpm.sock
+    -   localhost:9000
 -   PHP_POST_MAX_SIZE
 -   PHP_UPLOAD_MAX_FILESIZE
 -   NGINX_CORS
@@ -61,19 +61,18 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   UBUNTU 16.04
 -   DOCKERIZE 0.5.0
 -   NGINX 1.12.1
--   LIBV8 6.1
--   LIBMEMCACHED 1.0.18
+-   LIBV8 6.2
 -   LIBRABBITMQ 0.8.0
--   PHP 7.1.7
-    -   phalcon 3.2.1
+-   PHP 7.1.8
+    -   phalcon 3.2.2
     -   redis 3.1.3
-    -   yaml 2.0.0
+    -   yaml 2.0.2
     -   memcached 3.0.3
     -   apcu 5.1.8
     -   uuid 1.0.4
     -   ~~amqp 1.9.1~~ (optionally)
-    -   ~~v8js 1.4.0~~ (optionally)
-    -   ~~v8 0.1.7~~ (optionally)
+    -   ~~v8js 1.4.1~~ (optionally)
+    -   ~~v8 0.1.8~~ (optionally)
     -   ~~sodium 2.0.2~~ (optionally)
     -   ~~ev 1.0.4~~ (optionally)
     -   ~~uv 0.2.2~~ (optionally)
