@@ -60,6 +60,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get upgrade -y; \
     mkdir -p "${PHP_CONF_DIR}"; \
+    mkdir -p "${PHP_LOG_DIR}"; \
     mkdir -p "${SRC_DIR}"; \
     cd "${SRC_DIR}"; \
     \
