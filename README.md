@@ -63,27 +63,39 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   NGINX 1.12.1
 -   LIBV8 6.2
 -   LIBRABBITMQ 0.8.0
--   PHP 7.1.8
+-   PHP 7.1.9
     -   phalcon 3.2.2
     -   redis 3.1.3
     -   yaml 2.0.2
     -   memcached 3.0.3
     -   apcu 5.1.8
     -   uuid 1.0.4
-    -   ~~amqp 1.9.1~~ (optionally)
-    -   ~~v8js 1.4.1~~ (optionally)
-    -   ~~v8 0.1.8~~ (optionally)
-    -   ~~sodium 2.0.2~~ (optionally)
-    -   ~~ev 1.0.4~~ (optionally)
-    -   ~~uv 0.2.2~~ (optionally)
-    -   ~~ssh2 1.1.1~~ (optionally)
-    -   ~~gearman 2.0.3~~ (optionally)
+    -   amqp 1.9.1
+    -   v8js 1.4.1
+    -   v8 0.1.9
+    -   sodium 2.0.2
+    -   ev 1.0.4
+    -   uv 0.2.2
+    -   ssh2 1.1.1
+    -   gearman 2.0.3
     -   pdo_mysql
-    -   ~~pdo_sqlite~~ (optionally)
-    -   ~~pdo_pgsql~~ (optionally)
-    -   ~~pdo_sqlsrv~~ (optionally)
+    -   pdo_sqlite
+    -   pdo_pgsql
+    -   pdo_sqlsrv
+
+## Build Options
+-   BUILD_TYPE
+    -   null
+        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+    -   full
+        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+        -   dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8
+
 
 ## Examples
+-   build
+    -   ``docker build build-arg .``
+    -   ``docker build build-arg BUILD_TYPE=full .``
 -   run
     -   ``docker run -p 80:80 -d yejune/webserver``
 -   only SSL

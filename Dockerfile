@@ -4,6 +4,7 @@ MAINTAINER max
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG BUILD_LOCALE
+ARG BUILD_TYPE
 
 SHELL ["/bin/bash", "-c"]
 
@@ -15,9 +16,9 @@ RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
 ENV NGINX_VERSION 1.12.1
 ENV NGINX_GPGKEY 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
 
-ENV PHP_VERSION 7.1.8
+ENV PHP_VERSION 7.1.9
 ENV PHP_GPGKEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E
-ENV PHP_SHA256="8943858738604acb33ecedb865d6c4051eeffe4e2d06f3a3c8f794daccaa2aab" PHP_MD5=""
+ENV PHP_SHA256="ec9ca348dd51f19a84dc5d33acfff1fba1f977300604bdac08ed46ae2c281e8c" PHP_MD5=""
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -40,6 +41,12 @@ ENV DEPS \
         apt-utils \
         apt-transport-https \
         xz-utils
+
+ENV EXTENSIONS \
+    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+
+ENV EXTEND_EXTENSIONS \
+    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8
 
 ENV DEV_DEPS \
         pkg-config \
@@ -147,6 +154,12 @@ RUN set -xe; \
     BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
     MULTIARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
+    # Apply stack smash protection to functions using local buffers and alloca()
+    # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
+    # Enable optimization (-O2)
+    # Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
+    # Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
+    # https://github.com/docker-library/php/issues/272
     PHP_CFLAGS="-I${PHP_SRC_DIR} -fstack-protector-strong -fpic -fpie -O2"; \
     PHP_CPPFLAGS="$PHP_CFLAGS"; \
     PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"; \
@@ -202,247 +215,366 @@ RUN set -xe; \
     cp ${PHP_SRC_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini; \
     echo "zend_extension=opcache.so" > ${PHP_CONF_DIR}/opcache.ini; \
     \
+    if [ "full" = "${BUILD_TYPE}" ]; then \
+        EXTENSIONS="${EXTENSIONS} ${EXTEND_EXTENSIONS}"; \
+    fi; \
+    \
+    \
+    extensions=( $EXTENSIONS ); \
+    \
     # bcmath
-    ext-src bcmath; \
+    if in_array extensions "bcmath"; then \
+        ext-src bcmath; \
+    fi; \
     \
     # bz2
-    ext-lib libbz2-dev; \
-    ext-src bz2; \
+    if in_array extensions "bz2"; then \
+        ext-lib libbz2-dev; \
+        ext-src bz2; \
+    fi; \
     \
     # calendar
-    ext-src calendar; \
+    if in_array extensions "calendar"; then \
+        ext-src calendar; \
+    fi; \
     \
     # ctype
-    ext-src ctype; \
+    if in_array extensions "ctype"; then \
+        ext-src ctype; \
+    fi; \
     \
     # dba
-    # ext-src dba; \
+    if in_array extensions "dba"; then \
+        ext-src dba; \
+    fi; \
     \
     # dom
-    ext-lib libxml2 libxml2-dev; \
-    ext-src dom; \
+    if in_array extensions "dom"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src dom; \
+    fi; \
     \
     # enchant
-    # ext-lib libenchant1c2a libenchant-dev; \
-    # ext-src enchant; \
+    if in_array extensions "enchant"; then \
+        ext-lib libenchant1c2a libenchant-dev; \
+        ext-src enchant; \
+    fi; \
     \
     # exif
-    # ext-src exif; \
+    if in_array extensions "exif"; then \
+        ext-src exif; \
+    fi; \
     \
     # fileinfo
-    # ext-src fileinfo; \
+    if in_array extensions "fileinfo"; then \
+        ext-src fileinfo; \
+    fi; \
     \
     # gd
-    # ext-lib libjpeg-dev libpng12-dev libwebp-dev libxpm-dev libfreetype6-dev; \
-    # ext-src gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir \
-    #            --with-xpm-dir --with-freetype-dir --enable-gd-native-ttf; \
+    if in_array extensions "gd"; then \
+        ext-lib libjpeg-dev libpng12-dev libwebp-dev libxpm-dev libfreetype6-dev; \
+        ext-src gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir \
+                   --with-xpm-dir --with-freetype-dir --enable-gd-native-ttf; \
+    fi; \
     \
     # gettext
-    ext-src gettext; \
+    if in_array extensions "gettext"; then \
+        ext-src gettext; \
+    fi; \
     \
     # gmp
-    ext-lib libgmp-dev; \
-    ext-src gmp --with-gmp=/usr/include/x86_64-linux-gnu/gmp.h; \
+    if in_array extensions "gmp"; then \
+        ext-lib libgmp-dev; \
+        ext-src gmp --with-gmp=/usr/include/x86_64-linux-gnu/gmp.h; \
+    fi; \
     \
     # hash
-    ext-src hash; \
+    if in_array extensions "hash"; then \
+        ext-src hash; \
+    fi; \
     \
     # iconv
-    ext-src iconv; \
+    if in_array extensions "iconv"; then \
+        ext-src iconv; \
+    fi; \
     \
     # intl
-    ext-lib libicu-dev; \
-    ext-src intl; \
+    if in_array extensions "intl"; then \
+        ext-lib libicu-dev; \
+        ext-src intl; \
+    fi; \
     \
     # json
-    ext-src json; \
+    if in_array extensions "json"; then \
+        ext-src json; \
+    fi; \
     \
     # pcntl
-    ext-src pcntl; \
+    if in_array extensions "pcntl"; then \
+        ext-src pcntl; \
+    fi; \
     \
     # pdo
-    ext-src pdo; \
+    if in_array extensions "pdo"; then \
+        ext-src pdo; \
+    fi; \
     \
     # pdo mysql
-    ext-src pdo_mysql; \
+    if in_array extensions "pdo_mysql"; then \
+        ext-src pdo_mysql; \
+    fi; \
     \
     # pdo pgsql
-    # ext-lib libpq-dev; \
-    # ext-src pdo_pgsql; \
+    if in_array extensions "pdo_pgsql"; then \
+        ext-lib libpq-dev; \
+        ext-src pdo_pgsql; \
+    fi; \
     \
     # pdo sqlite
-    # ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
-    # ext-src pdo_sqlite; \
+    if in_array extensions "pdo_sqlite"; then \
+        ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
+        ext-src pdo_sqlite; \
+    fi; \
     \
     # phar
-    # ext-src phar; \
+    if in_array extensions "phar"; then \
+        ext-src phar; \
+    fi; \
     \
     # posix
-    ext-src posix; \
+    if in_array extensions "posix"; then \
+        ext-src posix; \
+    fi; \
     \
     # pspell
-    # ext-lib libpspell-dev; \
-    # ext-src pspell; \
+    if in_array extensions "pspell"; then \
+        ext-lib libpspell-dev; \
+        ext-src pspell; \
+    fi; \
     \
     # recode
-    # ext-lib librecode-dev; \
-    # ext-src recode; \
+    if in_array extensions "recode"; then \
+        ext-lib librecode-dev; \
+        ext-src recode; \
+    fi; \
     \
     # session
-    ext-src session; \
+    if in_array extensions "session"; then \
+        ext-src session; \
+    fi; \
     \
     # shmop
-    # ext-src shmop; \
+    if in_array extensions "shmop"; then \
+        ext-src shmop; \
+    fi; \
     \
     # simplexml
-    ext-lib libxml2 libxml2-dev; \
-    ext-src simplexml; \
+    if in_array extensions "simplexml"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src simplexml; \
+    fi; \
     \
     # snmp
-    # ext-lib libsnmp-dev snmp-mibs-downloader; \
-    # ext-src snmp; \
+    if in_array extensions "snmp"; then \
+        ext-lib libsnmp-dev snmp-mibs-downloader; \
+        ext-src snmp; \
+    fi; \
     \
     # soap
-    ext-lib libxml2-dev; \
-    ext-src soap; \
+    if in_array extensions "soap"; then \
+        ext-lib libxml2-dev; \
+        ext-src soap; \
+    fi; \
     \
     # sockets
-    ext-src sockets; \
+    if in_array extensions "sockets"; then \
+        ext-src sockets; \
+    fi; \
     \
     # sqlite
-    # ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
-    # ext-src sqlite3; \
+    if in_array extensions "sqlite3"; then \
+        ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
+        ext-src sqlite3; \
+    fi; \
     \
     # tidy
-    # ext-lib libtidy-dev; \
-    # ext-src tidy; \
+    if in_array extensions "tidy"; then \
+        ext-lib libtidy-dev; \
+        ext-src tidy; \
+    fi; \
     \
     # tokenizer
-    # ext-src tokenizer; \
+    if in_array extensions "tokenizer"; then \
+        ext-src tokenizer; \
+    fi; \
     \
     # wddx
-    # ext-lib libxml2 libxml2-dev; \
-    # ext-src wddx; \
+    if in_array extensions "wddx"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src wddx; \
+    fi; \
     \
     # xml
-    ext-lib libxml2 libxml2-dev; \
-    ext-src xml; \
+    if in_array extensions "xml"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src xml; \
+    fi; \
     \
     # xsl
-    # ext-lib libxml2 libxslt1-dev; \
-    # ext-src xsl; \
+    if in_array extensions "xsl"; then \
+        ext-lib libxml2 libxslt1-dev; \
+        ext-src xsl; \
+    fi; \
     \
     # xmlreader
-    ext-lib libxml2 libxml2-dev; \
-    ext-src xmlreader; \
+    if in_array extensions "xmlreader"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src xmlreader; \
+    fi; \
     \
     # xmlwriter
-    ext-lib libxml2 libxml2-dev; \
-    ext-src xmlwriter; \
+    if in_array extensions "xmlwriter"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src xmlwriter; \
+    fi; \
     \
     # xmlrpc
-    # ext-lib libxml2 libxml2-dev; \
-    # ext-src xmlrpc; \
+    if in_array extensions "xmlrpc"; then \
+        ext-lib libxml2 libxml2-dev; \
+        ext-src xmlrpc; \
+    fi; \
     \
     # zip
-    # ext-src zip; \
+    if in_array extensions "zip"; then \
+        ext-src zip; \
+    fi; \
     \
     \
     \
     # pecl install
     \
     # yaml
-    ext-lib libyaml-dev; \
-    ext-pcl yaml-2.0.2; \
+    if in_array extensions "yaml"; then \
+        ext-lib libyaml-dev; \
+        ext-pcl yaml-2.0.2; \
+    fi; \
     \
     # apcu
-    ext-pcl apcu-5.1.8; \
+    if in_array extensions "apcu"; then \
+        ext-pcl apcu-5.1.8; \
+    fi; \
     \
     # memcached
-    ext-lib libmemcached-dev; \
-    ext-pcl memcached-3.0.3; \
+    if in_array extensions "memcached"; then \
+        ext-lib libmemcached-dev; \
+        ext-pcl memcached-3.0.3; \
+    fi; \
     \
     # redis
-    ext-pcl redis-3.1.3; \
+    if in_array extensions "redis"; then \
+        ext-pcl redis-3.1.3; \
+    fi; \
     \
     # uuid
-    ext-lib uuid-dev; \
-    ext-pcl uuid-1.0.4; \
+    if in_array extensions "uuid"; then \
+        ext-lib uuid-dev; \
+        ext-pcl uuid-1.0.4; \
+    fi; \
     \
     # ev
-    # ext-lib libev-dev; \
-    # ext-pcl ev-1.0.4; \
+    if in_array extensions "ev"; then \
+        ext-lib libev-dev; \
+        ext-pcl ev-1.0.4; \
+    fi; \
     \
     # uv \
-    # ext-lib libuv1-dev; \
-    # ext-pcl uv-0.2.2; \
+    if in_array extensions "uv"; then \
+        ext-lib libuv1-dev; \
+        ext-pcl uv-0.2.2; \
+    fi; \
     \
     # ssh2
-    # ext-lib libssh2-1-dev; \
-    # ext-pcl ssh2-1.1.2; \
+    if in_array extensions "ssh2"; then \
+        ext-lib libssh2-1-dev; \
+        ext-pcl ssh2-1.1.2; \
+    fi; \
     \
     # phalcon
-    PHALCON_VERSION=3.2.2; \
-    cd $PECL_SRC_DIR; \
-    wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz; \
-    tar -zxvf v${PHALCON_VERSION}.tar.gz; \
-    mv cphalcon-${PHALCON_VERSION}/build/php7/64bits phalcon-${PHALCON_VERSION}; \
-    PREV_PHP_CFLAGS="${PHP_CFLAGS}"; \
-    PHP_CFLAGS="${PHP_CFLAGS} -g -fomit-frame-pointer -DPHALCON_RELEASE"; \
-    ext-pcl phalcon-${PHALCON_VERSION}; \
-    PHP_CFLAGS="${PREV_PHP_CFLAGS}"; \
+    if in_array extensions "phalcon"; then \
+        PHALCON_VERSION=3.2.2; \
+        cd $PECL_SRC_DIR; \
+        wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz; \
+        tar -zxvf v${PHALCON_VERSION}.tar.gz; \
+        mv cphalcon-${PHALCON_VERSION}/build/php7/64bits phalcon-${PHALCON_VERSION}; \
+        PREV_PHP_CFLAGS="${PHP_CFLAGS}"; \
+        PHP_CFLAGS="${PHP_CFLAGS} -g -fomit-frame-pointer -DPHALCON_RELEASE"; \
+        ext-pcl phalcon-${PHALCON_VERSION}; \
+        PHP_CFLAGS="${PREV_PHP_CFLAGS}"; \
+    fi; \
     \
     # sodium
-    # SODIUM_VERSION=2.0.4; \
-    # cd $PECL_SRC_DIR; \
-    # git clone --branch=stable https://github.com/jedisct1/libsodium; \
-    # cd libsodium; \
-    # ./configure; \
-    # make; \
-    # make install; \
-    # cd $PECL_SRC_DIR; \
-    # wget https://github.com/jedisct1/libsodium-php/archive/${SODIUM_VERSION}.tar.gz; \
-    # tar -zxvf ${SODIUM_VERSION}.tar.gz; \
-    # mv libsodium-php-${SODIUM_VERSION} sodium-${SODIUM_VERSION}; \
-    # ext-pcl sodium-${SODIUM_VERSION}; \
+    if in_array extensions "sodium"; then \
+        SODIUM_VERSION=2.0.4; \
+        cd $PECL_SRC_DIR; \
+        git clone --branch=stable https://github.com/jedisct1/libsodium; \
+        cd libsodium; \
+        ./configure; \
+        make; \
+        make install; \
+        cd $PECL_SRC_DIR; \
+        wget https://github.com/jedisct1/libsodium-php/archive/${SODIUM_VERSION}.tar.gz; \
+        tar -zxvf ${SODIUM_VERSION}.tar.gz; \
+        mv libsodium-php-${SODIUM_VERSION} sodium-${SODIUM_VERSION}; \
+        ext-pcl sodium-${SODIUM_VERSION}; \
+    fi; \
     \
     # pdo_sqlsrv
-    # cd $PECL_SRC_DIR; \
-    # curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-    # curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
-    # apt-get update; \
-    # ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
-    # ext-pcl pdo_sqlsrv-4.3.0; \
+    if in_array extensions "pdo_sqlsrv"; then \
+        cd $PECL_SRC_DIR; \
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
+        curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
+        apt-get update; \
+        ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
+        ext-pcl pdo_sqlsrv-4.3.0; \
+    fi; \
     \
     # gearman
-    # GEARMAN_VERSION=2.0.3; \
-    # cd $PECL_SRC_DIR; \
-    # ext-lib libgearman-dev; \
-    # git clone https://github.com/wcgallego/pecl-gearman.git gearman-${GEARMAN_VERSION}; \
-    # ext-pcl gearman-${GEARMAN_VERSION}; \
+    if in_array extensions "gearman"; then \
+        GEARMAN_VERSION=2.0.3; \
+        cd $PECL_SRC_DIR; \
+        ext-lib libgearman-dev; \
+        git clone https://github.com/wcgallego/pecl-gearman.git gearman-${GEARMAN_VERSION}; \
+        ext-pcl gearman-${GEARMAN_VERSION}; \
+    fi; \
     \
     # amqp
-    # LIBRABBITMQ_VERSION=0.8.0; \
-    # cd $PECL_SRC_DIR; \
-    # wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-    # dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-    # wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-    # dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-    # ext-pcl amqp-1.9.1; \
+    if in_array extensions "amqp"; then \
+        LIBRABBITMQ_VERSION=0.8.0; \
+        cd $PECL_SRC_DIR; \
+        wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
+        dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
+        wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
+        dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
+        ext-pcl amqp-1.9.1; \
+    fi; \
     \
     # v8js
-    # LIBV8_VERSION=6.2; \
-    # apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
-    # apt-get update; \
-    # ext-lib libv8-${LIBV8_VERSION}-dev; \
-    # ext-pcl v8js-1.4.1 --with-v8js=/opt/libv8-${LIBV8_VERSION}; \
+    if in_array extensions "v8js"; then \
+        LIBV8_VERSION=6.2; \
+        apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
+        apt-get update; \
+        ext-lib libv8-${LIBV8_VERSION}-dev; \
+        ext-pcl v8js-1.4.1 --with-v8js=/opt/libv8-${LIBV8_VERSION}; \
+    fi; \
     \
     # v8
-    # LIBV8_VERSION=6.2; \
-    # apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
-    # apt-get update; \
-    # ext-lib libv8-${LIBV8_VERSION}-dev; \
-    # ext-pcl v8-0.1.8 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
+    if in_array extensions "v8"; then \
+        LIBV8_VERSION=6.2; \
+        apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
+        apt-get update; \
+        ext-lib libv8-${LIBV8_VERSION}-dev; \
+        ext-pcl v8-0.1.9 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
+    fi; \
     \
     \
     # Install dockerize

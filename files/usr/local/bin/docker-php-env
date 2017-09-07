@@ -88,6 +88,8 @@ class PhpFpmEnvironment
         'PHP_ASC_URL',
         'PHP_GPGKEYS',
         'NGINX_GPGKEY',
+        'EXTENSIONS',
+        'EXTEND_EXTENSIONS',
     ];
 
     /**
