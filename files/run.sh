@@ -24,6 +24,7 @@ export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
 export TZ=${TZ:-"Asia/Seoul"}
+export VARIABLES_ORDER=${VARIABLES_ORDER:-"GPCS"}
 
 dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
@@ -33,13 +34,17 @@ if [ ! -z "$SLOWLOG_TIMEOUT" ] ; then
     sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
 fi
 
-if [ ! -z "$PHP_ACCESS_LOG" ] ; then
+if [ "$PHP_ACCESS_LOG" = "on" ] ; then
     sed -i -e "s/;access.log*/access.log/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     if [ "$LOG_FORMAT" = "json" ] ; then
         sed -i -e "s/;json.access.format*/access.format/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     else
         sed -i -e "s/;main.access.format*/access.format/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
+fi
+
+if [ ! -z "$VARIABLES_ORDER" ] ; then
+    sed -i 's/variables_order = .*/variables_order = "${VARIABLES_ORDER}"/' ${PHP_INI_DIR}/php.ini
 fi
 
 if [ "$LOG_FORMAT" = "json" ] ; then
@@ -55,10 +60,12 @@ else
 fi
 
 # Display Version Details or not
-if [ ! -z "$SHOW_VERSION" ] ; then
+if [ "$SHOW_VERSION" = "on" ] ; then
+    #sed -i -e "s/#more_clear_headers Server;//g" /etc/nginx/nginx.conf
     sed -i -e "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
     sed -i -e "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
 else
+    #sed -i -e "s/#more_clear_headers Server;/more_clear_headers Server;/g" /etc/nginx/nginx.conf
     sed -i -e "s/server_tokens on;/server_tokens off;/g" /etc/nginx/nginx.conf
     sed -i -e "s/expose_php = On/expose_php = Off/g" ${PHP_INI_DIR}/php.ini
 fi
@@ -66,7 +73,7 @@ fi
 sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
 
 # Display PHP error's or not
-if [ ! -z "$DEBUG" ] ; then
+if [ "$DEBUG" = "on" ] ; then
     echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
 #    sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
     sed -i -e "s/display_errors\s*=\s*.*/display_errors = stderr/g" ${PHP_INI_DIR}/php.ini
@@ -121,13 +128,18 @@ fi
 # cgi.fix_pathinfo off
 # sed -i -e "s/.*cgi.fix_pathinfo\s*=\s*.*/cgi.fix_pathinfo = 0/g" ${PHP_INI_DIR}/php.ini
 
-if [ ! -z "$NGINX_CORS" ] ; then
+if [ "$NGINX_CORS" = "on" ] ; then
     export INCLUDE_NGINX_CORS_CONF="include /etc/nginx/cors.conf;";
 else
     export INCLUDE_NGINX_CORS_CONF="#include /etc/nginx/cors.conf;";
 fi
 
 dockerize -template /etc/nginx/cors.tmpl > /etc/nginx/cors.conf
+
+if [ "$NGINX_ACCESS_LOG" = "off" ] ; then
+    sed -i -e "s/access_log.*/access_log off;/g" /etc/nginx/site.d/default-ssl.tmpl
+    sed -i -e "s/access_log.*/access_log off;/g" /etc/nginx/site.d/default.tmpl
+fi
 
 rm -rf /etc/nginx/cors.tmpl
 

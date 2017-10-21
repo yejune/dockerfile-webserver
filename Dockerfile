@@ -9,16 +9,16 @@ ARG BUILD_TYPE
 SHELL ["/bin/bash", "-c"]
 
 RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
-        sed -i 's/archive.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list; \
-        sed -i 's/security.ubuntu.com/ftp.daum.net/g' /etc/apt/sources.list; \
+        sed -i 's/archive.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
+        sed -i 's/security.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
     fi
 
 ENV NGINX_VERSION 1.12.1
 ENV NGINX_GPGKEY 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
 
-ENV PHP_VERSION 7.1.9
+ENV PHP_VERSION 7.1.10
 ENV PHP_GPGKEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E
-ENV PHP_SHA256="ec9ca348dd51f19a84dc5d33acfff1fba1f977300604bdac08ed46ae2c281e8c" PHP_MD5=""
+ENV PHP_SHA256="2b8efa771a2ead0bb3ae67b530ca505b5b286adc873cca9ce97a6e1d6815c50b" PHP_MD5=""
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -43,10 +43,13 @@ ENV DEPS \
         xz-utils
 
 ENV EXTENSIONS \
-    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached mongodb redis uuid phalcon phar
 
 ENV EXTEND_EXTENSIONS \
-    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8
+    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick
+
+ENV EXTRA_EXTENSIONS \
+    screwim
 
 ENV DEV_DEPS \
         pkg-config \
@@ -184,6 +187,7 @@ RUN set -xe; \
         # --disable-cgi \
         # --disable-short-tags \
         \
+        --enable-ipv6 \
         --enable-fpm \
         --enable-opcache \
         \
@@ -217,6 +221,9 @@ RUN set -xe; \
     \
     if [ "full" = "${BUILD_TYPE}" ]; then \
         EXTENSIONS="${EXTENSIONS} ${EXTEND_EXTENSIONS}"; \
+    fi; \
+    if [ "extra" = "${BUILD_TYPE}" ]; then \
+        EXTENSIONS="${EXTENSIONS} ${EXTEND_EXTENSIONS} ${EXTRA_EXTENSIONS}"; \
     fi; \
     \
     \
@@ -472,7 +479,19 @@ RUN set -xe; \
     \
     # redis
     if in_array extensions "redis"; then \
-        ext-pcl redis-3.1.3; \
+        ext-pcl redis-3.1.4; \
+    fi; \
+    \
+    \
+    # mongodb
+    if in_array extensions "mongodb"; then \
+        ext-pcl mongodb-1.3.1; \
+    fi; \
+    \
+    # imagick
+    if in_array extensions "imagick"; then \
+        ext-lib libmagickwand-dev imagemagick; \
+        ext-pcl imagick-3.4.3; \
     fi; \
     \
     # uuid
@@ -501,7 +520,7 @@ RUN set -xe; \
     \
     # phalcon
     if in_array extensions "phalcon"; then \
-        PHALCON_VERSION=3.2.2; \
+        PHALCON_VERSION=3.2.3; \
         cd $PECL_SRC_DIR; \
         wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz; \
         tar -zxvf v${PHALCON_VERSION}.tar.gz; \
@@ -514,7 +533,7 @@ RUN set -xe; \
     \
     # sodium
     if in_array extensions "sodium"; then \
-        SODIUM_VERSION=2.0.4; \
+        SODIUM_VERSION=2.0.9; \
         cd $PECL_SRC_DIR; \
         git clone --branch=stable https://github.com/jedisct1/libsodium; \
         cd libsodium; \
@@ -543,8 +562,11 @@ RUN set -xe; \
         GEARMAN_VERSION=2.0.3; \
         cd $PECL_SRC_DIR; \
         ext-lib libgearman-dev; \
-        git clone https://github.com/wcgallego/pecl-gearman.git gearman-${GEARMAN_VERSION}; \
+        wget https://github.com/wcgallego/pecl-gearman/archive/gearman-${GEARMAN_VERSION}.tar.gz; \
+        tar -zxvf gearman-${GEARMAN_VERSION}.tar.gz; \
+        mv pecl-gearman-gearman-${GEARMAN_VERSION} gearman-${GEARMAN_VERSION}; \
         ext-pcl gearman-${GEARMAN_VERSION}; \
+        rm -rf gearman-${GEARMAN_VERSION}.tar.gz; \
     fi; \
     \
     # amqp
@@ -555,12 +577,12 @@ RUN set -xe; \
         dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
         wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
         dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-        ext-pcl amqp-1.9.1; \
+        ext-pcl amqp-1.9.3; \
     fi; \
     \
     # v8js
     if in_array extensions "v8js"; then \
-        LIBV8_VERSION=6.2; \
+        LIBV8_VERSION=6.3; \
         apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
         apt-get update; \
         ext-lib libv8-${LIBV8_VERSION}-dev; \
@@ -569,13 +591,19 @@ RUN set -xe; \
     \
     # v8
     if in_array extensions "v8"; then \
-        LIBV8_VERSION=6.2; \
+        LIBV8_VERSION=6.3; \
         apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
         apt-get update; \
         ext-lib libv8-${LIBV8_VERSION}-dev; \
-        ext-pcl v8-0.1.9 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
+        ext-pcl v8-0.2.0 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
     fi; \
     \
+    # screwim
+    if in_array extensions "screwim"; then \
+        SCREWIM_VERSION=1.0.0; \
+        git clone https://github.com/OOPS-ORG-PHP/mod_screwim.git screwim-${SCREWIM_VERSION}; \
+        ext-pcl screwim-${SCREWIM_VERSION}; \
+    fi; \
     \
     # Install dockerize
     DOCKERIZE_VERSION=0.5.0; \

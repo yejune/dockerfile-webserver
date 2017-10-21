@@ -61,23 +61,25 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   UBUNTU 16.04
 -   DOCKERIZE 0.5.0
 -   NGINX 1.12.1
--   LIBV8 6.2
+-   LIBV8 6.3
 -   LIBRABBITMQ 0.8.0
--   PHP 7.1.9
-    -   phalcon 3.2.2
-    -   redis 3.1.3
+-   PHP 7.1.10
+    -   phalcon 3.2.3
+    -   redis 3.1.4
     -   yaml 2.0.2
     -   memcached 3.0.3
+    -   mongodb 1.3.1
     -   apcu 5.1.8
     -   uuid 1.0.4
-    -   amqp 1.9.1
+    -   amqp 1.9.3
     -   v8js 1.4.1
-    -   v8 0.1.9
-    -   sodium 2.0.2
+    -   v8 0.2.0
+    -   sodium 2.0.9
     -   ev 1.0.4
     -   uv 0.2.2
-    -   ssh2 1.1.1
+    -   ssh2 1.1.2
     -   gearman 2.0.3
+    -   imagick 3.4.3
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
@@ -89,7 +91,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
     -   full
         -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
-        -   dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8
+        -   dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick mongodb
 
 
 ## Examples
