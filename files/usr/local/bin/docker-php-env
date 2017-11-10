@@ -90,6 +90,12 @@ class PhpFpmEnvironment
         'NGINX_GPGKEY',
         'EXTENSIONS',
         'EXTEND_EXTENSIONS',
+        'VARIABLES_ORDER',
+        'EXTRA_EXTENSIONS',
+        'NGINX_ACCESS_LOG',
+        'NGINX_CORS_METHODS',
+        'NGINX_CORS_HEADERS',
+        'PHP_EXTENSIONS',
     ];
 
     /**

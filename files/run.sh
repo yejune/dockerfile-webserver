@@ -20,6 +20,8 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
+export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"GET, POST, PUT, DELETE, OPTIONS"}
+export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Mx-ReqToken,X-Requested-With,X-CustomHeader"}
 
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
@@ -71,6 +73,28 @@ else
 fi
 
 sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
+
+if [ "$XDEBUG" = "on" ]; then
+    if [ -f "${PHP_CONF_DIR}/xdebug.ini.stop" ]; then
+        mv ${PHP_CONF_DIR}/xdebug.ini.stop ${PHP_CONF_DIR}/xdebug.ini
+    fi
+fi
+
+if [ ! -z "$PHP_EXTENSIONS" ]; then
+    mv "${PHP_CONF_DIR}/" "${PHP_CONF_DIR}.stop/"
+    mkdir -p "${PHP_CONF_DIR}/"
+    a=( $PHP_EXTENSIONS )
+    for ((j=1; j<"${#a[@]}"; j++)); do
+        ext="${a[j]}"
+        if [ -f "${PHP_CONF_DIR}.stop/1_$ext.ini" ]; then
+            mv "${PHP_CONF_DIR}.stop/1_$ext.ini" "${PHP_CONF_DIR}/1_$ext.ini"
+        else
+            if [ -f "${PHP_CONF_DIR}.stop/$ext.ini" ]; then
+                mv "${PHP_CONF_DIR}.stop/$ext.ini" "${PHP_CONF_DIR}/$ext.ini"
+            fi
+        fi
+    done
+fi
 
 # Display PHP error's or not
 if [ "$DEBUG" = "on" ] ; then

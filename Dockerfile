@@ -13,12 +13,12 @@ RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
         sed -i 's/security.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
     fi
 
-ENV NGINX_VERSION 1.12.1
+ENV NGINX_VERSION 1.12.2
 ENV NGINX_GPGKEY 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
 
-ENV PHP_VERSION 7.1.10
+ENV PHP_VERSION 7.1.11
 ENV PHP_GPGKEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E
-ENV PHP_SHA256="2b8efa771a2ead0bb3ae67b530ca505b5b286adc873cca9ce97a6e1d6815c50b" PHP_MD5=""
+ENV PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e" PHP_MD5=""
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -49,7 +49,7 @@ ENV EXTEND_EXTENSIONS \
     dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick
 
 ENV EXTRA_EXTENSIONS \
-    screwim
+    screwim xdebug swoole
 
 ENV DEV_DEPS \
         pkg-config \
@@ -85,7 +85,7 @@ RUN set -xe; \
     apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS}; \
     \
     # Install nginx
-    NJS_VERSION="${NGINX_VERSION}.0.1.10-1~xenial"; \
+    NJS_VERSION="${NGINX_VERSION}.0.1.14-1~xenial"; \
     NGINX_VERSION="${NGINX_VERSION}-1~xenial"; \
     found=''; \
     for server in \
@@ -485,7 +485,7 @@ RUN set -xe; \
     \
     # mongodb
     if in_array extensions "mongodb"; then \
-        ext-pcl mongodb-1.3.1; \
+        ext-pcl mongodb-1.3.2; \
     fi; \
     \
     # imagick
@@ -520,7 +520,7 @@ RUN set -xe; \
     \
     # phalcon
     if in_array extensions "phalcon"; then \
-        PHALCON_VERSION=3.2.3; \
+        PHALCON_VERSION=3.2.4; \
         cd $PECL_SRC_DIR; \
         wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz; \
         tar -zxvf v${PHALCON_VERSION}.tar.gz; \
@@ -533,7 +533,7 @@ RUN set -xe; \
     \
     # sodium
     if in_array extensions "sodium"; then \
-        SODIUM_VERSION=2.0.9; \
+        SODIUM_VERSION=2.0.10; \
         cd $PECL_SRC_DIR; \
         git clone --branch=stable https://github.com/jedisct1/libsodium; \
         cd libsodium; \
@@ -582,7 +582,7 @@ RUN set -xe; \
     \
     # v8js
     if in_array extensions "v8js"; then \
-        LIBV8_VERSION=6.3; \
+        LIBV8_VERSION=6.4; \
         apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
         apt-get update; \
         ext-lib libv8-${LIBV8_VERSION}-dev; \
@@ -591,11 +591,11 @@ RUN set -xe; \
     \
     # v8
     if in_array extensions "v8"; then \
-        LIBV8_VERSION=6.3; \
+        LIBV8_VERSION=6.4; \
         apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
         apt-get update; \
         ext-lib libv8-${LIBV8_VERSION}-dev; \
-        ext-pcl v8-0.2.0 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
+        ext-pcl v8-0.2.1 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
     fi; \
     \
     # screwim
@@ -603,6 +603,20 @@ RUN set -xe; \
         SCREWIM_VERSION=1.0.0; \
         git clone https://github.com/OOPS-ORG-PHP/mod_screwim.git screwim-${SCREWIM_VERSION}; \
         ext-pcl screwim-${SCREWIM_VERSION}; \
+    fi; \
+    \
+    # swoole
+    if in_array extensions "swoole"; then \
+        # ext-pcl swoole-1.9.21; \
+        ext-pcl swoole-2.0.9; \
+    fi; \
+    # xdebug
+    if in_array extensions "xdebug"; then \
+        pecl install xdebug-2.5.5; \
+        XDEBUG_INI="${PHP_CONF_DIR}/xdebug.ini.stop"; \
+        echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > ${XDEBUG_INI}; \
+        echo "xdebug.remote_enable=on" >> ${XDEBUG_INI}; \
+        echo "xdebug.remote_autostart=on" >> ${XDEBUG_INI}; \
     fi; \
     \
     # Install dockerize
