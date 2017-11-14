@@ -3,10 +3,134 @@ eval $(docker-machine env bootapp-docker-machine)
 type="$1";
 subname="";
 if [ ! -z "$type" ]; then
-    subname="-$type"
+    if [ "$type" = "full" ]; then #|| [ "$type" = "extra" ]
+        subname="-$type"
+    else
+        echo "$type not support, full"; # or extra
+        exit;
+    fi
 fi
 
-echo $type;
-echo $subname;
+if [ $subname = "full" ]; then
+    EXTENSIONS="\
+        bcmath\
+        bz2\
+        calendar\
+        ctype\
+        gettext\
+        gmp\
+        hash\
+        iconv\
+        intl\
+        json\
+        pcntl\
+        pdo\
+        pdo_mysql\
+        posix\
+        session\
+        sockets\
+        apcu\
+        memcached\
+        mongodb\
+        redis\
+        uuid\
+        phalcon\
+        phar\
+        shmop\
+        zip\
+        tidy\
+        tokenizer\
+        snmp\
+        dom\
+        xml\
+        xmlreader\
+        xmlwriter\
+        simplexml\
+        xsl\
+        soap\
+        yaml\
+        \
+        xmlrpc\
+        exif\
+        fileinfo\
+        gd\
+        imagick\
+        ev\
+        uv\
+        ssh2\
+        sodium\
+        gearman\
+        amqp\
+        screwim\
+        swoole\
+        \
+        dba\
+        enchant\
+        pspell\
+        recode\
+        wddx\
+        sqlite3\
+        pdo_pgsql\
+        pdo_sqlite\
+        pdo_sqlsrv\
+        v8js\
+        v8\
+"
+else
+    EXTENSIONS="\
+        bcmath\
+        bz2\
+        calendar\
+        ctype\
+        gettext\
+        gmp\
+        hash\
+        iconv\
+        intl\
+        json\
+        pcntl\
+        pdo\
+        pdo_mysql\
+        posix\
+        session\
+        sockets\
+        apcu\
+        memcached\
+        mongodb\
+        redis\
+        uuid\
+        phalcon\
+        phar\
+        shmop\
+        zip\
+        tidy\
+        tokenizer\
+        snmp\
+        dom\
+        xml\
+        xmlreader\
+        xmlwriter\
+        simplexml\
+        xsl\
+        soap\
+        yaml\
+        \
+        xmlrpc\
+        exif\
+        fileinfo\
+        gd\
+        imagick\
+        ev\
+        uv\
+        ssh2\
+        sodium\
+        gearman\
+        amqp\
+        screwim\
+        swoole\
+"
+fi
 
-docker build --tag yejune/webserver:7.1.11${subname} --build-arg BUILD_LOCALE=ko --build-arg BUILD_TYPE=${type} .
+echo $EXTENSIONS;
+
+docker build --tag yejune/webserver:7.2.0${subname} --build-arg BUILD_LOCALE=ko --build-arg BUILD_EXTENSIONS="${EXTENSIONS}" .

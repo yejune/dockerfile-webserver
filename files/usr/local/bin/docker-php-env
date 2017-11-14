@@ -96,6 +96,7 @@ class PhpFpmEnvironment
         'NGINX_CORS_METHODS',
         'NGINX_CORS_HEADERS',
         'PHP_EXTENSIONS',
+        'BUILD_EXTENSIONS',
     ];
 
     /**
