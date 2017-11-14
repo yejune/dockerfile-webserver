@@ -17,12 +17,12 @@ RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
 ENV NGINX_VERSION="1.12.2" \
     NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 
-ENV PHP_VERSION="7.1.11" \
-    PHP_GPGKEYS="A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E" \
-    PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e"
+ENV PHP_VERSION="7.2.0RC6" \
+    PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F" \
+    PHP_SHA256="be4df00ff5b66e9f13c83e1d08d1d5384ae7ccc820e26f7e5f9e660011496a9e"
 
-ENV PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
-    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" \
+ENV PHP_URL="https://downloads.php.net/~pollita/php-${PHP_VERSION}.tar.xz" \
+    PHP_ASC_URL="https://downloads.php.net/~pollita/php-${PHP_VERSION}.tar.xz.asc"
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -33,35 +33,15 @@ ENV PHP_INI_DIR=/etc/php \
     PECL_SRC_DIR=/usr/src/pecl \
     SRC_DIR=/usr/src
 
-ENV DEPS \
-        locales \
-        tzdata \
-        openssl \
-        ca-certificates \
-        wget \
-        curl \
-        ssh \
-        git \
-        apt-utils \
-        apt-transport-https \
-        xz-utils
+ENV DEPS locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils
 
-ENV EXTENSIONS \
-    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached mongodb redis uuid phalcon phar \
-    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick screwim swoole
+ENV EXTENSIONS bcmath bz2 calendar ctype gettext gmp hash iconv intl json pcntl \
+    pdo pdo_mysql posix session sockets apcu memcached mongodb redis uuid phalcon \
+    phar shmop zip tidy tokenizer snmp dom xml xmlreader xmlwriter simplexml xsl \
+    soap yaml xmlrpc exif fileinfo gd imagick ev uv ssh2 sodium gearman amqp \
+    screwim swoole dba enchant pspell recode wddx sqlite3 pdo_pgsql pdo_sqlite pdo_sqlsrv v8js v8
 
-ENV DEV_DEPS \
-        pkg-config \
-        autoconf \
-        dpkg-dev \
-        file \
-        g++ \
-        gcc \
-        make \
-        re2c \
-        bison \
-        python-software-properties \
-        software-properties-common
+ENV DEV_DEPS pkg-config autoconf dpkg-dev file g++ gcc make re2c bison python-software-properties software-properties-common
 
 COPY files/ /
 
