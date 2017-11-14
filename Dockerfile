@@ -1,10 +1,11 @@
 FROM ubuntu:16.04
-MAINTAINER max
+LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG BUILD_LOCALE
 ARG BUILD_TYPE
+ARG BUILD_EXTENSIONS
 
 SHELL ["/bin/bash", "-c"]
 
@@ -13,12 +14,15 @@ RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
         sed -i 's/security.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
     fi
 
-ENV NGINX_VERSION 1.12.2
-ENV NGINX_GPGKEY 573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+ENV NGINX_VERSION="1.12.2" \
+    NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 
-ENV PHP_VERSION 7.1.11
-ENV PHP_GPGKEYS A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E
-ENV PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e" PHP_MD5=""
+ENV PHP_VERSION="7.1.11" \
+    PHP_GPGKEYS="A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E" \
+    PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e"
+
+ENV PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
+    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" \
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -43,13 +47,8 @@ ENV DEPS \
         xz-utils
 
 ENV EXTENSIONS \
-    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached mongodb redis uuid phalcon phar
-
-ENV EXTEND_EXTENSIONS \
-    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick
-
-ENV EXTRA_EXTENSIONS \
-    screwim xdebug swoole
+    bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached mongodb redis uuid phalcon phar \
+    dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick screwim swoole
 
 ENV DEV_DEPS \
         pkg-config \
@@ -72,6 +71,7 @@ RUN set -xe; \
     mkdir -p "${PHP_CONF_DIR}"; \
     mkdir -p "${PHP_LOG_DIR}"; \
     mkdir -p "${SRC_DIR}"; \
+    mkdir -p "${PECL_SRC_DIR}"; \
     cd "${SRC_DIR}"; \
     \
     ADD_DEPS=' \
@@ -112,8 +112,6 @@ RUN set -xe; \
     \
     \
     # Install php
-    PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
-    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
     # environment
     LIB_DEPS=" \
         libc-dev \
@@ -219,11 +217,8 @@ RUN set -xe; \
     cp ${PHP_SRC_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini; \
     echo "zend_extension=opcache.so" > ${PHP_CONF_DIR}/opcache.ini; \
     \
-    if [ "full" = "${BUILD_TYPE}" ]; then \
-        EXTENSIONS="${EXTENSIONS} ${EXTEND_EXTENSIONS}"; \
-    fi; \
-    if [ "extra" = "${BUILD_TYPE}" ]; then \
-        EXTENSIONS="${EXTENSIONS} ${EXTEND_EXTENSIONS} ${EXTRA_EXTENSIONS}"; \
+    if [ ! -z "${BUILD_EXTENSIONS}" ]; then \
+        EXTENSIONS="${BUILD_EXTENSIONS}"; \
     fi; \
     \
     \
@@ -533,18 +528,22 @@ RUN set -xe; \
     \
     # sodium
     if in_array extensions "sodium"; then \
-        SODIUM_VERSION=2.0.10; \
         cd $PECL_SRC_DIR; \
         git clone --branch=stable https://github.com/jedisct1/libsodium; \
         cd libsodium; \
         ./configure; \
         make; \
         make install; \
-        cd $PECL_SRC_DIR; \
-        wget https://github.com/jedisct1/libsodium-php/archive/${SODIUM_VERSION}.tar.gz; \
-        tar -zxvf ${SODIUM_VERSION}.tar.gz; \
-        mv libsodium-php-${SODIUM_VERSION} sodium-${SODIUM_VERSION}; \
-        ext-pcl sodium-${SODIUM_VERSION}; \
+        if [[ $PHP_VERSION == "7.1."* ]]; then \
+            SODIUM_VERSION=2.0.10; \
+            cd $PECL_SRC_DIR; \
+            wget https://github.com/jedisct1/libsodium-php/archive/${SODIUM_VERSION}.tar.gz; \
+            tar -zxvf ${SODIUM_VERSION}.tar.gz; \
+            mv libsodium-php-${SODIUM_VERSION} sodium-${SODIUM_VERSION}; \
+            ext-pcl sodium-${SODIUM_VERSION}; \
+        else \
+            ext-src sodium; \
+        fi; \
     fi; \
     \
     # pdo_sqlsrv
