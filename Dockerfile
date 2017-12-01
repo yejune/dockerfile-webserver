@@ -19,10 +19,10 @@ ENV NGINX_VERSION="1.12.2" \
 
 ENV PHP_VERSION="7.1.12" \
     PHP_GPGKEYS="A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E" \
-    PHP_SHA256="074093e9d7d21afedc5106904218a80a47b854abe368d2728ed22184c884893e"
+    PHP_SHA256="a0118850774571b1f2d4e30b4fe7a4b958ca66f07d07d65ebdc789c54ba6eeb3"
 
 ENV PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
-    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" \
+    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -63,6 +63,7 @@ RUN set -xe; \
         "; \
     fi; \
     apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS}; \
+    \
     \
     # Install nginx
     NJS_VERSION="${NGINX_VERSION}.0.1.14-1~xenial"; \
@@ -183,6 +184,7 @@ RUN set -xe; \
         --enable-libxml \
         --with-pear \
         --with-libxml-dir \
+        --enable-phar \
         \
         --without-sqlite3 \
         --without-pdo-sqlite \
