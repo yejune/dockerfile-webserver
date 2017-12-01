@@ -17,12 +17,13 @@ RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
 ENV NGINX_VERSION="1.12.2" \
     NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 
-ENV PHP_VERSION="7.2.0RC6" \
-    PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F" \
-    PHP_SHA256="be4df00ff5b66e9f13c83e1d08d1d5384ae7ccc820e26f7e5f9e660011496a9e"
 
-ENV PHP_URL="https://downloads.php.net/~pollita/php-${PHP_VERSION}.tar.xz" \
-    PHP_ASC_URL="https://downloads.php.net/~pollita/php-${PHP_VERSION}.tar.xz.asc"
+ENV PHP_VERSION="7.2.0" \
+    PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F" \
+    PHP_SHA256="87572a6b924670a5d4aac276aaa4a94321936283df391d702c845ffc112db095"
+
+ ENV PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
+     PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -63,6 +64,7 @@ RUN set -xe; \
         "; \
     fi; \
     apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS}; \
+    \
     \
     # Install nginx
     NJS_VERSION="${NGINX_VERSION}.0.1.14-1~xenial"; \
@@ -183,6 +185,7 @@ RUN set -xe; \
         --enable-libxml \
         --with-pear \
         --with-libxml-dir \
+        --enable-phar \
         \
         --without-sqlite3 \
         --without-pdo-sqlite \

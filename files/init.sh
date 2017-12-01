@@ -106,7 +106,7 @@ ext-src()
         done
     fi
 
-    local extensions=("filter", "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib");
+    local extensions=("filter", "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib", "phar");
     local periods=("libxml" "session" "pdo");
 
     if in_array extensions "${name}"; then

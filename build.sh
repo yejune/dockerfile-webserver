@@ -3,7 +3,7 @@ eval $(docker-machine env bootapp-docker-machine)
 type="$1";
 subname="";
 if [ ! -z "$type" ]; then
-    if [ "$type" = "full" ]; then #|| [ "$type" = "extra" ]
+    if [ "$type" = "full" ] || [ "$type" = "mini" ] ; then #|| [ "$type" = "extra" ]
         subname="-$type"
     else
         echo "$type not support, full"; # or extra
@@ -11,7 +11,56 @@ if [ ! -z "$type" ]; then
     fi
 fi
 
-if [ $subname = "full" ]; then
+tagname="yejune/webserver:7.2.0${subname}"
+
+if [ $subname = "-mini" ]; then
+    EXTENSIONS="\
+        bcmath\
+        bz2\
+        calendar\
+        ctype\
+        gettext\
+        gmp\
+        hash\
+        iconv\
+        intl\
+        pcntl\
+        shmop\
+        posix\
+        \
+        pdo\
+        pdo_mysql\
+        session\
+        sockets\
+        apcu\
+        \
+        json\
+        yaml\
+        dom\
+        xml\
+        xmlreader\
+        xmlwriter\
+        simplexml\
+        xsl\
+        \
+        memcached\
+        mongodb\
+        redis\
+        amqp\
+        \
+        uuid\
+        phalcon\
+        phar\
+        zip\
+        \
+        tidy\
+        tokenizer\
+        \
+        sodium\
+        \
+        screwim\
+"
+elif [ $subname = "-full" ]; then
     EXTENSIONS="\
         bcmath\
         bz2\
@@ -87,8 +136,10 @@ else
         hash\
         iconv\
         intl\
-        json\
         pcntl\
+        \
+        json\
+        \
         pdo\
         pdo_mysql\
         posix\
@@ -133,4 +184,6 @@ fi
 
 echo $EXTENSIONS;
 
-docker build --tag yejune/webserver:7.2.0${subname} --build-arg BUILD_LOCALE=ko --build-arg BUILD_EXTENSIONS="${EXTENSIONS}" .
+docker build --no-cache --tag ${tagname} --build-arg BUILD_LOCALE=ko --build-arg BUILD_EXTENSIONS="${EXTENSIONS}" .
+
+docker push ${tagname}
