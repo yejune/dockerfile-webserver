@@ -23,7 +23,8 @@ server {
         include /etc/nginx/variables.conf;
 
         {{ .Env.NGINX_HEADER }}
-        {{ .Env.INCLUDE_NGINX_CORS_CONF }}
+
+        include /etc/nginx/cors.conf;
 
         fastcgi_pass {{ .Env.FASTCGI_PASS }};
     }

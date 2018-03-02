@@ -1,0 +1,16 @@
+.*
+.version
+.build
+.docker
+docker-compose*
+vendor
+var
+temp
+*.dab
+*.pem
+*.bak
+!.dockerignore
+!.version
+!.gitignore
+!.php_cs
+!.template

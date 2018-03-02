@@ -3,27 +3,50 @@ LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG BUILD_LOCALE
-ARG BUILD_TYPE
+ARG NGINX_VERSION="1.12.2-1"
+ARG NJS_VERSION="1.12.2.0.1.14-1"
+ARG NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
+
+ARG PHP_VERSION=7.2.3
+ARG PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F"
+ARG PHP_SHA256="b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f"
+
+ARG REPOGITORY_URL
+
 ARG BUILD_EXTENSIONS
+
+ARG LIBRARY_V8_VERSION=6.6
+ARG LIBRARY_RABBITMQ_VERSION=0.8.0
+ARG EXTENSION_YAML_VERSION=2.0.2
+ARG EXTENSION_IGBINARY_VERSION=2.0.5
+ARG EXTENSION_MSGPACK_VERSION=2.0.2
+ARG EXTENSION_APCU_VERSION=5.1.10
+ARG EXTENSION_MEMCACHED_VERSION=3.0.4
+ARG EXTENSION_REDIS_VERSION=3.1.6
+ARG EXTENSION_MONGODB_VERSION=1.4.1
+ARG EXTENSION_IMAGICK_VERSION=3.4.3
+ARG EXTENSION_UUID_VERSION=1.0.4
+ARG EXTENSION_EV_VERSION=1.0.4
+ARG EXTENSION_UV_VERSION=0.2.2
+ARG EXTENSION_SSH2_VERSION=1.1.2
+ARG EXTENSION_PHALCON_VERSION=3.3.1
+ARG EXTENSION_SODIUM_VERSION=2.0.10
+ARG EXTENSION_SQLSRV_VERSION=4.3.0
+ARG EXTENSION_GEARMAN_VERSION=2.0.3
+ARG EXTENSION_AMQP_VERSION=1.9.3
+ARG EXTENSION_V8JS_VERSION=2.1.0
+ARG EXTENSION_V8_VERSION=0.2.2
+ARG EXTENSION_SCREWIM_VERSION=1.0.1
+ARG EXTENSION_SWOOLE_VERSION=2.1.0
+ARG EXTENSION_XDEBUG_VERSION=2.6.0
+ARG DOCKERIZE_VERSION=0.6.0
 
 SHELL ["/bin/bash", "-c"]
 
-RUN if [ "ko" = "${BUILD_LOCALE}" ]; then \
-        sed -i 's/archive.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
-        sed -i 's/security.ubuntu.com/ftp.daumkakao.com/g' /etc/apt/sources.list; \
+RUN if [ ! -z "${REPOGITORY_URL}" ]; then \
+        sed -i "s/archive.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+        sed -i "s/security.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
     fi
-
-ENV NGINX_VERSION="1.12.2" \
-    NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
-
-
-ENV PHP_VERSION="7.2.0" \
-    PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F" \
-    PHP_SHA256="87572a6b924670a5d4aac276aaa4a94321936283df391d702c845ffc112db095"
-
- ENV PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" \
-     PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_RUN_DIR=/run/php \
@@ -36,11 +59,11 @@ ENV PHP_INI_DIR=/etc/php \
 
 ENV DEPS locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils
 
-ENV EXTENSIONS bcmath bz2 calendar ctype gettext gmp hash iconv intl json pcntl \
+ENV PHP_EXTENSIONS bcmath bz2 calendar ctype gettext gmp hash iconv intl json igbinary msgpack pcntl \
     pdo pdo_mysql posix session sockets apcu memcached mongodb redis uuid phalcon \
     phar shmop zip tidy tokenizer snmp dom xml xmlreader xmlwriter simplexml xsl \
     soap yaml xmlrpc exif fileinfo gd imagick ev uv ssh2 sodium gearman amqp \
-    screwim swoole dba enchant pspell recode wddx sqlite3 pdo_pgsql pdo_sqlite pdo_sqlsrv v8js v8
+    screwim swoole dba enchant pspell recode wddx sqlite3 pdo_pgsql pdo_sqlite pdo_sqlsrv v8js v8 igbinary msgpack
 
 ENV DEV_DEPS pkg-config autoconf dpkg-dev file g++ gcc make re2c bison python-software-properties software-properties-common
 
@@ -56,6 +79,7 @@ RUN set -xe; \
     cd "${SRC_DIR}"; \
     \
     ADD_DEPS=' \
+        lsb-release \
     '; \
     if ! command -v gpg > /dev/null; then \
         ADD_DEPS="${ADD_DEPS} \
@@ -64,11 +88,10 @@ RUN set -xe; \
         "; \
     fi; \
     apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS}; \
+    dpkg-reconfigure tzdata ; \
     \
     \
     # Install nginx
-    NJS_VERSION="${NGINX_VERSION}.0.1.14-1~xenial"; \
-    NGINX_VERSION="${NGINX_VERSION}-1~xenial"; \
     found=''; \
     for server in \
         ha.pool.sks-keyservers.net \
@@ -80,14 +103,14 @@ RUN set -xe; \
         apt-key adv --keyserver "${server}" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" && found=yes && break; \
     done; \
     test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
-    echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list; \
+    echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
     apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" \
-            nginx="${NGINX_VERSION}" \
-            nginx-module-xslt="${NGINX_VERSION}" \
-            nginx-module-geoip="${NGINX_VERSION}" \
-            nginx-module-image-filter="${NGINX_VERSION}" \
-            nginx-module-njs="${NJS_VERSION}"; \
+            nginx="${NGINX_VERSION}~$(lsb_release -cs)" \
+            nginx-module-xslt="${NGINX_VERSION}~$(lsb_release -cs)" \
+            nginx-module-geoip="${NGINX_VERSION}~$(lsb_release -cs)" \
+            nginx-module-image-filter="${NGINX_VERSION}~$(lsb_release -cs)" \
+            nginx-module-njs="${NJS_VERSION}~$(lsb_release -cs)"; \
     # forward request and error logs to docker log collector
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     ln -sf /dev/stderr /var/log/nginx/error.log; \
@@ -104,10 +127,16 @@ RUN set -xe; \
         libssl-dev \
         libxml2-dev \
         zlib1g-dev \
+        #libargon2-0 \
+        #libargon2-0-dev \
     "; \
     \
     apt-get install -y --no-install-recommends apt-transport-https ${DEV_DEPS} ${LIB_DEPS}; \
     \
+    \
+    \
+    PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
+    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
     \
     wget -O php.tar.xz "${PHP_URL}"; \
     \
@@ -134,8 +163,8 @@ RUN set -xe; \
     tar -Jxf $SRC_DIR/php.tar.xz -C "${PHP_SRC_DIR}" --strip-components=1; \
     cd "${PHP_SRC_DIR}"; \
     \
-    BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
-    MULTIARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    BUILD_ARCH="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
+    DEV_MULTI_ARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     # Apply stack smash protection to functions using local buffers and alloca()
     # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -151,9 +180,9 @@ RUN set -xe; \
         CFLAGS="$PHP_CFLAGS" \
         CPPFLAGS="$PHP_CPPFLAGS" \
         LDFLAGS="$PHP_LDFLAGS" \
-        --build="${BUILD}" \
+        --build="${BUILD_ARCH}" \
         --sysconfdir="${PHP_INI_DIR}" \
-        --with-libdir="lib/${MULTIARCH}" \
+        --with-libdir="lib/${DEV_MULTI_ARCH}" \
         --with-pcre-regex=/usr \
         \
         --disable-all \
@@ -187,6 +216,10 @@ RUN set -xe; \
         --with-libxml-dir \
         --enable-phar \
         \
+        # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
+		#--with-password-argon2 \
+        $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
+        \
         --without-sqlite3 \
         --without-pdo-sqlite \
     ; \
@@ -201,236 +234,236 @@ RUN set -xe; \
     echo "zend_extension=opcache.so" > ${PHP_CONF_DIR}/opcache.ini; \
     \
     if [ ! -z "${BUILD_EXTENSIONS}" ]; then \
-        EXTENSIONS="${BUILD_EXTENSIONS}"; \
+        BUILD_PHP_EXTENSIONS=( $BUILD_EXTENSIONS ); \
+    else \
+        BUILD_PHP_EXTENSIONS=( $PHP_EXTENSIONS ); \
     fi; \
     \
     \
-    extensions=( $EXTENSIONS ); \
-    \
     # bcmath
-    if in_array extensions "bcmath"; then \
+    if in_array BUILD_PHP_EXTENSIONS "bcmath"; then \
         ext-src bcmath; \
     fi; \
     \
     # bz2
-    if in_array extensions "bz2"; then \
+    if in_array BUILD_PHP_EXTENSIONS "bz2"; then \
         ext-lib libbz2-dev; \
         ext-src bz2; \
     fi; \
     \
     # calendar
-    if in_array extensions "calendar"; then \
+    if in_array BUILD_PHP_EXTENSIONS "calendar"; then \
         ext-src calendar; \
     fi; \
     \
     # ctype
-    if in_array extensions "ctype"; then \
+    if in_array BUILD_PHP_EXTENSIONS "ctype"; then \
         ext-src ctype; \
     fi; \
     \
     # dba
-    if in_array extensions "dba"; then \
+    if in_array BUILD_PHP_EXTENSIONS "dba"; then \
         ext-src dba; \
     fi; \
     \
     # dom
-    if in_array extensions "dom"; then \
+    if in_array BUILD_PHP_EXTENSIONS "dom"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src dom; \
     fi; \
     \
     # enchant
-    if in_array extensions "enchant"; then \
+    if in_array BUILD_PHP_EXTENSIONS "enchant"; then \
         ext-lib libenchant1c2a libenchant-dev; \
         ext-src enchant; \
     fi; \
     \
     # exif
-    if in_array extensions "exif"; then \
+    if in_array BUILD_PHP_EXTENSIONS "exif"; then \
         ext-src exif; \
     fi; \
     \
     # fileinfo
-    if in_array extensions "fileinfo"; then \
+    if in_array BUILD_PHP_EXTENSIONS "fileinfo"; then \
         ext-src fileinfo; \
     fi; \
     \
     # gd
-    if in_array extensions "gd"; then \
+    if in_array BUILD_PHP_EXTENSIONS "gd"; then \
         ext-lib libjpeg-dev libpng12-dev libwebp-dev libxpm-dev libfreetype6-dev; \
         ext-src gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir \
                    --with-xpm-dir --with-freetype-dir --enable-gd-native-ttf; \
     fi; \
     \
     # gettext
-    if in_array extensions "gettext"; then \
+    if in_array BUILD_PHP_EXTENSIONS "gettext"; then \
         ext-src gettext; \
     fi; \
     \
     # gmp
-    if in_array extensions "gmp"; then \
+    if in_array BUILD_PHP_EXTENSIONS "gmp"; then \
         ext-lib libgmp-dev; \
         ext-src gmp --with-gmp=/usr/include/x86_64-linux-gnu/gmp.h; \
     fi; \
     \
     # hash
-    if in_array extensions "hash"; then \
+    if in_array BUILD_PHP_EXTENSIONS "hash"; then \
         ext-src hash; \
     fi; \
     \
     # iconv
-    if in_array extensions "iconv"; then \
+    if in_array BUILD_PHP_EXTENSIONS "iconv"; then \
         ext-src iconv; \
     fi; \
     \
     # intl
-    if in_array extensions "intl"; then \
+    if in_array BUILD_PHP_EXTENSIONS "intl"; then \
         ext-lib libicu-dev; \
         ext-src intl; \
     fi; \
     \
     # json
-    if in_array extensions "json"; then \
+    if in_array BUILD_PHP_EXTENSIONS "json"; then \
         ext-src json; \
     fi; \
     \
     # pcntl
-    if in_array extensions "pcntl"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pcntl"; then \
         ext-src pcntl; \
     fi; \
     \
     # pdo
-    if in_array extensions "pdo"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pdo"; then \
         ext-src pdo; \
     fi; \
     \
     # pdo mysql
-    if in_array extensions "pdo_mysql"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pdo_mysql"; then \
         ext-src pdo_mysql; \
     fi; \
     \
     # pdo pgsql
-    if in_array extensions "pdo_pgsql"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pdo_pgsql"; then \
         ext-lib libpq-dev; \
         ext-src pdo_pgsql; \
     fi; \
     \
     # pdo sqlite
-    if in_array extensions "pdo_sqlite"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pdo_sqlite"; then \
         ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
         ext-src pdo_sqlite; \
     fi; \
     \
     # phar
-    if in_array extensions "phar"; then \
+    if in_array BUILD_PHP_EXTENSIONS "phar"; then \
         ext-src phar; \
     fi; \
     \
     # posix
-    if in_array extensions "posix"; then \
+    if in_array BUILD_PHP_EXTENSIONS "posix"; then \
         ext-src posix; \
     fi; \
     \
     # pspell
-    if in_array extensions "pspell"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pspell"; then \
         ext-lib libpspell-dev; \
         ext-src pspell; \
     fi; \
     \
     # recode
-    if in_array extensions "recode"; then \
+    if in_array BUILD_PHP_EXTENSIONS "recode"; then \
         ext-lib librecode-dev; \
         ext-src recode; \
     fi; \
     \
     # session
-    if in_array extensions "session"; then \
+    if in_array BUILD_PHP_EXTENSIONS "session"; then \
         ext-src session; \
     fi; \
     \
     # shmop
-    if in_array extensions "shmop"; then \
+    if in_array BUILD_PHP_EXTENSIONS "shmop"; then \
         ext-src shmop; \
     fi; \
     \
     # simplexml
-    if in_array extensions "simplexml"; then \
+    if in_array BUILD_PHP_EXTENSIONS "simplexml"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src simplexml; \
     fi; \
     \
     # snmp
-    if in_array extensions "snmp"; then \
+    if in_array BUILD_PHP_EXTENSIONS "snmp"; then \
         ext-lib libsnmp-dev snmp-mibs-downloader; \
         ext-src snmp; \
     fi; \
     \
     # soap
-    if in_array extensions "soap"; then \
+    if in_array BUILD_PHP_EXTENSIONS "soap"; then \
         ext-lib libxml2-dev; \
         ext-src soap; \
     fi; \
     \
     # sockets
-    if in_array extensions "sockets"; then \
+    if in_array BUILD_PHP_EXTENSIONS "sockets"; then \
         ext-src sockets; \
     fi; \
     \
     # sqlite
-    if in_array extensions "sqlite3"; then \
+    if in_array BUILD_PHP_EXTENSIONS "sqlite3"; then \
         ext-lib sqlite3 libsqlite3-dev libsqlite3-0; \
         ext-src sqlite3; \
     fi; \
     \
     # tidy
-    if in_array extensions "tidy"; then \
+    if in_array BUILD_PHP_EXTENSIONS "tidy"; then \
         ext-lib libtidy-dev; \
         ext-src tidy; \
     fi; \
     \
     # tokenizer
-    if in_array extensions "tokenizer"; then \
+    if in_array BUILD_PHP_EXTENSIONS "tokenizer"; then \
         ext-src tokenizer; \
     fi; \
     \
     # wddx
-    if in_array extensions "wddx"; then \
+    if in_array BUILD_PHP_EXTENSIONS "wddx"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src wddx; \
     fi; \
     \
     # xml
-    if in_array extensions "xml"; then \
+    if in_array BUILD_PHP_EXTENSIONS "xml"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src xml; \
     fi; \
     \
     # xsl
-    if in_array extensions "xsl"; then \
+    if in_array BUILD_PHP_EXTENSIONS "xsl"; then \
         ext-lib libxml2 libxslt1-dev; \
         ext-src xsl; \
     fi; \
     \
     # xmlreader
-    if in_array extensions "xmlreader"; then \
+    if in_array BUILD_PHP_EXTENSIONS "xmlreader"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src xmlreader; \
     fi; \
     \
     # xmlwriter
-    if in_array extensions "xmlwriter"; then \
+    if in_array BUILD_PHP_EXTENSIONS "xmlwriter"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src xmlwriter; \
     fi; \
     \
     # xmlrpc
-    if in_array extensions "xmlrpc"; then \
+    if in_array BUILD_PHP_EXTENSIONS "xmlrpc"; then \
         ext-lib libxml2 libxml2-dev; \
         ext-src xmlrpc; \
     fi; \
     \
     # zip
-    if in_array extensions "zip"; then \
+    if in_array BUILD_PHP_EXTENSIONS "zip"; then \
         ext-src zip; \
     fi; \
     \
@@ -439,78 +472,90 @@ RUN set -xe; \
     # pecl install
     \
     # yaml
-    if in_array extensions "yaml"; then \
+    if in_array BUILD_PHP_EXTENSIONS "yaml"; then \
         ext-lib libyaml-dev; \
-        ext-pcl yaml-2.0.2; \
+        ext-pcl yaml-${EXTENSION_YAML_VERSION}; \
+    fi; \
+    \
+    # igbinary
+    if in_array BUILD_PHP_EXTENSIONS "igbinary"; then \
+        ext-pcl igbinary-${EXTENSION_IGBINARY_VERSION}; \
+    fi; \
+    \
+    # msgpack
+    if in_array BUILD_PHP_EXTENSIONS "msgpack"; then \
+        ext-pcl msgpack-${EXTENSION_MSGPACK_VERSION}; \
     fi; \
     \
     # apcu
-    if in_array extensions "apcu"; then \
-        ext-pcl apcu-5.1.8; \
+    if in_array BUILD_PHP_EXTENSIONS "apcu"; then \
+        ext-pcl apcu-${EXTENSION_APCU_VERSION}; \
     fi; \
     \
     # memcached
-    if in_array extensions "memcached"; then \
+    if in_array BUILD_PHP_EXTENSIONS "memcached"; then \
         ext-lib libmemcached-dev; \
-        ext-pcl memcached-3.0.3; \
+        ext-pcl memcached-${EXTENSION_MEMCACHED_VERSION} \
+            --enable-memcached-json \
+            --enable-memcached-igbinary \
+            --enable-memcached-msgpack; \
     fi; \
     \
     # redis
-    if in_array extensions "redis"; then \
-        ext-pcl redis-3.1.4; \
+    if in_array BUILD_PHP_EXTENSIONS "redis"; then \
+        ext-pcl redis-${EXTENSION_REDIS_VERSION}; \
     fi; \
     \
     \
     # mongodb
-    if in_array extensions "mongodb"; then \
-        ext-pcl mongodb-1.3.2; \
+    if in_array BUILD_PHP_EXTENSIONS "mongodb"; then \
+        ext-pcl mongodb-${EXTENSION_MONGODB_VERSION}; \
     fi; \
     \
     # imagick
-    if in_array extensions "imagick"; then \
+    if in_array BUILD_PHP_EXTENSIONS "imagick"; then \
         ext-lib libmagickwand-dev imagemagick; \
-        ext-pcl imagick-3.4.3; \
+        ext-pcl imagick-${EXTENSION_IMAGICK_VERSION}; \
     fi; \
     \
     # uuid
-    if in_array extensions "uuid"; then \
+    if in_array BUILD_PHP_EXTENSIONS "uuid"; then \
         ext-lib uuid-dev; \
-        ext-pcl uuid-1.0.4; \
+        ext-pcl uuid-${EXTENSION_UUID_VERSION}; \
     fi; \
     \
     # ev
-    if in_array extensions "ev"; then \
+    if in_array BUILD_PHP_EXTENSIONS "ev"; then \
         ext-lib libev-dev; \
-        ext-pcl ev-1.0.4; \
+        ext-pcl ev-${EXTENSION_EV_VERSION}; \
     fi; \
     \
     # uv \
-    if in_array extensions "uv"; then \
+    if in_array BUILD_PHP_EXTENSIONS "uv"; then \
         ext-lib libuv1-dev; \
-        ext-pcl uv-0.2.2; \
+        ext-pcl uv-${EXTENSION_UV_VERSION}; \
     fi; \
     \
     # ssh2
-    if in_array extensions "ssh2"; then \
+    if in_array BUILD_PHP_EXTENSIONS "ssh2"; then \
         ext-lib libssh2-1-dev; \
-        ext-pcl ssh2-1.1.2; \
+        ext-pcl ssh2-${EXTENSION_SSH2_VERSION}; \
     fi; \
     \
     # phalcon
-    if in_array extensions "phalcon"; then \
-        PHALCON_VERSION=3.2.4; \
+    if in_array BUILD_PHP_EXTENSIONS "phalcon"; then \
         cd $PECL_SRC_DIR; \
-        wget https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz; \
-        tar -zxvf v${PHALCON_VERSION}.tar.gz; \
-        mv cphalcon-${PHALCON_VERSION}/build/php7/64bits phalcon-${PHALCON_VERSION}; \
+        wget https://github.com/phalcon/cphalcon/archive/v${EXTENSION_PHALCON_VERSION}.tar.gz; \
+        tar -zxvf v${EXTENSION_PHALCON_VERSION}.tar.gz; \
+        mv cphalcon-${EXTENSION_PHALCON_VERSION}/build/php7/64bits phalcon-${EXTENSION_PHALCON_VERSION}; \
         PREV_PHP_CFLAGS="${PHP_CFLAGS}"; \
         PHP_CFLAGS="${PHP_CFLAGS} -g -fomit-frame-pointer -DPHALCON_RELEASE"; \
-        ext-pcl phalcon-${PHALCON_VERSION}; \
+        ext-pcl phalcon-${EXTENSION_PHALCON_VERSION}; \
         PHP_CFLAGS="${PREV_PHP_CFLAGS}"; \
     fi; \
     \
     # sodium
-    if in_array extensions "sodium"; then \
+    if in_array BUILD_PHP_EXTENSIONS "sodium"; then \
         cd $PECL_SRC_DIR; \
         git clone --branch=stable https://github.com/jedisct1/libsodium; \
         cd libsodium; \
@@ -518,83 +563,80 @@ RUN set -xe; \
         make; \
         make install; \
         if [[ $PHP_VERSION == "7.1."* ]]; then \
-            SODIUM_VERSION=2.0.10; \
             cd $PECL_SRC_DIR; \
-            wget https://github.com/jedisct1/libsodium-php/archive/${SODIUM_VERSION}.tar.gz; \
-            tar -zxvf ${SODIUM_VERSION}.tar.gz; \
-            mv libsodium-php-${SODIUM_VERSION} sodium-${SODIUM_VERSION}; \
-            ext-pcl sodium-${SODIUM_VERSION}; \
+            wget https://github.com/jedisct1/libsodium-php/archive/${EXTENSION_SODIUM_VERSION}.tar.gz; \
+            tar -zxvf ${EXTENSION_SODIUM_VERSION}.tar.gz; \
+            mv libsodium-php-${EXTENSION_SODIUM_VERSION} sodium-${EXTENSION_SODIUM_VERSION}; \
+            ext-pcl sodium-${EXTENSION_SODIUM_VERSION}; \
         else \
             ext-src sodium; \
         fi; \
     fi; \
     \
     # pdo_sqlsrv
-    if in_array extensions "pdo_sqlsrv"; then \
+    if in_array BUILD_PHP_EXTENSIONS "pdo_sqlsrv"; then \
         cd $PECL_SRC_DIR; \
         curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-        curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
+        curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
         apt-get update; \
         ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
-        ext-pcl pdo_sqlsrv-4.3.0; \
+        ext-pcl pdo_sqlsrv-${EXTENSION_SQLSRV_VERSION}; \
     fi; \
     \
     # gearman
-    if in_array extensions "gearman"; then \
-        GEARMAN_VERSION=2.0.3; \
+    if in_array BUILD_PHP_EXTENSIONS "gearman"; then \
         cd $PECL_SRC_DIR; \
         ext-lib libgearman-dev; \
-        wget https://github.com/wcgallego/pecl-gearman/archive/gearman-${GEARMAN_VERSION}.tar.gz; \
-        tar -zxvf gearman-${GEARMAN_VERSION}.tar.gz; \
-        mv pecl-gearman-gearman-${GEARMAN_VERSION} gearman-${GEARMAN_VERSION}; \
-        ext-pcl gearman-${GEARMAN_VERSION}; \
-        rm -rf gearman-${GEARMAN_VERSION}.tar.gz; \
+        wget https://github.com/wcgallego/pecl-gearman/archive/gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
+        tar -zxvf gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
+        mv pecl-gearman-gearman-${EXTENSION_GEARMAN_VERSION} gearman-${EXTENSION_GEARMAN_VERSION}; \
+        ext-pcl gearman-${EXTENSION_GEARMAN_VERSION}; \
+        rm -rf gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
     fi; \
     \
     # amqp
-    if in_array extensions "amqp"; then \
-        LIBRABBITMQ_VERSION=0.8.0; \
+    if in_array BUILD_PHP_EXTENSIONS "amqp"; then \
         cd $PECL_SRC_DIR; \
-        wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-        dpkg -i librabbitmq4_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-        wget http://ftp.daum.net/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-        dpkg -i librabbitmq-dev_${LIBRABBITMQ_VERSION}-1_amd64.deb; \
-        ext-pcl amqp-1.9.3; \
+        wget http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        dpkg -i librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        wget http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        dpkg -i librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        ext-pcl amqp-${EXTENSION_AMQP_VERSION}; \
     fi; \
     \
     # v8js
-    if in_array extensions "v8js"; then \
-        LIBV8_VERSION=6.4; \
-        apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
+    if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
+        apt-add-repository ppa:pinepain/libv8-${LIBRARY_V8_VERSION} -y; \
         apt-get update; \
-        ext-lib libv8-${LIBV8_VERSION}-dev; \
-        ext-pcl v8js-1.4.1 --with-v8js=/opt/libv8-${LIBV8_VERSION}; \
+        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+        ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8-${LIBRARY_V8_VERSION}; \
     fi; \
     \
     # v8
-    if in_array extensions "v8"; then \
-        LIBV8_VERSION=6.4; \
-        apt-add-repository ppa:pinepain/libv8-${LIBV8_VERSION} -y; \
+    if in_array BUILD_PHP_EXTENSIONS "v8"; then \
+        apt-add-repository ppa:pinepain/libv8-${LIBRARY_V8_VERSION} -y; \
         apt-get update; \
-        ext-lib libv8-${LIBV8_VERSION}-dev; \
-        ext-pcl v8-0.2.1 --with-v8=/opt/libv8-${LIBV8_VERSION}; \
+        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+        ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8-${LIBRARY_V8_VERSION}; \
     fi; \
     \
     # screwim
-    if in_array extensions "screwim"; then \
-        SCREWIM_VERSION=1.0.0; \
-        git clone https://github.com/OOPS-ORG-PHP/mod_screwim.git screwim-${SCREWIM_VERSION}; \
-        ext-pcl screwim-${SCREWIM_VERSION}; \
+    if in_array BUILD_PHP_EXTENSIONS "screwim"; then \
+        cd $PECL_SRC_DIR; \
+        wget https://github.com/OOPS-ORG-PHP/mod_screwim/archive/v${EXTENSION_SCREWIM_VERSION}.tar.gz; \
+        tar -zxvf v${EXTENSION_SCREWIM_VERSION}.tar.gz; \
+        mv mod_screwim-${EXTENSION_SCREWIM_VERSION} screwim-${EXTENSION_SCREWIM_VERSION}; \
+        ext-pcl screwim-${EXTENSION_SCREWIM_VERSION}; \
     fi; \
     \
     # swoole
-    if in_array extensions "swoole"; then \
-        # ext-pcl swoole-1.9.21; \
-        ext-pcl swoole-2.0.9; \
+    if in_array BUILD_PHP_EXTENSIONS "swoole"; then \
+        # ext-pcl swoole-1.10.1; \
+        ext-pcl swoole-${EXTENSION_SWOOLE_VERSION}; \
     fi; \
     # xdebug
-    if in_array extensions "xdebug"; then \
-        pecl install xdebug-2.5.5; \
+    if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \
+        pecl install xdebug-${EXTENSION_XDEBUG_VERSION}; \
         XDEBUG_INI="${PHP_CONF_DIR}/xdebug.ini.stop"; \
         echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > ${XDEBUG_INI}; \
         echo "xdebug.remote_enable=on" >> ${XDEBUG_INI}; \
@@ -602,7 +644,6 @@ RUN set -xe; \
     fi; \
     \
     # Install dockerize
-    DOCKERIZE_VERSION=0.5.0; \
     cd $SRC_DIR; \
     wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
     tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \

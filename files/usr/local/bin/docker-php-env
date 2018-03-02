@@ -1,53 +1,20 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * Allows to get the content of a php-fpm environment configuration file
- */
-class PhpFpmEnvironment
+class PhpEnvironment
 {
-    /**
-     * The temporary directory, used in TMP, TEMP and TMPDIR environment variables
-     * @var string
-     */
-    const TMP = '/tmp';
-
-    /**
-     * The path where to find executables, where sbin should be excluded if you don't run PHP as root.
-     * @var string
-     */
-    const PATH = '/usr/local/bin:/usr/bin:/bin';
-
-    /**
-     * The environment variables to discard
-     * @var Array
-     */
     const VARIABLES_TO_DISCARD = [
-        '_',           // The caller executable script, not pertinent
-        'HOME',        // Set correctly by php-fpm
-        'TERM',        // Not pertinent in server context
+        'USER',
+        'HOME',
+        'TERM',
         'HOSTNAME',
-        'PHP_INI_DIR',
-        'PHP_RUN_DIR',
-        'PHP_LOG_DIR',
-        'PHP_DATA_DIR',
-        'PHP_SRC_DIR',
-        'PHP_CONF_DIR',
-        'PECL_SRC_DIR',
-        'SRC_DIR',
-        'FPM_GROUP',
-        'FASTCGI_PASS',
         'LS_COLORS',
-        'PHP_LIB',
-        'DOCKERIZE_VERSION',
         'PATH',
         'PWD',
         'SHLVL',
         'affinity:container',
         'LESSOPEN',
-        'FPM_LISTEN',
         'LESSCLOSE',
-        'FPM_USER',
         'OLDPWD',
         'PHP_SELF',
         'SCRIPT_NAME',
@@ -61,50 +28,74 @@ class PhpFpmEnvironment
         'TMP',
         'TEMP',
         'TMPDIR',
-        'USE_DOCKERIZE',
-        'PHP_EXTRACONF',
-        'PHALCON_VER',
-        'PHP_VERSION',
+        'PHP_LIB',
+        '_',
+        'PHP_INI_DIR',
+        'PHP_RUN_DIR',
+        'PHP_LOG_DIR',
+        'PHP_DATA_DIR',
+        'PHP_SRC_DIR',
+        'PHP_CONF_DIR',
+        'PECL_SRC_DIR',
+        'SRC_DIR',
+        'FPM_GROUP',
+        'FASTCGI_PASS',
+        'FPM_LISTEN',
+        'FPM_USER',
         'NGINX_VERSION',
-        'NGINX_KEY',
-        'PHP5_KEY',
-        'PHP7_KEY',
-        'DEPS',
-        'DEV_DEPS',
-        'INCLUDE_NGINX_CORS_CONF',
-        'DEBIAN_FRONTEND',
-        'UPSTREAM',
-        'NGINX_LOCATION',
-        'NGINX_HEADER',
-        'WEBROOT',
-        'NGINX_VERSION',
+        'NJS_VERSION',
+        'NGINX_GPGKEY',
         'NGINX_CORS',
         'NGINX_CORS_ORIGIN',
         'NGINX_CORS_CONFIG',
-        'SLOWLOG_TIMEOUT',
-        'PHP_ACCESS_LOG',
-        'PHP_URL',
-        'PHP_SHA256',
-        'PHP_ASC_URL',
-        'PHP_GPGKEYS',
-        'NGINX_GPGKEY',
-        'EXTENSIONS',
-        'EXTEND_EXTENSIONS',
-        'VARIABLES_ORDER',
-        'EXTRA_EXTENSIONS',
+        'NGINX_LOCATION',
+        'NGINX_HEADER',
         'NGINX_ACCESS_LOG',
         'NGINX_CORS_METHODS',
         'NGINX_CORS_HEADERS',
+        'NGINX_CORS_CONF',
+        'DEPS',
+        'DEV_DEPS',
+        'DEBIAN_FRONTEND',
+        'UPSTREAM',
+        'WEBROOT',
+        'SLOWLOG_TIMEOUT',
+        'PHP_VERSION',
+        'PHP_SHA256',
+        'PHP_GPGKEYS',
+        'PHP_EXTRACONF',
+        'PHP_ACCESS_LOG',
         'PHP_EXTENSIONS',
-        'BUILD_EXTENSIONS',
+        'PHP_LOAD_EXTENSIONS',
+        'PHP_VARIABLES_ORDER',
+        'REPOGITORY_URL',
+        'LIBRARY_V8_VERSION',
+        'LIBRARY_RABBITMQ_VERSION',
+        'EXTENSION_YAML_VERSION',
+        'EXTENSION_IGBINARY_VERSION',
+        'EXTENSION_MSGPACK_VERSION',
+        'EXTENSION_APCU_VERSION',
+        'EXTENSION_MEMCACHED_VERSION',
+        'EXTENSION_REDIS_VERSION',
+        'EXTENSION_MONGODB_VERSION',
+        'EXTENSION_IMAGICK_VERSION',
+        'EXTENSION_UUID_VERSION',
+        'EXTENSION_EV_VERSION',
+        'EXTENSION_UV_VERSION',
+        'EXTENSION_SSH2_VERSION',
+        'EXTENSION_PHALCON_VERSION',
+        'EXTENSION_SODIUM_VERSION',
+        'EXTENSION_SQLSRV_VERSION',
+        'EXTENSION_GEARMAN_VERSION',
+        'EXTENSION_AMQP_VERSION',
+        'EXTENSION_V8JS_VERSION',
+        'EXTENSION_V8_VERSION',
+        'EXTENSION_SCREWIM_VERSION',
+        'EXTENSION_SWOOLE_VERSION',
+        'EXTENSION_XDEBUG_VERSION',
+        'DOCKERIZE_VERSION',
     ];
 
-    /**
-     * Gets an environment array from the current process environment,
-     * with PATH and temp variablesfiltered.
-     *
-     * @return Array
-     */
     public static function getEnvironmentVariables()
     {
         $variables = [];
@@ -115,55 +106,14 @@ class PhpFpmEnvironment
             }
         }
 
-        //static::addHardcodedEnvironmentVariables($variables);
         ksort($variables);
 
         return $variables;
     }
 
-    /**
-     * Adds hardcoded and always wanted environment variables
-     * (path, temporary directory) to the specified array.
-     *
-     * @paran array $variables the array to add the variables to
-     */
-    public static function addHardcodedEnvironmentVariables(&$variables)
-    {
-        static::addTempEnvironmentVariables($variables);
-        static::addPathEnvironmentVariables($variables);
-    }
-
-    /**
-     * Adds temporary directory environment variables to the specified array.
-     *
-     * @paran array $variables the array to add the variables to
-     */
-    public static function addTempEnvironmentVariables(&$variables)
-    {
-        $variables['TMP']    = static::TMP;
-        $variables['TEMP']   = static::TMP;
-        $variables['TMPDIR'] = static::TMP;
-    }
-
-    /**
-     * Adds temporary directory environment variables to the specified array.
-     *
-     * @paran array $variables the array to add the variables to
-     */
-    public static function addPathEnvironmentVariables(&$variables)
-    {
-        $variables['PATH'] = static::PATH;
-    }
-
-    /**
-     * Determines if the variable name must be ignored
-     *
-     * @return bool true if the variable must be ignored; otherwise, false.
-     * @param mixed $variableName
-     */
     public static function mustIgnoreVariable($variableName)
     {
-        return in_array($variableName, static::VARIABLES_TO_DISCARD) || preg_match('#VERSION#i', $variableName);
+        return in_array($variableName, static::VARIABLES_TO_DISCARD);
     }
 
     /**
@@ -195,7 +145,7 @@ class PhpFpmEnvironment
     }
 }
 
-if (true ===isset($argv[1])) {
-    $call = 'PhpFpmEnvironment::'.$argv[1];
+if (true === isset($argv[1])) {
+    $call = 'PhpEnvironment::'.$argv[1];
     $call();
 }

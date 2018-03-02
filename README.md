@@ -1,4 +1,4 @@
-# Docker Phalcon Webserver
+# Docker Php, Nginx Webserver
 
 This is a Phalcon application server image based on Nginx (with SSL support) and PHP7.
 
@@ -59,27 +59,30 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 
 ## version
 -   UBUNTU 16.04
--   DOCKERIZE 0.5.0
+-   DOCKERIZE 0.6.0
 -   NGINX 1.12.2
--   LIBV8 6.4
+-   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
--   PHP 7.1.11
-    -   phalcon 3.2.4
-    -   redis 3.1.4
+-   PHP 7.2.2
+    -   phalcon 3.3.1
+    -   redis 3.1.6
     -   yaml 2.0.2
-    -   memcached 3.0.3
-    -   mongodb 1.3.2
-    -   apcu 5.1.8
+    -   memcached 3.0.4
+    -   mongodb 1.4.1
+    -   apcu 5.1.10
     -   uuid 1.0.4
     -   amqp 1.9.3
-    -   v8js 1.4.1
-    -   v8 0.2.1
+    -   v8js 2.0.0
+    -   v8 0.2.2
     -   sodium 2.0.10
     -   ev 1.0.4
     -   uv 0.2.2
     -   ssh2 1.1.2
     -   gearman 2.0.3
     -   imagick 3.4.3
+    -   igbinary 2.0.5
+    -   msgpack 2.0.2
+    -   swoole 2.1.0
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
@@ -88,9 +91,9 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 ## Build Options
 -   BUILD_TYPE
     -   null
-        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon igbinary msgpack
     -   full
-        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon
+        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon igbinary msgpack
         -   dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick mongodb
 
 

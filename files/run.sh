@@ -8,8 +8,6 @@ export NGINX_HEADER=${NGINX_HEADER:-""}
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 
-export USE_DOCKERIZE=${USE_DOCKERIZE:-"yes"}
-
 #export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 #export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
@@ -26,7 +24,7 @@ export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"Accept,Authorization,Cache-Cont
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
 export TZ=${TZ:-"Asia/Seoul"}
-export VARIABLES_ORDER=${VARIABLES_ORDER:-"GPCS"}
+export PHP_VARIABLES_ORDER=${PHP_VARIABLES_ORDER:-"GPCS"}
 
 dockerize -template ${PHP_INI_DIR}/php-fpm.d/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 rm -rf ${PHP_INI_DIR}/php-fpm.d/www.tmpl
@@ -45,8 +43,8 @@ if [ "$PHP_ACCESS_LOG" = "on" ] ; then
     fi
 fi
 
-if [ ! -z "$VARIABLES_ORDER" ] ; then
-    sed -i 's/variables_order = .*/variables_order = "${VARIABLES_ORDER}"/' ${PHP_INI_DIR}/php.ini
+if [ ! -z "$PHP_VARIABLES_ORDER" ] ; then
+    sed -i 's/variables_order = .*/variables_order = "${PHP_VARIABLES_ORDER}"/' ${PHP_INI_DIR}/php.ini
 fi
 
 if [ "$LOG_FORMAT" = "json" ] ; then
@@ -80,10 +78,10 @@ if [ "$XDEBUG" = "on" ]; then
     fi
 fi
 
-if [ ! -z "$PHP_EXTENSIONS" ]; then
+if [ ! -z "$PHP_LOAD_EXTENSIONS" ]; then
     mv "${PHP_CONF_DIR}/" "${PHP_CONF_DIR}.stop/"
     mkdir -p "${PHP_CONF_DIR}/"
-    a=( $PHP_EXTENSIONS )
+    a=( $PHP_LOAD_EXTENSIONS )
     for ((j=1; j<"${#a[@]}"; j++)); do
         ext="${a[j]}"
         if [ -f "${PHP_CONF_DIR}.stop/1_$ext.ini" ]; then
@@ -152,20 +150,21 @@ fi
 # cgi.fix_pathinfo off
 # sed -i -e "s/.*cgi.fix_pathinfo\s*=\s*.*/cgi.fix_pathinfo = 0/g" ${PHP_INI_DIR}/php.ini
 
-if [ "$NGINX_CORS" = "on" ] ; then
-    export INCLUDE_NGINX_CORS_CONF="include /etc/nginx/cors.conf;";
-else
-    export INCLUDE_NGINX_CORS_CONF="#include /etc/nginx/cors.conf;";
-fi
-
 dockerize -template /etc/nginx/cors.tmpl > /etc/nginx/cors.conf
+rm -rf /etc/nginx/cors.tmpl
+
+if [ "$NGINX_CORS" = "off" ] ; then
+    sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/nginx/site.d/default-ssl.tmpl
+
+    sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/nginx/site.d/default.tmpl
+fi
 
 if [ "$NGINX_ACCESS_LOG" = "off" ] ; then
     sed -i -e "s/access_log.*/access_log off;/g" /etc/nginx/site.d/default-ssl.tmpl
     sed -i -e "s/access_log.*/access_log off;/g" /etc/nginx/site.d/default.tmpl
 fi
 
-rm -rf /etc/nginx/cors.tmpl
+
 
 mkdir -p /etc/nginx/site.d
 

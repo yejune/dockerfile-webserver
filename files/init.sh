@@ -40,14 +40,21 @@ pecl-download()
 }
 phpize-install()
 {
+    local all=($@)
+    local configure_option=""
     local lib_fullname=$1
-    local configure_option=$2
 
     local arrIN=(${lib_fullname//-/ })
     local lib_shortname="${arrIN[0]}"
 
     if [ ! -d "${PECL_SRC_DIR}/${lib_fullname}" ]; then
         pecl-download $lib_fullname
+    fi
+
+    if [ ! -z "${all[1]}" ]; then
+        for ((j=1; j<"${#all[@]}"; j++)); do
+            configure_option="$configure_option ${all[j]}"
+        done
     fi
 
     cd ${PECL_SRC_DIR}/${lib_fullname}
@@ -57,7 +64,7 @@ phpize-install()
         CFLAGS="$PHP_CFLAGS" \
         CPPFLAGS="$PHP_CPPFLAGS" \
         LDFLAGS="$PHP_LDFLAGS" \
-        --build="${BUILD}" \
+        --build="${BUILD_ARCH}" \
         ${configure_option}
 
     make -j "$(nproc)"
@@ -107,7 +114,7 @@ ext-src()
     fi
 
     local extensions=("filter", "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib", "phar");
-    local periods=("libxml" "session" "pdo");
+    local periods=("libxml" "session" "pdo", "igbinary", "msgpack");
 
     if in_array extensions "${name}"; then
         echo ""
