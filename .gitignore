@@ -2,6 +2,7 @@
 .version
 .build
 .docker
+.make.env
 docker-compose*
 vendor
 var

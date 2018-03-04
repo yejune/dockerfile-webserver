@@ -59,11 +59,87 @@ ENV PHP_INI_DIR=/etc/php \
 
 ENV DEPS locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils
 
-ENV PHP_EXTENSIONS bcmath bz2 calendar ctype gettext gmp hash iconv intl json igbinary msgpack pcntl \
-    pdo pdo_mysql posix session sockets apcu memcached mongodb redis uuid phalcon \
-    phar shmop zip tidy tokenizer snmp dom xml xmlreader xmlwriter simplexml xsl \
-    soap yaml xmlrpc exif fileinfo gd imagick ev uv ssh2 sodium gearman amqp \
-    screwim swoole dba enchant pspell recode wddx sqlite3 pdo_pgsql pdo_sqlite pdo_sqlsrv v8js v8 igbinary msgpack
+ENV MINI_EXTENSIONS="\
+        bcmath\
+        calendar\
+        ctype\
+        gettext\
+        gmp\
+        hash\
+        iconv\
+        intl\
+        pcntl\
+        shmop\
+        posix\
+        \
+        pdo\
+        pdo_mysql\
+        session\
+        sockets\
+        apcu\
+        opcache\
+        \
+        uuid\
+        json\
+        igbinary\
+        msgpack\
+        yaml\
+        \
+        dom\
+        xml\
+        xmlreader\
+        xmlwriter\
+        simplexml\
+        xsl\
+        soap\
+        xmlrpc\
+        wddx\
+        \
+        memcached\
+        mongodb\
+        redis\
+        amqp\
+        gearman\
+        \
+        zip\
+        bz2\
+        phar\
+        \
+        tidy\
+        tokenizer\
+        screwim\
+        \
+        sodium\
+        \
+        ev\
+        uv\
+        \
+        phalcon\
+        swoole\
+"
+
+ENV FULL_EXTENSIONS="\
+        ${MINI_EXTENSIONS}\
+        \
+        snmp\
+        \
+        exif\
+        fileinfo\
+        gd\
+        imagick\
+        ssh2\
+        \
+        dba\
+        enchant\
+        pspell\
+        recode\
+        sqlite3\
+        pdo_pgsql\
+        pdo_sqlite\
+        pdo_sqlsrv\
+        v8js\
+        v8\
+"
 
 ENV DEV_DEPS pkg-config autoconf dpkg-dev file g++ gcc make re2c bison python-software-properties software-properties-common
 
@@ -166,6 +242,10 @@ RUN set -xe; \
     BUILD_ARCH="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
     DEV_MULTI_ARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
+    # https://bugs.php.net/bug.php?id=74125
+	if [ ! -d /usr/include/curl ]; then \
+		ln -sT "/usr/include/${DEV_MULTI_ARCH}/curl" /usr/local/include/curl; \
+	fi; \
     # Apply stack smash protection to functions using local buffers and alloca()
     # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
     # Enable optimization (-O2)
@@ -218,6 +298,8 @@ RUN set -xe; \
         \
         # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
 		#--with-password-argon2 \
+        # bundled pcre does not support JIT on s390x
+        # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
         $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
         \
         --without-sqlite3 \
@@ -236,9 +318,24 @@ RUN set -xe; \
     if [ ! -z "${BUILD_EXTENSIONS}" ]; then \
         BUILD_PHP_EXTENSIONS=( $BUILD_EXTENSIONS ); \
     else \
-        BUILD_PHP_EXTENSIONS=( $PHP_EXTENSIONS ); \
+        BUILD_PHP_EXTENSIONS=( $FULL_EXTENSIONS ); \
     fi; \
     \
+    \
+    # sysvsem
+    if in_array BUILD_PHP_EXTENSIONS "sysvsem"; then \
+        ext-src sysvsem; \
+    fi; \
+    \
+    # sysvshm
+    if in_array BUILD_PHP_EXTENSIONS "sysvshm"; then \
+        ext-src sysvshm; \
+    fi; \
+    \
+    # sysvmsg
+    if in_array BUILD_PHP_EXTENSIONS "sysvmsg"; then \
+        ext-src sysvmsg; \
+    fi; \
     \
     # bcmath
     if in_array BUILD_PHP_EXTENSIONS "bcmath"; then \
