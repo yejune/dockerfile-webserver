@@ -1,0 +1,126 @@
+#!make
+
+REPOGITORY_URL:=ap-northeast-2.ec2.archive.ubuntu.com
+
+NJS_VERSION:=1.12.2.0.1.14-1
+NGINX_VERSION:=1.12.2-1
+NGINX_GPGKEY:=573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+
+PHP71_VERSION:=7.1.15
+PHP71_SHA256:=0e17192fb43532e4ebaa190ecec9c7e59deea7dadb7dab67b19c2081a68bd817
+PHP71_GPGKEYS:=A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 1729F83938DA44E27BA0F4D3DBDB397470D12172
+
+PHP72_VERSION:=7.2.3
+PHP72_SHA256:=b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f
+PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+
+LIBRARY_V8_VERSION:=6.6
+LIBRARY_RABBITMQ_VERSION:=0.8.0
+EXTENSION_YAML_VERSION:=2.0.2
+EXTENSION_IGBINARY_VERSION:=2.0.5
+EXTENSION_MSGPACK_VERSION:=2.0.2
+EXTENSION_APCU_VERSION:=5.1.10
+EXTENSION_MEMCACHED_VERSION:=3.0.4
+EXTENSION_REDIS_VERSION:=3.1.6
+EXTENSION_MONGODB_VERSION:=1.4.1
+EXTENSION_IMAGICK_VERSION:=3.4.3
+EXTENSION_UUID_VERSION:=1.0.4
+EXTENSION_EV_VERSION:=1.0.4
+EXTENSION_UV_VERSION:=0.2.2
+EXTENSION_SSH2_VERSION:=1.1.2
+EXTENSION_PHALCON_VERSION:=3.3.1
+EXTENSION_SODIUM_VERSION:=2.0.10
+EXTENSION_SQLSRV_VERSION:=4.3.0
+EXTENSION_GEARMAN_VERSION:=2.0.3
+EXTENSION_AMQP_VERSION:=1.9.3
+EXTENSION_V8JS_VERSION:=2.1.0
+EXTENSION_V8_VERSION:=0.2.2
+EXTENSION_SCREWIM_VERSION:=1.0.1
+EXTENSION_SWOOLE_VERSION:=2.1.0
+EXTENSION_XDEBUG_VERSION:=2.6.0
+DOCKERIZE_VERSION:=0.6.0
+
+define MINI_EXTENSIONS
+    bcmath\
+    calendar\
+    ctype\
+    gettext\
+    gmp\
+    hash\
+    iconv\
+    intl\
+    pcntl\
+    shmop\
+    posix\
+    \
+    pdo\
+    pdo_mysql\
+    session\
+    sockets\
+    apcu\
+    opcache\
+    \
+    uuid\
+    json\
+    igbinary\
+    msgpack\
+    yaml\
+    \
+    dom\
+    xml\
+    xmlreader\
+    xmlwriter\
+    simplexml\
+    xsl\
+    soap\
+    xmlrpc\
+    wddx\
+    \
+    memcached\
+    mongodb\
+    redis\
+    amqp\
+    gearman\
+    \
+    zip\
+    bz2\
+    phar\
+    \
+    tidy\
+    tokenizer\
+    screwim\
+    \
+    sodium\
+    \
+    ev\
+    uv\
+    \
+    phalcon\
+    swoole
+endef
+
+define FULL_EXTENSIONS
+    ${MINI_EXTENSIONS}\
+    snmp\
+    \
+    exif\
+    fileinfo\
+    gd\
+    imagick\
+    ssh2\
+    \
+    dba\
+    enchant\
+    pspell\
+    recode\
+    sqlite3\
+    pdo_pgsql\
+    pdo_sqlite\
+    pdo_sqlsrv\
+    v8js\
+    v8\
+    \
+    sysvsem\
+    sysvshm\
+    sysvmsg
+endef
