@@ -94,6 +94,8 @@ class PhpEnvironment
         'EXTENSION_SWOOLE_VERSION',
         'EXTENSION_XDEBUG_VERSION',
         'DOCKERIZE_VERSION',
+        'MINI_EXTENSIONS',
+        'FULL_EXTENSIONS',
     ];
 
     public static function getEnvironmentVariables()
