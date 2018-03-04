@@ -9,7 +9,7 @@ help:
 	@echo "\033[33mUsage:\033[0m\n  make [target] [arg=\"val\"...]\n\n\033[33mTargets:\033[0m"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-build: ## Build image. Usage: make build TAG="7.0-cli"
+build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
 		--tag yejune/webserver:$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
