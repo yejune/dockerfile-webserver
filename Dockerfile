@@ -139,6 +139,10 @@ ENV FULL_EXTENSIONS="\
         pdo_sqlsrv\
         v8js\
         v8\
+        \
+        sysvsem\
+        sysvshm\
+        sysvmsg\
 "
 
 ENV DEV_DEPS pkg-config autoconf dpkg-dev file g++ gcc make re2c bison python-software-properties software-properties-common
