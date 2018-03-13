@@ -2,7 +2,7 @@
 
 # is on
 is_on() {
-    local var=${1}
+    local var=${1,,}
     case $var in
         yes|y|true|t|on|1|enabled) return 0 ;;
     esac
@@ -11,7 +11,7 @@ is_on() {
 
 # is on
 is_off() {
-    local var=${1}
+    local var=${1,,}
     case $var in
         no|n|false|f|off|0|disabled|"") return 0 ;;
     esac
@@ -20,7 +20,7 @@ is_off() {
 
 # not off
 not_off() {
-    local var=${1}
+    local var=${1,,}
     if is_off "$var"; then
         return 1
     else
