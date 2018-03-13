@@ -11,7 +11,7 @@ ARG PHP_VERSION=7.2.3
 ARG PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F"
 ARG PHP_SHA256="b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f"
 
-ARG REPOGITORY_URL
+ARG REPOGITORY_URL="archive.ubuntu.com"
 
 ARG BUILD_EXTENSIONS
 
@@ -43,7 +43,7 @@ ARG DOCKERIZE_VERSION=0.6.0
 
 SHELL ["/bin/bash", "-c"]
 
-RUN if [ ! -z "${REPOGITORY_URL}" ]; then \
+RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
         sed -i "s/archive.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
         sed -i "s/security.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
     fi
