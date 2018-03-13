@@ -64,12 +64,12 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.2.3
-    -   phalcon 3.3.1
+    -   phalcon 3.3.2
     -   redis 3.1.6
     -   yaml 2.0.2
     -   memcached 3.0.4
-    -   mongodb 1.4.1
-    -   apcu 5.1.10
+    -   mongodb 1.4.2
+    -   apcu 5.1.11
     -   uuid 1.0.4
     -   amqp 1.9.3
     -   v8js 2.1.0
@@ -82,7 +82,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   imagick 3.4.3
     -   igbinary 2.0.5
     -   msgpack 2.0.2
-    -   swoole 2.1.0
+    -   swoole 2.1.1
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
