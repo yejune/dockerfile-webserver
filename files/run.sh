@@ -61,6 +61,13 @@ if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
     sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
 fi
 
+if is_on "$PROXY_VARIABLES_FIXED"; then
+    echo 'fastcgi_param REMOTE_ADDR      $x_remote_addr;' >> /etc/nginx/variables.conf
+    echo 'fastcgi_param REQUEST_SCHEME   $x_protocol;' >> /etc/nginx/variables.conf
+    echo 'fastcgi_param SERVER_PROTOCOL  $x_protocol;' >> /etc/nginx/variables.conf
+    echo 'fastcgi_param SERVER_PORT      $x_port;' >> /etc/nginx/variables.conf
+fi
+
 if is_on "$PHP_ACCESS_LOG"; then
     sed -i -e "s/;access.log*/access.log/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     if [ "$LOG_FORMAT" = "json" ]; then

@@ -96,6 +96,7 @@ class PhpEnvironment
         'DOCKERIZE_VERSION',
         'MINI_EXTENSIONS',
         'FULL_EXTENSIONS',
+        'PROXY_VARIABLES_FIXED',
     ];
 
     public static function getEnvironmentVariables()

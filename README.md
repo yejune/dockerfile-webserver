@@ -2,7 +2,7 @@
 
 This is a Phalcon application server image based on Nginx (with SSL support) and PHP7.
 
-## mount
+## volumes
 -   /var/www
     -   for your app code (e.g. using "-v /home/project/:/var/www/")
     -   with your document root in a directory named public/
@@ -56,6 +56,13 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   NGINX_CORS_ORIGIN
     -   optionally, default *
     -   Access-Control-Allow-Origin
+-   NGINX_CORS_METHODS
+    -   optionally
+-   NGINX_CORS_HEADERS
+    -   optionally
+-   PROXY_VARIABLES_FIXED
+    -   optionally
+    -   Modify REMOTE_ADDR, REQUEST_SCHEME, SERVER_PROTOCOL, SERVER_PORT variable to the value before forward
 
 ## version
 -   UBUNTU 16.04
@@ -89,18 +96,113 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   pdo_sqlsrv
 
 ## Build Options
--   BUILD_TYPE
-    -   null
-        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon igbinary msgpack
-    -   full
-        -   bcmath bz2 calendar ctype dom gettext gmp hash iconv intl json pcntl pdo pdo_mysql posix session simplexml soap sockets xml xmlreader xmlwriter yaml apcu memcached redis uuid phalcon igbinary msgpack
-        -   dba enchant exif fileinfo gd pdo_pgsql pdo_sqlite phar pspell recode shmop snmp sqlite3 tidy tokenizer wddx xsl xmlrpc zip ev uv ssh2 sodium pdo_sqlsrv gearman amqp v8js v8 imagick mongodb
-
+-   REPOGITORY_URL
+-   NGINX_VERSION
+-   NJS_VERSION
+-   NGINX_GPGKEY
+-   PHP_VERSION
+-   PHP_GPGKEYS
+-   PHP_SHA256
+    -   file type php-*.tar.xz
+-   BUILD_EXTENSIONS
+    -   optionally
+    -   null is all extensions
+    -   Type the extension you want to use, separated by spaces
+        -   bcmath
+        -   calendar
+        -   ctype
+        -   gettext
+        -   gmp
+        -   hash
+        -   iconv
+        -   intl
+        -   pcntl
+        -   shmop
+        -   posix
+        -   pdo
+        -   pdo_mysql
+        -   session
+        -   sockets
+        -   apcu
+        -   opcache
+        -   uuid
+        -   json
+        -   igbinary
+        -   msgpack
+        -   yaml
+        -   dom
+        -   xml
+        -   xmlreader
+        -   xmlwriter
+        -   simplexml
+        -   xsl
+        -   soap
+        -   xmlrpc
+        -   wddx
+        -   memcached
+        -   mongodb
+        -   redis
+        -   amqp
+        -   gearman
+        -   zip
+        -   bz2
+        -   phar
+        -   tidy
+        -   tokenizer
+        -   screwim
+        -   sodium
+        -   ev
+        -   uv
+        -   phalcon
+        -   swoole
+        -   snmp
+        -   exif
+        -   fileinfo
+        -   gd
+        -   imagick
+        -   ssh2
+        -   dba
+        -   enchant
+        -   pspell
+        -   recode
+        -   sqlite3
+        -   pdo_pgsql
+        -   pdo_sqlite
+        -   pdo_sqlsrv
+        -   v8js
+        -   v8
+        -   sysvsem
+        -   sysvshm
+        -   sysvmsg
+-   LIBRARY_V8_VERSION
+-   LIBRARY_RABBITMQ_VERSION
+-   EXTENSION_YAML_VERSION
+-   EXTENSION_IGBINARY_VERSION
+-   EXTENSION_MSGPACK_VERSION
+-   EXTENSION_APCU_VERSION
+-   EXTENSION_MEMCACHED_VERSION
+-   EXTENSION_REDIS_VERSION
+-   EXTENSION_MONGODB_VERSION
+-   EXTENSION_IMAGICK_VERSION
+-   EXTENSION_UUID_VERSION
+-   EXTENSION_EV_VERSION
+-   EXTENSION_UV_VERSION
+-   EXTENSION_SSH2_VERSION
+-   EXTENSION_PHALCON_VERSION
+-   EXTENSION_SODIUM_VERSION
+-   EXTENSION_SQLSRV_VERSION
+-   EXTENSION_GEARMAN_VERSION
+-   EXTENSION_AMQP_VERSION
+-   EXTENSION_V8JS_VERSION
+-   EXTENSION_V8_VERSION
+-   EXTENSION_SCREWIM_VERSION
+-   EXTENSION_SWOOLE_VERSION
+-   EXTENSION_XDEBUG_VERSION
+-   DOCKERIZE_VERSION
 
 ## Examples
 -   build
-    -   ``docker build build-arg .``
-    -   ``docker build build-arg BUILD_TYPE=full .``
+    -   ``docker build .``
 -   run
     -   ``docker run -p 80:80 -d yejune/webserver``
 -   only SSL
