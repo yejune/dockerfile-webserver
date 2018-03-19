@@ -46,8 +46,8 @@ export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
-export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"GET, POST, PUT, DELETE, OPTIONS"}
-export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Mx-ReqToken,X-Requested-With,X-CustomHeader"}
+export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Mx-ReqToken,X-Requested-With,X-CustomHeader"}
+export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"GET, POST, PUT, DELETE, OPTIONS"}
 
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
