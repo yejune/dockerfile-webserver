@@ -47,6 +47,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 	.
 
+	@make test TAG="$(TAG)"
+
 build-71: ## Build PHP 7.1 images
 	@make build \
 		EXTENSIONS="$(FULL_EXTENSIONS)" \
@@ -106,6 +108,26 @@ build-and-push-72: ## Build and push PHP 7.2 images to Docker Hub
 build-and-push: ## Build all images and push them to Docker Hub
 	@make build-all
 	@make push-all
+
+test:
+	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	@#docker rm -f test-webserver > /dev/null 2>&1 || true
+	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(TAG)
+	wget --spider --retry-connrefused --no-check-certificate -T 5 http://localhost:8111
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111 | grep "200 OK"
+	docker kill test-webserver
+
+test-all: ## 테스트
+	@make test-71
+	@make test-72
+
+test-71:
+	@make test TAG="$(PHP71_VERSION)"
+	@make test TAG="$(PHP71_VERSION)-mini"
+
+test-72:
+	@make test TAG="$(PHP72_VERSION)"
+	@make test TAG="$(PHP72_VERSION)-mini"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f
