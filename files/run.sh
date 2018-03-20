@@ -54,6 +54,7 @@ export LOG_FORMAT=${LOG_FORMAT:-"main"}
 export TZ=${TZ:-"Asia/Seoul"}
 export PHP_VARIABLES_ORDER=${PHP_VARIABLES_ORDER:-"GPCS"}
 
+mkdir -p ${PHP_INI_DIR}/php-fpm.d/
 dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 
 if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
