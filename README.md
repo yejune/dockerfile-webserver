@@ -93,7 +93,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
-    -   pdo_sqlsrv
+    -   pdo_sqlsrv 5.2.0
 
 ## Build Options
 -   REPOGITORY_URL
