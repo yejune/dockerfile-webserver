@@ -16,22 +16,17 @@ server {
 
     location ~ [^/]\.php(/|$)
     {
-        if (!-f $document_root$fastcgi_script_name) {
-            return 404;
-        }
-
         include /etc/nginx/variables.conf;
 
         {{ .Env.NGINX_HEADER }}
 
         include /etc/nginx/cors.conf;
 
-        fastcgi_pass {{ .Env.FASTCGI_PASS }};
-    }
+        if (!-f $document_root$fastcgi_script_name) {
+            return 404;
+        }
 
-    location /protected/ {
-        internal;
-        alias   /var/www/protected/;
+        fastcgi_pass {{ .Env.FASTCGI_PASS }};
     }
 
     {{ .Env.NGINX_LOCATION }}

@@ -45,9 +45,17 @@ export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
+
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
-export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Mx-ReqToken,X-Requested-With,X-CustomHeader"}
-export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"GET, POST, PUT, DELETE, OPTIONS"}
+export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization"}
+export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD"}
+export NGINX_CORS_EXPOSE_HEADERS=${NGINX_CORS_EXPOSE_HEADERS:-"X-Request-ID"}
+# When responding to a credentialed request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the "*" wildcard.
+if [ "$NGINX_CORS_ORIGIN" = "*" ]; then
+    export NGINX_CORS_CREDENTIALS="false";
+else
+    export NGINX_CORS_CREDENTIALS=${NGINX_CORS_CREDENTIALS:-"true"}
+fi
 
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
 
