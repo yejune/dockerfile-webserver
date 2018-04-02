@@ -1,0 +1,15 @@
+filebeat:
+  prospectors:
+    - input_type: log
+      document_type: "php-fpm.slow"
+      paths:
+        - /var/log/php/fpm.slow.log
+      multiline:
+        pattern: '^[[:space:]]'
+        negate: true
+        match: after
+output:
+  console:
+    enabled: true
+shipper:
+  tags: ["web"]

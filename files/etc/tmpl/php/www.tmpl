@@ -13,9 +13,8 @@ pm.max_children = 10
 pm.process_idle_timeout = 60
 pm.max_requests = 500
 
-;slow log
-;/var/log/php/fpm.slow.log
-;slowlog = /proc/self/fd/2;
+;slow log to filebeat
+;slowlog = /var/log/php/fpm.slow.log;
 ;request_slowlog_timeout = 0s
 
 ;if we send this to /proc/self/fd/1, it never appears

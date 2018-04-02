@@ -744,6 +744,13 @@ RUN set -xe; \
         echo "xdebug.remote_autostart=on" >> ${XDEBUG_INI}; \
     fi; \
     \
+    # Install filebeat
+    cd "${SRC_DIR}"; \
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
+    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" > /etc/apt/sources.list.d/elastic-6.x.list; \
+    apt-get update; \
+    apt-get install --no-install-recommends --no-install-suggests -y  -o Dpkg::Options::="--force-confold" filebeat; \
+    \
     # Install dockerize
     cd $SRC_DIR; \
     wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
