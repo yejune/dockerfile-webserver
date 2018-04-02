@@ -79,6 +79,17 @@ build-72: ## Build PHP 7.2 images
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(PHP72_VERSION)-mini"
 
+
+build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
+	@make build \
+		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		PHP_VERSION="$(PHP72_VERSION)" \
+		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
+		PHP_SHA256="$(PHP72_SHA256)" \
+		TAG="$(tag)"
+
+	@docker push yejune/webserver:$(tag)
+
 build-all: ## Build all images
 	@make build-71
 	@make build-72
