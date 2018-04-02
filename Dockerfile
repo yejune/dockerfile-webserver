@@ -156,6 +156,9 @@ RUN set -xe; \
     mkdir -p "${PHP_LOG_DIR}"; \
     mkdir -p "${SRC_DIR}"; \
     mkdir -p "${PECL_SRC_DIR}"; \
+    mkdir -p "${PHP_SRC_DIR}"; \
+    mkdir -p "${PHP_INI_DIR}/"; \
+    mkdir -p "${PHP_INI_DIR}/php-fpm.d/"; \
     cd "${SRC_DIR}"; \
     \
     ADD_DEPS=' \
@@ -239,7 +242,6 @@ RUN set -xe; \
     locale-gen en_US.UTF-8; \
     \
     # php
-    mkdir -p "${PHP_SRC_DIR}"; \
     tar -Jxf $SRC_DIR/php.tar.xz -C "${PHP_SRC_DIR}" --strip-components=1; \
     cd "${PHP_SRC_DIR}"; \
     \
