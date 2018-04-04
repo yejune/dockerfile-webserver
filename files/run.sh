@@ -45,6 +45,9 @@ export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
+export NGINX_ACCESS_LOG_LEVEL=""
+export NGINX_ERROR_LOG_LEVEL=${NGINX_ERROR_LOG_LEVEL:-"error"}
+export NGINX_ERROR_LOG_LEVEL=" ${NGINX_ERROR_LOG_LEVEL}"
 
 export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
 export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization"}
@@ -58,15 +61,17 @@ else
 fi
 
 export LOG_FORMAT=${LOG_FORMAT:-"main"}
+export SLOW_LOG_STREAM=${SLOW_LOG_STREAM:-"/var/log/php/fpm.slow.log"};
 
 export TZ=${TZ:-"Asia/Seoul"}
 export PHP_VARIABLES_ORDER=${PHP_VARIABLES_ORDER:-"GPCS"}
 
-mkdir -p ${PHP_INI_DIR}/php-fpm.d/
 dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 
 if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
-    sed -i -e "s/;slowlog/slowlog/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
+    mkfifo ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
+
+    sed -i -e "s~;slowlog = .*~slowlog = ${SLOW_LOG_STREAM}~g" ${PHP_INI_DIR}/php-fpm.d/www.conf
     sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
 fi
 
@@ -123,7 +128,6 @@ fi
 
 if [ ! -z "$PHP_LOAD_EXTENSIONS" ]; then
     mv "${PHP_CONF_DIR}/" "${PHP_CONF_DIR}.stop/"
-    mkdir -p "${PHP_CONF_DIR}/"
     a=( $PHP_LOAD_EXTENSIONS )
     for ((j=1; j<"${#a[@]}"; j++)); do
         ext="${a[j]}"
@@ -201,8 +205,7 @@ if is_off "$NGINX_CORS"; then
 fi
 
 if is_off "$NGINX_ACCESS_LOG"; then
-    sed -i -e "s/access_log.*/access_log off;/g" /etc/tmpl/nginx/site.ssl.tmpl
-    sed -i -e "s/access_log.*/access_log off;/g" /etc/tmpl/nginx/site.tmpl
+    export NGINX_ACCESS_LOG_LEVEL=" if=\$loggable"
 fi
 
 mkdir -p /etc/nginx/site.d

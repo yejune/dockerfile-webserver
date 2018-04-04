@@ -55,6 +55,8 @@ class PhpEnvironment
         'NGINX_LOCATION',
         'NGINX_HEADER',
         'NGINX_ACCESS_LOG',
+        'NGINX_ACCESS_LOG_LEVEL',
+        'NGINX_ERROR_LOG_LEVEL',
         'DEPS',
         'DEV_DEPS',
         'DEBIAN_FRONTEND',

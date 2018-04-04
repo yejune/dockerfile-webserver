@@ -8,8 +8,8 @@ server {
 
     include     /etc/nginx/common.d/*.conf;
 
-    access_log  /var/log/nginx/access.log logformat;
-    error_log   /var/log/nginx/error.log error;
+    access_log  /var/log/nginx/access.log logformat{{ .Env.NGINX_ACCESS_LOG_LEVEL }};
+    error_log   /var/log/nginx/error.log{{ .Env.NGINX_ERROR_LOG_LEVEL }};
 
     ssl_certificate /var/certs/{{ .Env.DOMAIN }}.crt;
     ssl_certificate_key /var/certs/{{ .Env.DOMAIN }}.key;
