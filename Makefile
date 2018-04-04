@@ -45,6 +45,7 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_SWOOLE_VERSION=$(EXTENSION_SWOOLE_VERSION) \
 		--build-arg EXTENSION_XDEBUG_VERSION=$(EXTENSION_XDEBUG_VERSION) \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file $(DOCKERFILE) \
 	.
 
 	@make test TAG="$(TAG)"
@@ -55,14 +56,16 @@ build-71: ## Build PHP 7.1 images
 		PHP_VERSION="$(PHP71_VERSION)" \
 		PHP_GPGKEYS="$(PHP71_GPGKEYS)" \
 		PHP_SHA256="$(PHP71_SHA256)" \
-		TAG="$(PHP71_VERSION)"
+		TAG="$(PHP71_VERSION)" \
+		DOCKERFILE="Dockerfile"
 
 	@make build \
 		EXTENSIONS="$(MINI_EXTENSIONS)" \
 		PHP_VERSION="$(PHP71_VERSION)" \
 		PHP_GPGKEYS="$(PHP71_GPGKEYS)" \
 		PHP_SHA256="$(PHP71_SHA256)" \
-		TAG="$(PHP71_VERSION)-mini"
+		TAG="$(PHP71_VERSION)-mini" \
+		DOCKERFILE="Dockerfile"
 
 build-72: ## Build PHP 7.2 images
 	@make build \
@@ -70,15 +73,16 @@ build-72: ## Build PHP 7.2 images
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)"
+		TAG="$(PHP72_VERSION)" \
+		DOCKERFILE="Dockerfile"
 
 	@make build \
 		EXTENSIONS="$(MINI_EXTENSIONS)" \
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)-mini"
-
+		TAG="$(PHP72_VERSION)-mini" \
+		DOCKERFILE="Dockerfile"
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
@@ -86,7 +90,16 @@ build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(tag)"
+		TAG="$(tag)" \
+		DOCKERFILE="Dockerfile"
+
+	@docker push yejune/webserver:$(tag)
+
+build-test-file: ## Dockerfile.test 로 빌드. Usage: make build-test-file tag="test11"
+	docker build \
+		--tag yejune/webserver:$(tag) \
+		--file Dockerfile.test \
+	.
 
 	@docker push yejune/webserver:$(tag)
 
