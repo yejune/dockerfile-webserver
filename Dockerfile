@@ -118,8 +118,7 @@ ENV MINI_EXTENSIONS="\
         swoole\
 "
 
-ENV FULL_EXTENSIONS="\
-        ${MINI_EXTENSIONS}\
+ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         \
         snmp\
         \
