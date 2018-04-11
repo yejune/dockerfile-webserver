@@ -89,7 +89,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   imagick 3.4.3
     -   igbinary 2.0.5
     -   msgpack 2.0.2
-    -   swoole 2.1.1
+    -   swoole 2.1.2
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
