@@ -9,7 +9,7 @@ user = {{ .Env.FPM_USER }}
 group = {{ .Env.FPM_GROUP }}
 
 pm = ondemand
-pm.max_children = 10
+pm.max_children = 100
 pm.process_idle_timeout = 60
 pm.max_requests = 500
 
