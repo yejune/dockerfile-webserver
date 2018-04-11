@@ -3,6 +3,7 @@ filebeat:
     - input_type: log
       fields:
         type: php-fpm slow log
+        status: 524
       paths:
         - /var/log/php/fpm.slow.log
       encoding: plain
