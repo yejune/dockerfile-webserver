@@ -72,7 +72,7 @@ else
     dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 
     if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
-        mkfifo ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
+        touch ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
 
         sed -i -e "s~;slowlog = .*~slowlog = ${SLOW_LOG_STREAM}~g" ${PHP_INI_DIR}/php-fpm.d/www.conf
         sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
