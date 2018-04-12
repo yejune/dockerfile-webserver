@@ -18,7 +18,7 @@ group = {{ .Env.FPM_GROUP }}
 ;/var/log/php/fpm.access.log
 ;access.log = /proc/self/fd/2;
 
-;json.access.format = '{"type" : "php", "mode": "access", "fields": {"request_id": "%{HTTP_REQUEST_ID}e", "remote_addr": "%{REMOTE_ADDR}e", "request_scheme": "%{REQUEST_SCHEME}e", "remote_user": "%u", "request_date": "%t", "request_method": "%m", "request_uri": "%{REQUEST_URI}e", "qs": "%Q", "query_string": "%q", "status": %s, "filename": "%f", "request_time": %{seconds}d, "peak_memory": "%{mega}MM", "used_cpu" : "%{total}C%"}}'
+;json.access.format = '{"fields": {"type": "php-access", "host": "%{HTTP_HOST}e", "request_id": "%{HTTP_REQUEST_ID}e", "remote_addr": "%{REMOTE_ADDR}e", "remote_user": "%u", "scheme": "%{REQUEST_SCHEME}e", "port": "%{SERVER_PORT}e", "status": %s, "request": "%m %r%Q%q", "request_uri": "%{REQUEST_URI}e", "request_time": %{seconds}d, "request_date": "%t", "request_method": "%m", "user_agent": "%{HTTP_USER_AGENT}e", "referer": "%{HTTP_REFERER}e", "filename": "%f", "peak_memory": "%{mega}MM", "used_cpu": "%{total}C"}}'
 
 ;main.access.format = %{REMOTE_ADDR}e - %u %t "%m %{REQUEST_URI}e %Q%q" %s %f %{seconds}d %{mega}MM %C%%
 
