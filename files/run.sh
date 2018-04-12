@@ -66,6 +66,51 @@ export SLOW_LOG_STREAM=${SLOW_LOG_STREAM:-"/var/log/php/fpm.slow.log"};
 export TZ=${TZ:-"Asia/Seoul"}
 export PHP_VARIABLES_ORDER=${PHP_VARIABLES_ORDER:-"GPCS"}
 
+if [ ! -z $PM ]; then
+    export PM=${PM}
+else
+    PM=""
+    if [ ! -z $PM_TYPE ]; then
+        PM="$PM
+pm = ${PM_TYPE}";
+    fi
+    if [ ! -z $PM_MAX_CHILDREN ]; then
+        PM="$PM
+pm.max_children = ${PM_MAX_CHILDREN}";
+    fi
+    if [ ! -z $PM_MAX_REQUESTS ]; then
+        PM="$PM
+pm.max_requests = ${PM_MAX_REQUESTS}";
+    fi
+    if [ ! -z $PM_PROCESS_IDLE_TIMEOUT ]; then
+        PM="$PM
+pm.process_idle_timeout = ${PM_PROCESS_IDLE_TIMEOUT}";
+    fi
+    if [ ! -z $PM_START_SERVERS ]; then
+        PM="$PM
+pm.start_servers = ${PM_START_SERVERS}";
+    fi
+    if [ ! -z $PM_MIN_SPARE_SERVERS ]; then
+        PM="$PM
+pm.min_spare_servers = ${PM_MIN_SPARE_SERVERS}";
+    fi
+    if [ ! -z $PM_MAX_SPARE_SERVERS ]; then
+        PM="$PM
+pm.max_spare_servers = ${PM_MAX_SPARE_SERVERS}";
+    fi
+
+    if [ -z "$PM" ]; then
+        export PM="
+pm = ondemand
+pm.max_children = 100
+pm.process_idle_timeout = 60
+pm.max_requests = 500";
+    else
+        export PM=${PM}
+    fi
+fi
+
+
 if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else

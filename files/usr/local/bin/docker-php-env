@@ -100,6 +100,7 @@ class PhpEnvironment
         'MINI_EXTENSIONS',
         'FULL_EXTENSIONS',
         'PROXY_VARIABLES_FIXED',
+        'PM',
     ];
 
     public static function getEnvironmentVariables()
