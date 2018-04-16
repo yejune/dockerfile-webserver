@@ -110,14 +110,13 @@ pm.max_requests = 500";
     fi
 fi
 
-
 if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else
     dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 
     if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
-        touch ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
+        # mkfifo ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
 
         sed -i -e "s~;slowlog = .*~slowlog = ${SLOW_LOG_STREAM}~g" ${PHP_INI_DIR}/php-fpm.d/www.conf
         sed -i -e "s/;request_slowlog_timeout = 0s/request_slowlog_timeout = ${SLOWLOG_TIMEOUT}/g" ${PHP_INI_DIR}/php-fpm.d/www.conf
@@ -285,4 +284,4 @@ stderr_logfile_maxbytes=0
     update-ca-certificates
 fi
 
-/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisor.conf
+/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
