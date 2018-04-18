@@ -24,6 +24,8 @@ ARG EXTENSION_APCU_VERSION=5.1.11
 ARG EXTENSION_MEMCACHED_VERSION=3.0.4
 ARG EXTENSION_REDIS_VERSION=4.0.0
 ARG EXTENSION_MONGODB_VERSION=1.4.2
+ARG EXTENSION_COUCHBASE_VERSION=2.4.6
+ARG EXTENSION_CASSANDRA_VERSION=1.3.2
 ARG EXTENSION_IMAGICK_VERSION=3.4.3
 ARG EXTENSION_UUID_VERSION=1.0.4
 ARG EXTENSION_EV_VERSION=1.0.4
@@ -132,6 +134,8 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         enchant\
         pspell\
         recode\
+        couchbase\
+        cassandra\
         sqlite3\
         pdo_pgsql\
         pdo_sqlite\
@@ -616,6 +620,20 @@ RUN set -xe; \
     # mongodb
     if in_array BUILD_PHP_EXTENSIONS "mongodb"; then \
         ext-pcl mongodb-${EXTENSION_MONGODB_VERSION}; \
+    fi; \
+    \
+    # cassandra
+    # if in_array BUILD_PHP_EXTENSIONS "cassandra"; then \
+    #     git clone https://github.com/datastax/php-driver.git; \
+    #     cd php-driver; \
+    #     git submodule update --init; \
+    #     cd ext && ./install.sh; \
+    #     ext-pcl cassandra-${EXTENSION_CASSANDRA_VERSION}; \
+    # fi; \
+    #\
+    # couchbase
+    if in_array BUILD_PHP_EXTENSIONS "couchbase"; then \
+        ext-pcl couchbase-${EXTENSION_COUCHBASE_VERSION}; \
     fi; \
     \
     # imagick
