@@ -159,4 +159,15 @@ ext-lib()
 {
     $sudo apt-get install -y $@
 }
+wget-retry()
+{
+    while [ 1 ]; do
+        wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 --continue $@;
+        if [ $? = 0 ]; then
+            break;
+        fi;
+        sleep 1s;
+    done;
 
+    #wget --spider --retry-connrefused --no-check-certificate -T 5 $@
+}

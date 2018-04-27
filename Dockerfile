@@ -1,11 +1,7 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
-
-ARG NGINX_VERSION="1.14.0-1"
-ARG NJS_VERSION="1.14.0.0.2.0-1"
-ARG NGINX_GPGKEY="573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62"
 
 ARG PHP_VERSION=7.2.5
 ARG PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F"
@@ -16,7 +12,6 @@ ARG REPOGITORY_URL="archive.ubuntu.com"
 ARG BUILD_EXTENSIONS
 
 ARG LIBRARY_V8_VERSION=6.6
-ARG LIBRARY_RABBITMQ_VERSION=0.8.0
 ARG EXTENSION_YAML_VERSION=2.0.2
 ARG EXTENSION_IGBINARY_VERSION=2.0.5
 ARG EXTENSION_MSGPACK_VERSION=2.0.2
@@ -58,8 +53,6 @@ ENV PHP_INI_DIR=/etc/php \
     PHP_CONF_DIR=/etc/php/conf.d \
     PECL_SRC_DIR=/usr/src/pecl \
     SRC_DIR=/usr/src
-
-ENV DEPS locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils
 
 ENV MINI_EXTENSIONS="\
         bcmath\
@@ -148,13 +141,31 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         sysvmsg\
 "
 
-ENV DEV_DEPS pkg-config autoconf dpkg-dev file g++ gcc make re2c bison python-software-properties software-properties-common
-
 COPY files/ /
 
 RUN set -xe; \
+    source /init.sh; \
+    \
     apt-get update; \
     apt-get upgrade -y; \
+    \
+    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils"; \
+    \
+    DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
+    \
+    LIB_DEPS=" \
+        libc-dev \
+        libpcre3-dev \
+        \
+        libcurl4-openssl-dev \
+        libreadline6-dev \
+        libssl-dev \
+        libxml2-dev \
+        zlib1g-dev \
+        libargon2-0 \
+        libargon2-0-dev \
+    "; \
+    \
     mkdir -p "${PHP_CONF_DIR}"; \
     mkdir -p "${PHP_LOG_DIR}"; \
     mkdir -p "${SRC_DIR}"; \
@@ -173,65 +184,45 @@ RUN set -xe; \
             gnupg2 \
         "; \
     fi; \
-    apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS}; \
+    apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS} ${DEV_DEPS} ${LIB_DEPS}; \
     dpkg-reconfigure tzdata ; \
     \
     \
     # Install nginx
-    found=''; \
-    for server in \
-        ha.pool.sks-keyservers.net \
-        hkp://keyserver.ubuntu.com:80 \
-        hkp://p80.pool.sks-keyservers.net:80 \
-        pgp.mit.edu \
-    ; do \
-        echo "Fetching GPG key ${NGINX_GPGKEY} from $server"; \
-        apt-key adv --keyserver "${server}" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" && found=yes && break; \
-    done; \
-    test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
-    echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
+    # found=''; \
+    # for server in \
+    #     ha.pool.sks-keyservers.net \
+    #     hkp://keyserver.ubuntu.com:80 \
+    #     hkp://p80.pool.sks-keyservers.net:80 \
+    #     pgp.mit.edu \
+    # ; do \
+    #     echo "Fetching GPG key ${NGINX_GPGKEY} from $server"; \
+    #     apt-key adv --keyserver "${server}" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" && found=yes && break; \
+    # done; \
+    # test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
+    # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
+    add-apt-repository ppa:nginx/stable; \
     apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" \
-            nginx="${NGINX_VERSION}~$(lsb_release -cs)" \
-            nginx-module-xslt="${NGINX_VERSION}~$(lsb_release -cs)" \
-            nginx-module-geoip="${NGINX_VERSION}~$(lsb_release -cs)" \
-            nginx-module-image-filter="${NGINX_VERSION}~$(lsb_release -cs)" \
-            nginx-module-njs="${NJS_VERSION}~$(lsb_release -cs)"; \
+    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx; \
     # forward request and error logs to docker log collector
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     #ln -sf /dev/stderr /var/log/nginx/error.log; \
     \
     \
     # Install php
-    # environment
-    LIB_DEPS=" \
-        libc-dev \
-        libpcre3-dev \
-        \
-        libcurl4-openssl-dev \
-        libreadline6-dev \
-        libssl-dev \
-        libxml2-dev \
-        zlib1g-dev \
-        #libargon2-0 \
-        #libargon2-0-dev \
-    "; \
-    \
-    apt-get install -y --no-install-recommends apt-transport-https ${DEV_DEPS} ${LIB_DEPS}; \
-    \
     \
     \
     PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
     PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
     \
-    wget -O php.tar.xz "${PHP_URL}"; \
+    wget-retry -O php.tar.xz "${PHP_URL}"; \
     \
     if [ -n "$PHP_SHA256" ]; then \
         echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
     fi; \
     \
     if [ -n "$PHP_ASC_URL" ]; then \
-        wget -O php.tar.xz.asc "$PHP_ASC_URL"; \
+        wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
         export GNUPGHOME="$(mktemp -d)"; \
         for key in $PHP_GPGKEYS; do \
             gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
@@ -243,8 +234,6 @@ RUN set -xe; \
         gpg --batch --verify php.tar.xz.asc php.tar.xz; \
         rm -rf "$GNUPGHOME"; \
     fi; \
-    \
-    source /init.sh; \
     \
     locale-gen en_US.UTF-8; \
     \
@@ -310,7 +299,7 @@ RUN set -xe; \
         --enable-phar \
         \
         # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
-		#--with-password-argon2 \
+		--with-password-argon2 \
         # bundled pcre does not support JIT on s390x
         # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
         $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
@@ -400,7 +389,7 @@ RUN set -xe; \
     \
     # gd
     if in_array BUILD_PHP_EXTENSIONS "gd"; then \
-        ext-lib libjpeg-dev libpng12-dev libwebp-dev libxpm-dev libfreetype6-dev; \
+        ext-lib libjpeg-dev libpng-dev libwebp-dev libxpm-dev libfreetype6-dev; \
         ext-src gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir \
                    --with-xpm-dir --with-freetype-dir --enable-gd-native-ttf; \
     fi; \
@@ -670,7 +659,7 @@ RUN set -xe; \
     # phalcon
     if in_array BUILD_PHP_EXTENSIONS "phalcon"; then \
         cd $PECL_SRC_DIR; \
-        wget https://github.com/phalcon/cphalcon/archive/v${EXTENSION_PHALCON_VERSION}.tar.gz; \
+        wget-retry https://github.com/phalcon/cphalcon/archive/v${EXTENSION_PHALCON_VERSION}.tar.gz; \
         tar -zxvf v${EXTENSION_PHALCON_VERSION}.tar.gz; \
         mv cphalcon-${EXTENSION_PHALCON_VERSION}/build/php7/64bits phalcon-${EXTENSION_PHALCON_VERSION}; \
         PREV_PHP_CFLAGS="${PHP_CFLAGS}"; \
@@ -681,15 +670,16 @@ RUN set -xe; \
     \
     # sodium
     if in_array BUILD_PHP_EXTENSIONS "sodium"; then \
-        cd $PECL_SRC_DIR; \
-        git clone --branch=stable https://github.com/jedisct1/libsodium; \
-        cd libsodium; \
-        ./configure; \
-        make; \
-        make install; \
+        # cd $PECL_SRC_DIR; \
+        # git clone --branch=stable https://github.com/jedisct1/libsodium; \
+        # cd libsodium; \
+        # ./configure; \
+        # make; \
+        # make install; \
+        ext-lib libsodium-dev; \
         if [[ $PHP_VERSION == "7.1."* ]]; then \
             cd $PECL_SRC_DIR; \
-            wget https://github.com/jedisct1/libsodium-php/archive/${EXTENSION_SODIUM_VERSION}.tar.gz; \
+            wget-retry https://github.com/jedisct1/libsodium-php/archive/${EXTENSION_SODIUM_VERSION}.tar.gz; \
             tar -zxvf ${EXTENSION_SODIUM_VERSION}.tar.gz; \
             mv libsodium-php-${EXTENSION_SODIUM_VERSION} sodium-${EXTENSION_SODIUM_VERSION}; \
             ext-pcl sodium-${EXTENSION_SODIUM_VERSION}; \
@@ -699,20 +689,20 @@ RUN set -xe; \
     fi; \
     \
     # pdo_sqlsrv
-    if in_array BUILD_PHP_EXTENSIONS "pdo_sqlsrv"; then \
-        cd $PECL_SRC_DIR; \
-        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-        curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
-        apt-get update; \
-        ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
-        ext-pcl pdo_sqlsrv-${EXTENSION_SQLSRV_VERSION}; \
-    fi; \
+    # if in_array BUILD_PHP_EXTENSIONS "pdo_sqlsrv"; then \
+    #     cd $PECL_SRC_DIR; \
+    #     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
+    #     curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
+    #     apt-get update; \
+    #     ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
+    #     ext-pcl pdo_sqlsrv-${EXTENSION_SQLSRV_VERSION}; \
+    # fi; \
     \
     # gearman
     if in_array BUILD_PHP_EXTENSIONS "gearman"; then \
         cd $PECL_SRC_DIR; \
         ext-lib libgearman-dev; \
-        wget https://github.com/wcgallego/pecl-gearman/archive/gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
+        wget-retry https://github.com/wcgallego/pecl-gearman/archive/gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
         tar -zxvf gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
         mv pecl-gearman-gearman-${EXTENSION_GEARMAN_VERSION} gearman-${EXTENSION_GEARMAN_VERSION}; \
         ext-pcl gearman-${EXTENSION_GEARMAN_VERSION}; \
@@ -721,34 +711,35 @@ RUN set -xe; \
     \
     # amqp
     if in_array BUILD_PHP_EXTENSIONS "amqp"; then \
-        cd $PECL_SRC_DIR; \
-        wget http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
-        dpkg -i librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
-        wget http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
-        dpkg -i librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        # cd $PECL_SRC_DIR; \
+        # wget-retry http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        # dpkg -i librabbitmq4_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        # wget-retry http://${REPOGITORY_URL}/ubuntu/pool/universe/libr/librabbitmq/librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        # dpkg -i librabbitmq-dev_${LIBRARY_RABBITMQ_VERSION}-1_amd64.deb; \
+        ext-lib librabbitmq4 librabbitmq-dev; \
         ext-pcl amqp-${EXTENSION_AMQP_VERSION}; \
     fi; \
     \
     # v8js
-    if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
-        add-apt-repository ppa:pinepain/libv8 -y; \
-        apt-get update; \
-        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
-        ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8-${LIBRARY_V8_VERSION}; \
-    fi; \
+    # if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
+    #     add-apt-repository ppa:pinepain/libv8 -y; \
+    #     apt-get update; \
+    #     ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+    #     ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8-${LIBRARY_V8_VERSION}; \
+    # fi; \
     \
     # v8
-    if in_array BUILD_PHP_EXTENSIONS "v8"; then \
-        add-apt-repository ppa:pinepain/libv8 -y; \
-        apt-get update; \
-        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
-        ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8-${LIBRARY_V8_VERSION}; \
-    fi; \
+    # if in_array BUILD_PHP_EXTENSIONS "v8"; then \
+    #     add-apt-repository ppa:pinepain/libv8 -y; \
+    #     apt-get update; \
+    #     ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+    #     ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8-${LIBRARY_V8_VERSION}; \
+    # fi; \
     \
     # screwim
     if in_array BUILD_PHP_EXTENSIONS "screwim"; then \
         cd $PECL_SRC_DIR; \
-        wget https://github.com/OOPS-ORG-PHP/mod_screwim/archive/v${EXTENSION_SCREWIM_VERSION}.tar.gz; \
+        wget-retry https://github.com/OOPS-ORG-PHP/mod_screwim/archive/v${EXTENSION_SCREWIM_VERSION}.tar.gz; \
         tar -zxvf v${EXTENSION_SCREWIM_VERSION}.tar.gz; \
         mv mod_screwim-${EXTENSION_SCREWIM_VERSION} screwim-${EXTENSION_SCREWIM_VERSION}; \
         ext-pcl screwim-${EXTENSION_SCREWIM_VERSION}; \
@@ -770,14 +761,14 @@ RUN set -xe; \
     \
     # Install filebeat
     cd "${SRC_DIR}"; \
-    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
+    wget-retry -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
     echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" > /etc/apt/sources.list.d/elastic-6.x.list; \
     apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y  -o Dpkg::Options::="--force-confold" filebeat; \
+    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" filebeat; \
     \
     # Install dockerize
     cd $SRC_DIR; \
-    wget https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
+    wget-retry https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
     tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
     rm -rf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
     \
@@ -786,12 +777,12 @@ RUN set -xe; \
     mkdir -p /var/log/supervisor; \
     \
     # Install composer
-    wget http://getcomposer.org/composer.phar; \
+    wget-retry http://getcomposer.org/composer.phar; \
     chmod +x composer.phar; \
     mv composer.phar /usr/local/bin/composer; \
     \
     # Install phpunit
-    wget https://phar.phpunit.de/phpunit.phar; \
+    wget-retry https://phar.phpunit.de/phpunit.phar; \
     chmod +x phpunit.phar; \
     mv phpunit.phar /usr/local/bin/phpunit; \
     \
