@@ -131,7 +131,7 @@ define FULL_EXTENSIONS
     enchant\
     pspell\
     recode\
-    cauchbase\
+    couchbase\
     cassandra\
     sqlite3\
     pdo_pgsql\

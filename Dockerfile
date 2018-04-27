@@ -632,9 +632,10 @@ RUN set -xe; \
     # fi; \
     #\
     # couchbase
-    if in_array BUILD_PHP_EXTENSIONS "couchbase"; then \
-        ext-pcl couchbase-${EXTENSION_COUCHBASE_VERSION}; \
-    fi; \
+    # if in_array BUILD_PHP_EXTENSIONS "couchbase"; then \
+    #     ext-lib libcouchbase; \
+    #     ext-pcl couchbase-${EXTENSION_COUCHBASE_VERSION}; \
+    # fi; \
     \
     # imagick
     if in_array BUILD_PHP_EXTENSIONS "imagick"; then \
