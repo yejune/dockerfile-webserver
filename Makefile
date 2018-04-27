@@ -137,7 +137,7 @@ test:
 	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
 	@#docker rm -f test-webserver > /dev/null 2>&1 || true
 	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(TAG)
-	wget --spider --retry-connrefused --no-check-certificate -T 5 http://localhost:8111
+	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111 | grep "200 OK"
 	docker kill test-webserver
 
