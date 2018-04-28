@@ -11,7 +11,6 @@ ARG REPOGITORY_URL="archive.ubuntu.com"
 
 ARG BUILD_EXTENSIONS
 
-ARG LIBRARY_V8_VERSION=6.6
 ARG EXTENSION_YAML_VERSION=2.0.2
 ARG EXTENSION_IGBINARY_VERSION=2.0.5
 ARG EXTENSION_MSGPACK_VERSION=2.0.2
@@ -721,20 +720,22 @@ RUN set -xe; \
     fi; \
     \
     # v8js
-    # if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
-    #     add-apt-repository ppa:pinepain/libv8 -y; \
-    #     apt-get update; \
-    #     ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
-    #     ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8-${LIBRARY_V8_VERSION}; \
-    # fi; \
+    if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
+        cd $PECL_SRC_DIR; \
+        rm -rf libv8; \
+        git clone https://github.com/yejune/libv8 -b bionic; \
+        cp -r libv8/opt/libv8 /opt/libv8/; \
+        ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8; \
+    fi; \
     \
     # v8
-    # if in_array BUILD_PHP_EXTENSIONS "v8"; then \
-    #     add-apt-repository ppa:pinepain/libv8 -y; \
-    #     apt-get update; \
-    #     ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
-    #     ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8-${LIBRARY_V8_VERSION}; \
-    # fi; \
+    if in_array BUILD_PHP_EXTENSIONS "v8"; then \
+        cd $PECL_SRC_DIR; \
+        rm -rf libv8; \
+        git clone https://github.com/yejune/libv8 -b bionic; \
+        cp -r libv8/opt/libv8 /opt/libv8/; \
+        ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8; \
+    fi; \
     \
     # screwim
     if in_array BUILD_PHP_EXTENSIONS "screwim"; then \
