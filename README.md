@@ -83,7 +83,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   amqp 1.9.3
     -   v8js 2.1.0
     -   v8 0.2.2
-    -   sodium 2.0.10
+    -   sodium 2.0.11
     -   ev 1.0.4
     -   uv 0.2.2
     -   ssh2 1.1.2
