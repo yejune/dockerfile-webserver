@@ -34,6 +34,7 @@ ARG EXTENSION_V8JS_VERSION=2.1.0
 ARG EXTENSION_V8_VERSION=0.2.2
 ARG EXTENSION_SCREWIM_VERSION=1.0.1
 ARG EXTENSION_SWOOLE_VERSION=2.1.3
+ARG EXTENSION_HTTP_VERSION=3.1.0
 ARG EXTENSION_XDEBUG_VERSION=2.6.0
 ARG DOCKERIZE_VERSION=0.6.1
 
@@ -110,6 +111,7 @@ ENV MINI_EXTENSIONS="\
         \
         phalcon\
         swoole\
+        http\
 "
 
 ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
@@ -750,6 +752,9 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "swoole"; then \
         # ext-pcl swoole-1.10.1; \
         ext-pcl swoole-${EXTENSION_SWOOLE_VERSION}; \
+    fi; \
+    if in_array BUILD_PHP_EXTENSIONS "http"; then \
+        ext-pcl http-${EXTENSION_HTTP_VERSION}; \
     fi; \
     # xdebug
     if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \
