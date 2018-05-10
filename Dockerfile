@@ -702,7 +702,7 @@ RUN set -xe; \
     # gearman
     if in_array BUILD_PHP_EXTENSIONS "gearman"; then \
         cd $PECL_SRC_DIR; \
-        ext-lib libgearman-dev; \
+        ext-lib libevent-dev libgearman-dev; \
         wget-retry https://github.com/wcgallego/pecl-gearman/archive/gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
         tar -zxvf gearman-${EXTENSION_GEARMAN_VERSION}.tar.gz; \
         mv pecl-gearman-gearman-${EXTENSION_GEARMAN_VERSION} gearman-${EXTENSION_GEARMAN_VERSION}; \
@@ -753,8 +753,15 @@ RUN set -xe; \
         # ext-pcl swoole-1.10.1; \
         ext-pcl swoole-${EXTENSION_SWOOLE_VERSION}; \
     fi; \
+    # http
     if in_array BUILD_PHP_EXTENSIONS "http"; then \
-        ext-pcl http-${EXTENSION_HTTP_VERSION}; \
+        ext-lib libidn2-dev libevent-dev libicu-dev; \
+        pecl install raphf; \
+        echo "extension=raphf.so" > /etc/php/conf.d/raphf.ini; \
+        pecl install propro; \
+        echo "extension=propro.so" > /etc/php/conf.d/propro.ini; \
+        printf "yes\n" | pecl install pecl_http-${EXTENSION_HTTP_VERSION}; \
+        echo "extension=http.so" > /etc/php/conf.d/http.ini; \
     fi; \
     # xdebug
     if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \
