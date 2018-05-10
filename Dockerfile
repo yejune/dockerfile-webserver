@@ -757,11 +757,11 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "http"; then \
         ext-lib libidn2-dev libevent-dev libicu-dev; \
         pecl install raphf; \
-        echo "extension=raphf.so" > /etc/php/conf.d/raphf.ini; \
+        echo "extension=raphf.so" > ${PHP_CONF_DIR}/raphf.ini; \
         pecl install propro; \
-        echo "extension=propro.so" > /etc/php/conf.d/propro.ini; \
+        echo "extension=propro.so" > ${PHP_CONF_DIR}/propro.ini; \
         printf "yes\n" | pecl install pecl_http-${EXTENSION_HTTP_VERSION}; \
-        echo "extension=http.so" > /etc/php/conf.d/http.ini; \
+        echo "extension=http.so" > ${PHP_CONF_DIR}/http.ini; \
     fi; \
     # xdebug
     if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \
