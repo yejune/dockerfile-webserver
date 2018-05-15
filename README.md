@@ -89,7 +89,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   ssh2 1.1.2
     -   gearman 2.0.3
     -   imagick 3.4.3
-    -   igbinary 2.0.5
+    -   igbinary 2.0.6
     -   msgpack 2.0.2
     -   swoole 2.1.3
     -   http 3.1.0
