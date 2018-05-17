@@ -2,6 +2,13 @@
 
 .DEFAULT_GOAL := help
 .PHONY: *
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+
+ifeq (BRANCH,'master')
+	PREFIX=
+else
+	PREFIX=$(BRANCH)-
+endif
 
 include env.makefile
 
@@ -11,7 +18,7 @@ help:
 
 build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
-		--tag yejune/webserver:$(TAG) \
+		--tag yejune/webserver:$(PREFIX)$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg NGINX_VERSION="$(NGINX_VERSION)" \
 		--build-arg NJS_VERSION="$(NJS_VERSION)" \
@@ -94,29 +101,29 @@ build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 		TAG="$(tag)" \
 		DOCKERFILE="Dockerfile"
 
-	@docker push yejune/webserver:$(tag)
+	@docker push yejune/webserver:$(PREFIX)$(tag)
 
 build-test-file: ## Dockerfile.test 로 빌드. Usage: make build-test-file tag="test11"
 	docker build \
-		--tag yejune/webserver:$(tag) \
+		--tag yejune/webserver:$(PREFIX)$(tag) \
 		--file Dockerfile.test \
 	.
 
-	@docker push yejune/webserver:$(tag)
+	@docker push yejune/webserver:$(PREFIX)$(tag)
 
 build-all: ## Build all images
 	@make build-71
 	@make build-72
 
 push-71: ## Push built PHP 7.1 images to Docker Hub
-	@docker push yejune/webserver:$(PHP71_VERSION)
-	@docker push yejune/webserver:$(PHP71_VERSION)-mini
+	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)
+	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)-mini
 
 push-72: ## Push built PHP 7.2 images to Docker Hub
-	@docker push yejune/webserver:$(PHP72_VERSION)
-	@docker push yejune/webserver:$(PHP72_VERSION)-mini
-	# @docker tag yejune/webserver:$(PHP72_VERSION) yejune/webserver:latest
-	# @docker push yejune/webserver:latest
+	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)
+	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-mini
+	# @docker tag yejune/webserver:$(PREFIX)$(PHP72_VERSION) yejune/webserver:$(PREFIX)latest
+	# @docker push yejune/webserver:$(PREFIX)latest
 
 push-all: ## Push all built images to Docker Hub
 	@make push-71
@@ -137,7 +144,7 @@ build-and-push: ## Build all images and push them to Docker Hub
 test:
 	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
 	@#docker rm -f test-webserver > /dev/null 2>&1 || true
-	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(TAG)
+	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(PREFIX)$(TAG)
 	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111 | grep "200 OK"
 	docker kill test-webserver
