@@ -669,6 +669,23 @@ RUN set -xe; \
         PHP_CFLAGS="${PREV_PHP_CFLAGS}"; \
     fi; \
     \
+    # custom phalcon
+    if in_array BUILD_PHP_EXTENSIONS "phalcon"; then \
+        cd $PECL_SRC_DIR; \
+        git clone https://github.com/phalcon/php-zephir-parser; \
+        git clone https://github.com/phalcon/zephir; \
+        git clone https://github.com/yejune/cphalcon -b issue13379; \
+        cd php-zephir-parser; \
+        bash install; \
+        echo "extension=zephir_parser.so" > ${PHP_CONF_DIR}/zephir_parser.ini; \
+        cd $PECL_SRC_DIR; \
+        cd cphalcon; \
+        ../zephir/bin/zephir build --backend=ZendEngine3; \
+        cd build; \
+        php gen-build.php; \
+        bash install; \
+    fi; \
+    \
     # sodium
     if in_array BUILD_PHP_EXTENSIONS "sodium"; then \
         # cd $PECL_SRC_DIR; \
