@@ -35,6 +35,7 @@ ARG EXTENSION_V8_VERSION=0.2.2
 ARG EXTENSION_SCREWIM_VERSION=1.0.1
 ARG EXTENSION_SWOOLE_VERSION=2.2.0
 ARG EXTENSION_HTTP_VERSION=3.1.0
+ARG EXTENSION_XLSWRITER_VERSION=1.0.1
 ARG EXTENSION_XDEBUG_VERSION=2.6.0
 ARG DOCKERIZE_VERSION=0.6.1
 
@@ -112,6 +113,7 @@ ENV MINI_EXTENSIONS="\
         phalcon\
         swoole\
         http\
+        xlswriter\
 "
 
 ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
@@ -780,6 +782,15 @@ RUN set -xe; \
         printf "yes\n" | pecl install pecl_http-${EXTENSION_HTTP_VERSION}; \
         echo "extension=http.so" > ${PHP_CONF_DIR}/http.ini; \
     fi; \
+    # xlswriter
+    if in_array BUILD_PHP_EXTENSIONS "xlswriter"; then \
+        ext-lib zlib1g-dev; \
+        git clone https://github.com/jmcnamara/libxlsxwriter.git; \
+        cd libxlsxwriter; \
+        make; \
+        make install; \
+        ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION}; \
+    fi;\
     # xdebug
     if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \
         pecl install xdebug-${EXTENSION_XDEBUG_VERSION}; \
