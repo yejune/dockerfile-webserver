@@ -20,9 +20,6 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
 		--tag yejune/webserver:$(PREFIX)$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg NGINX_VERSION="$(NGINX_VERSION)" \
-		--build-arg NJS_VERSION="$(NJS_VERSION)" \
-		--build-arg NGINX_GPGKEY="$(NGINX_GPGKEY)" \
 		--build-arg PHP_VERSION="$(PHP_VERSION)" \
 		--build-arg PHP_GPGKEYS="$(PHP_GPGKEYS)" \
 		--build-arg PHP_SHA256="$(PHP_SHA256)" \
