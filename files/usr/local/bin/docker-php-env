@@ -132,7 +132,7 @@ class PhpEnvironment
 
         foreach ($variables as $key => $value) {
             if ($key && $value) {
-                echo 'env['.$key.']="'.addcslashes($value, '"').'"'.PHP_EOL;
+                echo 'env['.$key.']="'.addcslashes(str_replace(PHP_EOL, '\n', trim($value)), '"').'"'.PHP_EOL;
             }
         }
     }
@@ -146,7 +146,7 @@ class PhpEnvironment
 
         foreach ($variables as $key => $value) {
             if ($key && $value) {
-                echo $key.'="'.addcslashes($value, '"').'"'.PHP_EOL;
+                echo $key.'="'.addcslashes(str_replace(PHP_EOL, '\n', trim($value)), '"').'"'.PHP_EOL;
             }
         }
     }
