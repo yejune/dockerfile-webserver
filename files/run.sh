@@ -175,8 +175,9 @@ else
 
     if [ ! -z "$PHP_LOAD_EXTENSIONS" ]; then
         mv "${PHP_CONF_DIR}/" "${PHP_CONF_DIR}.stop/"
+        mkdir "${PHP_CONF_DIR}/"
         a=( $PHP_LOAD_EXTENSIONS )
-        for ((j=1; j<"${#a[@]}"; j++)); do
+        for ((j=0; j<"${#a[@]}"; j++)); do
             ext="${a[j]}"
             if [ -f "${PHP_CONF_DIR}.stop/1_$ext.ini" ]; then
                 mv "${PHP_CONF_DIR}.stop/1_$ext.ini" "${PHP_CONF_DIR}/1_$ext.ini"
