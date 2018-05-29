@@ -71,7 +71,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
 -   PHP 7.2.5
-    -   phalcon 3.3.2
+    -   phalcon 3.4.0
     -   redis 4.0.2
     -   yaml 2.0.2
     -   memcached 3.0.4
