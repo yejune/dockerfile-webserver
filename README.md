@@ -65,7 +65,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   Modify REMOTE_ADDR, REQUEST_SCHEME, SERVER_PROTOCOL, SERVER_PORT variable to the value before forward
 
 ## version
--   UBUNTU 16.04
+-   UBUNTU 18.04
 -   DOCKERIZE 0.6.1
 -   NGINX 1.14.0
 -   LIBV8 6.6
