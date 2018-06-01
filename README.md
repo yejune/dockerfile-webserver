@@ -97,7 +97,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   pdo_sqlite
     -   pdo_pgsql
     -   pdo_sqlsrv 5.2.0
-    -   xlswriter 1.0.2
+    -   xlswriter 1.2.0
 
 ## Build Options
 -   REPOGITORY_URL
