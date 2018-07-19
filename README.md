@@ -91,13 +91,13 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   imagick 3.4.3
     -   igbinary 2.0.7
     -   msgpack 2.0.2
-    -   swoole 4.0.1
+    -   swoole 4.0.2
     -   http 3.2.0
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
     -   pdo_sqlsrv 5.2.0
-    -   xlswriter 1.2.1
+    -   xlswriter 1.2.2
 
 ## Build Options
 -   REPOGITORY_URL
