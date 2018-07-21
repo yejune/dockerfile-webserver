@@ -33,7 +33,7 @@ ARG EXTENSION_AMQP_VERSION=1.9.3
 ARG EXTENSION_V8JS_VERSION=2.1.0
 ARG EXTENSION_V8_VERSION=0.2.2
 ARG EXTENSION_SCREWIM_VERSION=1.0.1
-ARG EXTENSION_SWOOLE_VERSION=4.0.2
+ARG EXTENSION_SWOOLE_VERSION=4.0.3
 ARG EXTENSION_HTTP_VERSION=3.3.0
 ARG EXTENSION_XLSWRITER_VERSION=1.2.2
 ARG EXTENSION_XDEBUG_VERSION=2.6.0
@@ -152,7 +152,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get upgrade -y; \
     \
-    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils"; \
+    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip"; \
     \
     DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
     \
