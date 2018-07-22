@@ -285,6 +285,7 @@ RUN set -xe; \
         --enable-fpm \
         --enable-opcache \
         \
+        --enable-hash \
         --enable-ftp \
         --enable-mbstring \
         --enable-mysqlnd \
