@@ -24,8 +24,6 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg PHP_GPGKEYS="$(PHP_GPGKEYS)" \
 		--build-arg PHP_SHA256="$(PHP_SHA256)" \
 		--build-arg BUILD_EXTENSIONS="$(EXTENSIONS)" \
-		--build-arg LIBRARY_V8_VERSION=$(LIBRARY_V8_VERSION) \
-		--build-arg LIBRARY_RABBITMQ_VERSION=$(LIBRARY_RABBITMQ_VERSION) \
 		--build-arg EXTENSION_YAML_VERSION=$(EXTENSION_YAML_VERSION) \
 		--build-arg EXTENSION_IGBINARY_VERSION=$(EXTENSION_IGBINARY_VERSION) \
 		--build-arg EXTENSION_MSGPACK_VERSION=$(EXTENSION_MSGPACK_VERSION) \
@@ -143,9 +141,9 @@ test:
 	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
 	@#docker rm -f test-webserver > /dev/null 2>&1 || true
 	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(PREFIX)$(TAG)
-	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111
-	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111 | grep "200 OK"
-	docker kill test-webserver
+	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111/ip.php
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111/ip.php | grep "200 OK"
+	#docker kill test-webserver
 
 test-all: ## 테스트
 	@make test-71

@@ -280,12 +280,13 @@ RUN set -xe; \
         \
         # --disable-cgi \
         # --disable-short-tags \
+        --enable-hash \
+        --with-mhash \
         \
         --enable-ipv6 \
         --enable-fpm \
         --enable-opcache \
         \
-        --enable-hash \
         --enable-ftp \
         --enable-mbstring \
         --enable-mysqlnd \
