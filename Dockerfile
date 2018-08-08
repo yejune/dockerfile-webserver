@@ -38,6 +38,7 @@ ARG EXTENSION_HTTP_VERSION=3.3.0
 ARG EXTENSION_XLSWRITER_VERSION=1.2.2
 ARG EXTENSION_XDEBUG_VERSION=2.6.1
 ARG EXTENSION_JSONNET_VERSION=1.3.1
+ARG EXTENSION_EIO_VERSION=2.0.4
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -111,6 +112,7 @@ ENV MINI_EXTENSIONS="\
         \
         ev\
         uv\
+        eio\
         \
         phalcon\
         swoole\
@@ -659,6 +661,11 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "uv"; then \
         ext-lib libuv1-dev; \
         ext-pcl uv-${EXTENSION_UV_VERSION}; \
+    fi; \
+    # eio \
+    if in_array BUILD_PHP_EXTENSIONS "eio"; then \
+        ext-lib libuv1-dev; \
+        ext-pcl eio-${EXTENSION_EIO_VERSION}; \
     fi; \
     \
     # ssh2

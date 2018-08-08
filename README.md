@@ -86,6 +86,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   sodium 2.0.11
     -   ev 1.0.4
     -   uv 0.2.2
+    -   eio 2.0.4
     -   ssh2 1.1.2
     -   gearman 2.0.3
     -   imagick 3.4.3
