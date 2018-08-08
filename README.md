@@ -75,7 +75,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   redis 4.1.1
     -   yaml 2.0.2
     -   memcached 3.0.4
-    -   mongodb 1.5.1
+    -   mongodb 1.5.2
     -   ~~couchbase 2.4.6~~
     -   ~~cassandra 1.3.2~~
     -   apcu 5.1.11
