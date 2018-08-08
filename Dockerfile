@@ -37,6 +37,7 @@ ARG EXTENSION_SWOOLE_VERSION=4.0.3
 ARG EXTENSION_HTTP_VERSION=3.3.0
 ARG EXTENSION_XLSWRITER_VERSION=1.2.2
 ARG EXTENSION_XDEBUG_VERSION=2.6.1
+ARG EXTENSION_JSONNET_VERSION=1.3.1
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -77,6 +78,7 @@ ENV MINI_EXTENSIONS="\
         \
         uuid\
         json\
+        jsonnet\
         igbinary\
         msgpack\
         yaml\
@@ -429,6 +431,10 @@ RUN set -xe; \
     # json
     if in_array BUILD_PHP_EXTENSIONS "json"; then \
         ext-src json; \
+    fi; \
+    # jsonnet
+    if in_array BUILD_PHP_EXTENSIONS "jsonnet"; then \
+        ext-pcl jsonnet-${EXTENSION_JSONNET_VERSION}; \
     fi; \
     \
     # pcntl
