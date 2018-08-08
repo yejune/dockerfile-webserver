@@ -39,6 +39,8 @@ ARG EXTENSION_XLSWRITER_VERSION=1.2.2
 ARG EXTENSION_XDEBUG_VERSION=2.6.1
 ARG EXTENSION_JSONNET_VERSION=1.3.1
 ARG EXTENSION_EIO_VERSION=2.0.4
+ARG EXTENSION_EVENT_VERSION=2.4.0
+ARG EXTENSION_MEMPROF_VERSION=2.0.0
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -113,6 +115,7 @@ ENV MINI_EXTENSIONS="\
         ev\
         uv\
         eio\
+        event\
         \
         phalcon\
         swoole\
@@ -147,7 +150,7 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         sysvshm\
         sysvmsg\
         \
-        memprop\
+        memprof\
 "
 
 COPY files/ /
@@ -666,8 +669,11 @@ RUN set -xe; \
     fi; \
     # eio \
     if in_array BUILD_PHP_EXTENSIONS "eio"; then \
-        ext-lib libuv1-dev; \
         ext-pcl eio-${EXTENSION_EIO_VERSION} --enable-eio-debug=no; \
+    fi; \
+    # event \
+    if in_array BUILD_PHP_EXTENSIONS "event"; then \
+        ext-pcl event-${EXTENSION_EIO_VERSION} --enable-event-debug=no --enable-event-sockets=yes --with-event-libevent-dir=/usr --with-event-pthreads=no --with-event-extra --with-event-openssl --with-event-ns= --with-openssl-dir=no; \
     fi; \
     # memprof \
     if in_array BUILD_PHP_EXTENSIONS "memprof"; then \
