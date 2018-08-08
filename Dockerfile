@@ -667,7 +667,7 @@ RUN set -xe; \
     # eio \
     if in_array BUILD_PHP_EXTENSIONS "eio"; then \
         ext-lib libuv1-dev; \
-        ext-pcl eio-${EXTENSION_EIO_VERSION}; \
+        ext-pcl eio-${EXTENSION_EIO_VERSION} --enable-eio-debug=no; \
     fi; \
     # memprof \
     if in_array BUILD_PHP_EXTENSIONS "memprof"; then \
