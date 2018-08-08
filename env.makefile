@@ -162,5 +162,7 @@ define FULL_EXTENSIONS
     \
     sysvsem\
     sysvshm\
-    sysvmsg
+    sysvmsg\
+    \
+    memprop
 endef

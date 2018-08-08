@@ -146,6 +146,8 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         sysvsem\
         sysvshm\
         sysvmsg\
+        \
+        memprop\
 "
 
 COPY files/ /
@@ -666,6 +668,11 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "eio"; then \
         ext-lib libuv1-dev; \
         ext-pcl eio-${EXTENSION_EIO_VERSION}; \
+    fi; \
+    # memprof \
+    if in_array BUILD_PHP_EXTENSIONS "memprof"; then \
+        ext-lib libjudy-dev; \
+        ext-pcl eio-${EXTENSION_MEMPROF_VERSION}; \
     fi; \
     \
     # ssh2

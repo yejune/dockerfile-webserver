@@ -101,6 +101,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   xlswriter 1.2.2
     -   xdebug 2.6.1
     -   jsonnet 1.3.1
+    -   memprop 2.0.0
 
 ## Build Options
 -   REPOGITORY_URL
