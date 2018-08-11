@@ -182,6 +182,12 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   sysvsem
         -   sysvshm
         -   sysvmsg
+        -   event
+        -   eio
+        -   memprof
+        -   jsonnet
+        -   http
+        -   xlswriter
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
 -   EXTENSION_YAML_VERSION
@@ -205,7 +211,13 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_V8_VERSION
 -   EXTENSION_SCREWIM_VERSION
 -   EXTENSION_SWOOLE_VERSION
+-   EXTENSION_HTTP_VERSION
+-   EXTENSION_XLSWRITER_VERSION
 -   EXTENSION_XDEBUG_VERSION
+-   EXTENSION_JSONNET_VERSION
+-   EXTENSION_EIO_VERSION
+-   EXTENSION_EVENT_VERSION
+-   EXTENSION_MEMPROF_VERSION
 -   DOCKERIZE_VERSION
 
 ## Examples
