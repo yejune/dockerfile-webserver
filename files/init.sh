@@ -30,7 +30,7 @@ pecl-download()
 
     cd ${PECL_SRC_DIR}
 
-    wget -q -c http://pecl.php.net/get/${lib_fullname}.tgz
+    wget-retry -c http://pecl.php.net/get/${lib_fullname}.tgz
 
     find ${lib_fullname}.tgz
 
