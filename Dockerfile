@@ -39,7 +39,7 @@ ARG EXTENSION_XLSWRITER_VERSION=1.2.2
 ARG EXTENSION_XDEBUG_VERSION=2.6.1
 ARG EXTENSION_JSONNET_VERSION=1.3.1
 ARG EXTENSION_EIO_VERSION=2.0.4
-ARG EXTENSION_EVENT_VERSION=2.4.0
+ARG EXTENSION_EVENT_VERSION=2.4.1
 ARG EXTENSION_MEMPROF_VERSION=2.0.0
 ARG DOCKERIZE_VERSION=0.6.1
 
@@ -441,6 +441,10 @@ RUN set -xe; \
     fi; \
     # jsonnet
     if in_array BUILD_PHP_EXTENSIONS "jsonnet"; then \
+        cd $PECL_SRC_DIR; \
+        wget-retry http://pecl.php.net/get/Jsonnet-${EXTENSION_JSONNET_VERSION}.tgz; \
+        tar -zxvf Jsonnet-${EXTENSION_JSONNET_VERSION}.tgz; \
+        mv Jsonnet-${EXTENSION_JSONNET_VERSION} jsonnet-${EXTENSION_JSONNET_VERSION}; \
         ext-pcl jsonnet-${EXTENSION_JSONNET_VERSION}; \
     fi; \
     \
@@ -678,7 +682,7 @@ RUN set -xe; \
     # memprof \
     if in_array BUILD_PHP_EXTENSIONS "memprof"; then \
         ext-lib libjudy-dev; \
-        ext-pcl eio-${EXTENSION_MEMPROF_VERSION}; \
+        ext-pcl memprof-${EXTENSION_MEMPROF_VERSION}; \
     fi; \
     \
     # ssh2
