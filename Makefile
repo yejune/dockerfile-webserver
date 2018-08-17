@@ -56,7 +56,7 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--file $(DOCKERFILE) \
 	.
 
-	@make test TAG="$(TAG)"
+	#@make test TAG="$(TAG)"
 
 build-71: ## Build PHP 7.1 images
 	@make build \
