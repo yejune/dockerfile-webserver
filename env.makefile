@@ -46,6 +46,10 @@ PHP72_VERSION:=7.2.9
 PHP72_SHA256:=3585c1222e00494efee4f5a65a8e03a1e6eca3dfb834814236ee7f02c5248ae0
 PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
 
+PHP73_VERSION:=7.3.0beta2
+PHP73_SHA256:=28f040680ff517b6c3da403fd1048054de0e867246c47da36342f6a488661c70
+PHP73_GPGKEYS:=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
+
 LIBRARY_V8_VERSION:=6.6
 LIBRARY_RABBITMQ_VERSION:=0.8.0
 EXTENSION_YAML_VERSION:=2.0.2
@@ -80,8 +84,7 @@ EXTENSION_MEMPROF_VERSION:=2.0.0
 EXTENSION_EVENT_VERSION:=2.4.1
 DOCKERIZE_VERSION:=0.6.1
 
-define MINI_EXTENSIONS
-    phalcon\
+define DEFAULT_EXTENSIONS
     bcmath\
     calendar\
     ctype\
@@ -101,12 +104,7 @@ define MINI_EXTENSIONS
     apcu\
     opcache\
     \
-    uuid\
     json\
-    jsonnet\
-    igbinary\
-    msgpack\
-    yaml\
     \
     dom\
     xml\
@@ -118,25 +116,35 @@ define MINI_EXTENSIONS
     xmlrpc\
     wddx\
     \
-    memcached\
-    mongodb\
-    redis\
-    amqp\
-    gearman\
-    \
     zip\
     bz2\
     phar\
     \
     tidy\
     tokenizer\
-    screwim\
     \
     sodium\
     \
+    phalcon
+endef
+
+define MINI_EXTENSIONS
+    ${DEFAULT_EXTENSIONS}\
+    uuid\
+    jsonnet\
+    igbinary\
+    msgpack\
+    yaml\
+    memcached\
+    mongodb\
+    redis\
+    amqp\
+    gearman\
+    screwim\
     ev\
     uv\
     eio\
+    event\
     \
     swoole\
     http\

@@ -59,7 +59,7 @@ ENV PHP_INI_DIR=/etc/php \
     PECL_SRC_DIR=/usr/src/pecl \
     SRC_DIR=/usr/src
 
-ENV MINI_EXTENSIONS="\
+ENV DEFAULT_EXTENSIONS="\
         bcmath\
         calendar\
         ctype\
@@ -79,12 +79,7 @@ ENV MINI_EXTENSIONS="\
         apcu\
         opcache\
         \
-        uuid\
         json\
-        jsonnet\
-        igbinary\
-        msgpack\
-        yaml\
         \
         dom\
         xml\
@@ -96,28 +91,35 @@ ENV MINI_EXTENSIONS="\
         xmlrpc\
         wddx\
         \
-        memcached\
-        mongodb\
-        redis\
-        amqp\
-        gearman\
-        \
         zip\
         bz2\
         phar\
         \
         tidy\
         tokenizer\
-        screwim\
         \
         sodium\
         \
+        phalcon\
+"
+
+ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
+        uuid\
+        jsonnet\
+        igbinary\
+        msgpack\
+        yaml\
+        memcached\
+        mongodb\
+        redis\
+        amqp\
+        gearman\
+        screwim\
         ev\
         uv\
         eio\
         event\
         \
-        phalcon\
         swoole\
         http\
         xlswriter\
@@ -167,6 +169,7 @@ RUN set -xe; \
     \
     LIB_DEPS=" \
         libc-dev \
+        libpcre2-dev \
         libpcre3-dev \
         \
         libcurl4-openssl-dev \
@@ -224,8 +227,13 @@ RUN set -xe; \
     # Install php
     \
     \
-    PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
-    PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
+    if [[ $PHP_VERSION == *"beta"* ]]; then \
+        PHP_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz.asc"; \
+    else \
+        PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
+        PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
+    fi; \
     \
     wget-retry -O php.tar.xz "${PHP_URL}"; \
     \
@@ -283,6 +291,9 @@ RUN set -xe; \
         \
         --with-config-file-path="${PHP_INI_DIR}" \
         --with-config-file-scan-dir="${PHP_CONF_DIR}" \
+        \
+        # make sure invalid --configure-flags are fatal errors intead of just warnings
+		--enable-option-checking=fatal \
         \
         --with-fpm-user=www-data \
         --with-fpm-group=www-data \
@@ -585,6 +596,7 @@ RUN set -xe; \
     \
     # zip
     if in_array BUILD_PHP_EXTENSIONS "zip"; then \
+        ext-lib libzip-dev; \
         ext-src zip; \
     fi; \
     \
