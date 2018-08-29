@@ -324,7 +324,7 @@ RUN set -xe; \
         --enable-phar \
         \
         # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
-		--with-password-argon2 \
+        $([[ $PHP_VERSION != "7.1."* ]] && echo '--with-password-argon2') \
         # bundled pcre does not support JIT on s390x
         # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
         $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
@@ -689,7 +689,8 @@ RUN set -xe; \
     fi; \
     # event \
     if in_array BUILD_PHP_EXTENSIONS "event"; then \
-        ext-pcl event-${EXTENSION_EIO_VERSION} --enable-event-debug=no --enable-event-sockets=yes --with-event-libevent-dir=/usr --with-event-pthreads=no --with-event-extra --with-event-openssl --with-event-ns= --with-openssl-dir=no; \
+        ext-lib libevent-dev; \
+        ext-pcl event-${EXTENSION_EVENT_VERSION} --enable-event-debug=no --enable-event-sockets=yes --with-event-libevent-dir=/usr --with-event-pthreads=no --with-event-extra --with-event-openssl --with-event-ns= --with-openssl-dir=no; \
     fi; \
     # memprof \
     if in_array BUILD_PHP_EXTENSIONS "memprof"; then \

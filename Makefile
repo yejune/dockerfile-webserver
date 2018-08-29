@@ -10,6 +10,31 @@ else
 	PREFIX=$(BRANCH)-
 endif
 
+OSFLAG :=
+ifeq ($(OS),Windows_NT)
+	OSFLAG += WIN
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		OSFLAG += LINUX
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		OSFLAG += OSX
+	endif
+
+	# UNAME_P := $(shell uname -p)
+	# ifeq ($(UNAME_P),x86_64)
+	# 	OSFLAG += AMD64
+	# endif
+	# 	ifneq ($(filter %86,$(UNAME_P)),)
+	# OSFLAG += IA32
+	# 	endif
+	# ifneq ($(filter arm%,$(UNAME_P)),)
+	# 	OSFLAG += ARM
+	# endif
+endif
+
+
 include env.makefile
 
 help:
@@ -56,7 +81,7 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--file $(DOCKERFILE) \
 	.
 
-	#@make test TAG="$(TAG)"
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
 
 build-71: ## Build PHP 7.1 images
 	@make build \
@@ -92,7 +117,6 @@ build-72: ## Build PHP 7.2 images
 		TAG="$(PHP72_VERSION)-mini" \
 		DOCKERFILE="Dockerfile"
 
-
 build-73: ## Build PHP 7.3 images
 	@make build \
 		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
@@ -100,14 +124,6 @@ build-73: ## Build PHP 7.3 images
 		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
 		PHP_SHA256="$(PHP73_SHA256)" \
 		TAG="$(PHP73_VERSION)" \
-		DOCKERFILE="Dockerfile"
-
-	@make build \
-		EXTENSIONS="$(MINI_EXTENSIONS)" \
-		PHP_VERSION="$(PHP73_VERSION)" \
-		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
-		PHP_SHA256="$(PHP73_SHA256)" \
-		TAG="$(PHP73_VERSION)-mini" \
 		DOCKERFILE="Dockerfile"
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
@@ -132,6 +148,7 @@ build-test-file: ## Dockerfile.test 로 빌드. Usage: make build-test-file tag=
 build-all: ## Build all images
 	@make build-71
 	@make build-72
+	@make build-73
 
 push-71: ## Push built PHP 7.1 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)
@@ -145,11 +162,11 @@ push-72: ## Push built PHP 7.2 images to Docker Hub
 
 push-73: ## Push built PHP 7.3 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)
-	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)-mini
 
 push-all: ## Push all built images to Docker Hub
 	@make push-71
 	@make push-72
+	@make push-73
 
 build-and-push-71: ## Build and push PHP 7.1 images to Docker Hub
 	@make build-71
@@ -163,21 +180,21 @@ build-and-push-73: ## Build and push PHP 7.3 images to Docker Hub
 	@make build-73
 	@make push-73
 
-build-and-push: ## Build all images and push them to Docker Hub
+build-and-push-all: ## Build all images and push them to Docker Hub
 	@make build-all
 	@make push-all
 
 test:
 	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
-	@#docker rm -f test-webserver > /dev/null 2>&1 || true
 	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(PREFIX)$(TAG)
 	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111/ip.php
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111/ip.php | grep "200 OK"
-	#docker kill test-webserver
+	docker kill test-webserver
 
 test-all: ## 테스트
 	@make test-71
 	@make test-72
+	@make test-73
 
 test-71:
 	@make test TAG="$(PHP71_VERSION)"
@@ -189,7 +206,6 @@ test-72:
 
 test-73:
 	@make test TAG="$(PHP73_VERSION)"
-	@make test TAG="$(PHP73_VERSION)-mini"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f
