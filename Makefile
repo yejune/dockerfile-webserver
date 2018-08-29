@@ -92,6 +92,24 @@ build-72: ## Build PHP 7.2 images
 		TAG="$(PHP72_VERSION)-mini" \
 		DOCKERFILE="Dockerfile"
 
+
+build-73: ## Build PHP 7.3 images
+	@make build \
+		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		PHP_VERSION="$(PHP73_VERSION)" \
+		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
+		PHP_SHA256="$(PHP73_SHA256)" \
+		TAG="$(PHP73_VERSION)" \
+		DOCKERFILE="Dockerfile"
+
+	@make build \
+		EXTENSIONS="$(MINI_EXTENSIONS)" \
+		PHP_VERSION="$(PHP73_VERSION)" \
+		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
+		PHP_SHA256="$(PHP73_SHA256)" \
+		TAG="$(PHP73_VERSION)-mini" \
+		DOCKERFILE="Dockerfile"
+
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
 		EXTENSIONS="$(FULL_EXTENSIONS)" \
@@ -125,6 +143,10 @@ push-72: ## Push built PHP 7.2 images to Docker Hub
 	# @docker tag yejune/webserver:$(PREFIX)$(PHP72_VERSION) yejune/webserver:$(PREFIX)latest
 	# @docker push yejune/webserver:$(PREFIX)latest
 
+push-73: ## Push built PHP 7.3 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)
+	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)-mini
+
 push-all: ## Push all built images to Docker Hub
 	@make push-71
 	@make push-72
@@ -136,6 +158,10 @@ build-and-push-71: ## Build and push PHP 7.1 images to Docker Hub
 build-and-push-72: ## Build and push PHP 7.2 images to Docker Hub
 	@make build-72
 	@make push-72
+
+build-and-push-73: ## Build and push PHP 7.3 images to Docker Hub
+	@make build-73
+	@make push-73
 
 build-and-push: ## Build all images and push them to Docker Hub
 	@make build-all
@@ -160,6 +186,10 @@ test-71:
 test-72:
 	@make test TAG="$(PHP72_VERSION)"
 	@make test TAG="$(PHP72_VERSION)-mini"
+
+test-73:
+	@make test TAG="$(PHP73_VERSION)"
+	@make test TAG="$(PHP73_VERSION)-mini"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f

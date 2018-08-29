@@ -99,11 +99,11 @@ ENV DEFAULT_EXTENSIONS="\
         tokenizer\
         \
         sodium\
-        \
-        phalcon\
 "
 
 ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
+        phalcon\
+        \
         uuid\
         jsonnet\
         igbinary\
