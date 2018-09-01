@@ -797,8 +797,22 @@ RUN set -xe; \
     \
     # swoole
     if in_array BUILD_PHP_EXTENSIONS "swoole"; then \
+        ext-lib libnghttp2-dev libhiredis-dev libpq-dev; \
+        # cd $PECL_SRC_DIR; \
+        # git clone https://github.com/redis/hiredis.git; \
+        # cd hiredis; \
+        # make -j; \
+        # make install; \
+        # ldconfig; \
         # ext-pcl swoole-1.10.1; \
-        ext-pcl swoole-${EXTENSION_SWOOLE_VERSION}; \
+        ext-pcl swoole-${EXTENSION_SWOOLE_VERSION} \
+            --enable-swoole-debug \
+            --enable-openssl \
+            --enable-sockets \
+            --enable-async-redis \
+            --enable-mysqlnd \
+            --enable-http2 \
+            --enable-coroutine-postgresql; \
     fi; \
     # http
     if in_array BUILD_PHP_EXTENSIONS "http"; then \
