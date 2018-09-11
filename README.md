@@ -103,6 +103,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   jsonnet 1.3.1
     -   memprop 2.0.0
     -   psr 0.5.0
+    -   seaslog 1.8.6
 
 ## Build Options
 -   REPOGITORY_URL
@@ -189,6 +190,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   jsonnet
         -   http
         -   xlswriter
+        -   seaslog
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
 -   EXTENSION_YAML_VERSION
@@ -220,6 +222,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_EVENT_VERSION
 -   EXTENSION_MEMPROF_VERSION
 -   EXTENSION_PSR_VERSION
+-   EXTENSION_SEASLOG_VERSION
 -   DOCKERIZE_VERSION
 
 ## Examples

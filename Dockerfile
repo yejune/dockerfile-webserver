@@ -42,6 +42,7 @@ ARG EXTENSION_EIO_VERSION=2.0.4
 ARG EXTENSION_EVENT_VERSION=2.4.1
 ARG EXTENSION_MEMPROF_VERSION=2.0.0
 ARG EXTENSION_PSR_VERSION=0.5.0
+ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -155,6 +156,7 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         sysvmsg\
         \
         memprof\
+        seaslog\
 "
 
 COPY files/ /
@@ -459,6 +461,14 @@ RUN set -xe; \
         tar -zxvf Jsonnet-${EXTENSION_JSONNET_VERSION}.tgz; \
         mv Jsonnet-${EXTENSION_JSONNET_VERSION} jsonnet-${EXTENSION_JSONNET_VERSION}; \
         ext-pcl jsonnet-${EXTENSION_JSONNET_VERSION}; \
+    fi; \
+    # seaslog
+    if in_array BUILD_PHP_EXTENSIONS "seaslog"; then \
+        cd $PECL_SRC_DIR; \
+        wget-retry http://pecl.php.net/get/SeasLog-${EXTENSION_SEASLOG_VERSION}.tgz; \
+        tar -zxvf SeasLog-${EXTENSION_SEASLOG_VERSION}.tgz; \
+        mv SeasLog-${EXTENSION_SEASLOG_VERSION} seaslog-${EXTENSION_SEASLOG_VERSION}; \
+        ext-pcl seaslog-${EXTENSION_SEASLOG_VERSION}; \
     fi; \
     \
     # pcntl
