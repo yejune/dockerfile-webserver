@@ -102,6 +102,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   xdebug 2.6.1
     -   jsonnet 1.3.1
     -   memprop 2.0.0
+    -   psr 0.5.0
 
 ## Build Options
 -   REPOGITORY_URL
@@ -218,6 +219,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_EIO_VERSION
 -   EXTENSION_EVENT_VERSION
 -   EXTENSION_MEMPROF_VERSION
+-   EXTENSION_PSR_VERSION
 -   DOCKERIZE_VERSION
 
 ## Examples

@@ -41,6 +41,7 @@ ARG EXTENSION_JSONNET_VERSION=1.3.1
 ARG EXTENSION_EIO_VERSION=2.0.4
 ARG EXTENSION_EVENT_VERSION=2.4.1
 ARG EXTENSION_MEMPROF_VERSION=2.0.0
+ARG EXTENSION_PSR_VERSION=0.5.0
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -123,6 +124,7 @@ ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
         swoole\
         http\
         xlswriter\
+        psr\
 "
 
 ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
@@ -696,6 +698,11 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "memprof"; then \
         ext-lib libjudy-dev; \
         ext-pcl memprof-${EXTENSION_MEMPROF_VERSION}; \
+    fi; \
+    \
+    # psr \
+    if in_array BUILD_PHP_EXTENSIONS "psr"; then \
+        ext-pcl psr-${EXTENSION_PSR_VERSION}; \
     fi; \
     \
     # ssh2
