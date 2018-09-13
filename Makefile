@@ -77,6 +77,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_EIO_VERSION=$(EXTENSION_EIO_VERSION) \
 		--build-arg EXTENSION_EVENT_VERSION=$(EXTENSION_EVENT_VERSION) \
 		--build-arg EXTENSION_MEMPROF_VERSION=$(EXTENSION_MEMPROF_VERSION) \
+		--build-arg EXTENSION_PSR_VERSION=$(EXTENSION_PSR_VERSION) \
+		--build-arg EXTENSION_SEASLOG_VERSION=$(EXTENSION_SEASLOG_VERSION) \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file $(DOCKERFILE) \
 	.
@@ -185,7 +187,7 @@ build-and-push-all: ## Build all images and push them to Docker Hub
 	@make push-all
 
 test:
-	@if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
 	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(PREFIX)$(TAG)
 	wget --spider --tries 10 --retry-connrefused --no-check-certificate -T 5 http://localhost:8111/ip.php
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111/ip.php | grep "200 OK"
