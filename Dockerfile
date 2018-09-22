@@ -43,6 +43,7 @@ ARG EXTENSION_EVENT_VERSION=2.4.1
 ARG EXTENSION_MEMPROF_VERSION=2.0.0
 ARG EXTENSION_PSR_VERSION=0.5.0
 ARG EXTENSION_SEASLOG_VERSION=1.8.6
+ARG EXTENSION_CALLEE_VERSION=0.0.0
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -126,6 +127,7 @@ ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
         http\
         xlswriter\
         psr\
+        callee\
 "
 
 ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
@@ -453,6 +455,12 @@ RUN set -xe; \
     # json
     if in_array BUILD_PHP_EXTENSIONS "json"; then \
         ext-src json; \
+    fi; \
+    # callee
+    if in_array BUILD_PHP_EXTENSIONS "callee"; then \
+        cd $PECL_SRC_DIR; \
+        git clone https://github.com/mpyw-junks/phpext-callee callee-${EXTENSION_JSONNET_VERSION}; \
+        ext-pcl callee-${EXTENSION_JSONNET_VERSION} --enable-callee; \
     fi; \
     # jsonnet
     if in_array BUILD_PHP_EXTENSIONS "jsonnet"; then \
