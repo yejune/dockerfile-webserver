@@ -45,6 +45,7 @@ ARG EXTENSION_PSR_VERSION=0.5.0
 ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG EXTENSION_CALLEE_VERSION=0.0.0
 ARG EXTENSION_VIPS_VERSION=1.0.9
+ARG EXTENSION_OAUTH_VERSION=2.0.3
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -692,6 +693,11 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "vips"; then \
         ext-lib libvips-dev; \
         ext-src vips-${EXTENSION_VIPS_VERSION}; \
+    fi; \
+    \
+    # oauth
+    if in_array BUILD_PHP_EXTENSIONS "oauth"; then \
+        ext-pcl oauth-${EXTENSION_OAUTH_VERSION}; \
     fi; \
     \
     # uuid

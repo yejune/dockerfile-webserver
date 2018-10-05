@@ -106,6 +106,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   seaslog 1.8.6
     -   callee
     -   vips 1.0.9
+    -   oauth 2.0.3
 
 ## Build Options
 -   REPOGITORY_URL
@@ -196,6 +197,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   psr
         -   callee
         -   vips
+        -   oauth
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
 -   EXTENSION_YAML_VERSION
@@ -230,6 +232,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_SEASLOG_VERSION
 -   EXTENSION_CALLEE_VERSION
 -   EXTENSION_VIPS_VERSION
+-   EXTENSION_OAUTH_VERSION
 -   DOCKERIZE_VERSION
 
 ## Examples
