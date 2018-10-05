@@ -44,6 +44,7 @@ ARG EXTENSION_MEMPROF_VERSION=2.0.0
 ARG EXTENSION_PSR_VERSION=0.5.0
 ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG EXTENSION_CALLEE_VERSION=0.0.0
+ARG EXTENSION_VIPS_VERSION=1.0.9
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -138,6 +139,7 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         fileinfo\
         gd\
         imagick\
+        vips\
         ssh2\
         \
         dba\
@@ -684,6 +686,12 @@ RUN set -xe; \
     if in_array BUILD_PHP_EXTENSIONS "imagick"; then \
         ext-lib libmagickwand-dev imagemagick; \
         ext-pcl imagick-${EXTENSION_IMAGICK_VERSION}; \
+    fi; \
+    \
+    # vips
+    if in_array BUILD_PHP_EXTENSIONS "vips"; then \
+        ext-lib libvips-dev; \
+        ext-src vips-${EXTENSION_VIPS_VERSION}; \
     fi; \
     \
     # uuid
