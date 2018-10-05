@@ -151,9 +151,9 @@ build-test-file: ## Dockerfile.test 로 빌드. Usage: make build-test-file tag=
 	@docker push yejune/webserver:$(PREFIX)$(tag)
 
 build-all: ## Build all images
-	@make build-71
-	@make build-72
 	@make build-73
+	@make build-72
+	@make build-71
 
 push-71: ## Push built PHP 7.1 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)
@@ -169,9 +169,9 @@ push-73: ## Push built PHP 7.3 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)
 
 push-all: ## Push all built images to Docker Hub
-	@make push-71
-	@make push-72
 	@make push-73
+	@make push-72
+	@make push-71
 
 build-and-push-71: ## Build and push PHP 7.1 images to Docker Hub
 	@make build-71
@@ -197,9 +197,9 @@ test:
 	docker kill test-webserver
 
 test-all: ## 테스트
-	@make test-71
-	@make test-72
 	@make test-73
+	@make test-72
+	@make test-71
 
 test-71:
 	@make test TAG="$(PHP71_VERSION)"
