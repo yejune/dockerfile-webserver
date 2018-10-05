@@ -107,6 +107,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   callee
     -   vips 1.0.9
     -   oauth 2.0.3
+    -   excel 1.0.2
 
 ## Build Options
 -   REPOGITORY_URL
@@ -193,6 +194,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   jsonnet
         -   http
         -   xlswriter
+        -   excel
         -   seaslog
         -   psr
         -   callee
@@ -223,6 +225,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_SWOOLE_VERSION
 -   EXTENSION_HTTP_VERSION
 -   EXTENSION_XLSWRITER_VERSION
+-   EXTENSION_EXCEL_VERSION
 -   EXTENSION_XDEBUG_VERSION
 -   EXTENSION_JSONNET_VERSION
 -   EXTENSION_EIO_VERSION

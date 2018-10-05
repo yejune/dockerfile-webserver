@@ -46,6 +46,7 @@ ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG EXTENSION_CALLEE_VERSION=0.0.0
 ARG EXTENSION_VIPS_VERSION=1.0.9
 ARG EXTENSION_OAUTH_VERSION=2.0.3
+ARG EXTENSION_EXCEL_VERSION=1.0.2
 ARG DOCKERIZE_VERSION=0.6.1
 
 SHELL ["/bin/bash", "-c"]
@@ -127,7 +128,7 @@ ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
         \
         swoole\
         http\
-        xlswriter\
+        excel\
         psr\
         callee\
 "
@@ -866,6 +867,18 @@ RUN set -xe; \
         printf "yes\n" | pecl install pecl_http-${EXTENSION_HTTP_VERSION}; \
         echo "extension=http.so" > ${PHP_CONF_DIR}/http.ini; \
     fi; \
+    # excel
+    if in_array BUILD_PHP_EXTENSIONS "excel"; then \
+        cd $PECL_SRC_DIR; \
+        wget http://www.libxl.com/download/libxl-lin-3.8.3.tar.gz; \
+        tar -zxv -f libxl-lin-3.8.3.tar.gz; \
+        cd libxl-3.8.3.0/; \
+        cp lib64/libxl.so /usr/lib/libxl.so; \
+        mkdir -p /usr/include/libxl_c/; \
+        cp include_c/* /usr/include/libxl_c/; \
+        git clone https://github.com/iliaal/php_excel.git -b php7 excel-${EXTENSION_EXCEL_VERSION}; \
+        ext-pcl excel-${EXTENSION_EXCEL_VERSION} --with-libxl-incdir=/usr/include/libxl_c/; \
+    fi;\
     # xlswriter
     if in_array BUILD_PHP_EXTENSIONS "xlswriter"; then \
         ext-lib zlib1g-dev; \
