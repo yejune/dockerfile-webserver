@@ -27,7 +27,7 @@ ARG EXTENSION_UV_VERSION=0.2.2
 ARG EXTENSION_SSH2_VERSION=1.1.2
 ARG EXTENSION_PHALCON_VERSION=3.4.1
 ARG EXTENSION_SODIUM_VERSION=2.0.12
-ARG EXTENSION_SQLSRV_VERSION=5.2.0
+ARG EXTENSION_SQLSRV_VERSION=5.4.0preview
 ARG EXTENSION_GEARMAN_VERSION=2.0.3
 ARG EXTENSION_AMQP_VERSION=1.9.3
 ARG EXTENSION_V8JS_VERSION=2.1.0
@@ -770,14 +770,17 @@ RUN set -xe; \
     fi; \
     \
     # pdo_sqlsrv
-    # if in_array BUILD_PHP_EXTENSIONS "pdo_sqlsrv"; then \
-    #     cd $PECL_SRC_DIR; \
-    #     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
-    #     curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
-    #     apt-get update; \
-    #     ACCEPT_EULA=Y ext-lib msodbcsql mssql-tools unixodbc-dev; \
-    #     ext-pcl pdo_sqlsrv-${EXTENSION_SQLSRV_VERSION}; \
-    # fi; \
+    if in_array BUILD_PHP_EXTENSIONS "pdo_sqlsrv"; then \
+        cd $PECL_SRC_DIR; \
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -; \
+        curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -sr)/prod.list > /etc/apt/sources.list.d/mssql-release.list; \
+        apt-get update; \
+        ACCEPT_EULA=Y ext-lib mssql-tools unixodbc-dev; \
+        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile; \
+        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc; \
+        source ~/.bashrc; \
+        ext-pcl pdo_sqlsrv-${EXTENSION_SQLSRV_VERSION}; \
+    fi; \
     \
     # gearman
     if in_array BUILD_PHP_EXTENSIONS "gearman"; then \
