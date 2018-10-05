@@ -48,6 +48,7 @@ ARG EXTENSION_VIPS_VERSION=1.0.9
 ARG EXTENSION_OAUTH_VERSION=2.0.3
 ARG EXTENSION_EXCEL_VERSION=1.0.2
 ARG DOCKERIZE_VERSION=0.6.1
+ARG LIBRARY_XL_VERSION=3.8.3
 
 SHELL ["/bin/bash", "-c"]
 
@@ -163,6 +164,7 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         \
         memprof\
         seaslog\
+        oauth\
 "
 
 COPY files/ /
@@ -870,13 +872,14 @@ RUN set -xe; \
     # excel
     if in_array BUILD_PHP_EXTENSIONS "excel"; then \
         cd $PECL_SRC_DIR; \
-        wget http://www.libxl.com/download/libxl-lin-3.8.3.tar.gz; \
-        tar -zxv -f libxl-lin-3.8.3.tar.gz; \
-        cd libxl-3.8.3.0/; \
-        cp lib64/libxl.so /usr/lib/libxl.so; \
+        wget http://www.libxl.com/download/libxl-lin-${LIBRARY_XL_VERSION}.tar.gz; \
+        tar -zxv -f libxl-lin-${LIBRARY_XL_VERSION}.tar.gz; \
+        cp libxl-${LIBRARY_XL_VERSION}.0/lib64/libxl.so /usr/lib/libxl.so; \
         mkdir -p /usr/include/libxl_c/; \
-        cp include_c/* /usr/include/libxl_c/; \
-        git clone https://github.com/iliaal/php_excel.git -b php7 excel-${EXTENSION_EXCEL_VERSION}; \
+        cp libxl-${LIBRARY_XL_VERSION}.0/include_c/* /usr/include/libxl_c/; \
+        #git clone https://github.com/iliaal/php_excel.git -b php7 excel-${EXTENSION_EXCEL_VERSION}; \
+        wget https://github.com/iliaal/php_excel/releases/download/Excel-${EXTENSION_EXCEL_VERSION}-PHP7/excel-${EXTENSION_EXCEL_VERSION}-php7.tgz; \
+        tar zxvf excel-${EXTENSION_EXCEL_VERSION}-php7.tgz; \
         ext-pcl excel-${EXTENSION_EXCEL_VERSION} --with-libxl-incdir=/usr/include/libxl_c/; \
     fi;\
     # xlswriter

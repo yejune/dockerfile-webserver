@@ -70,6 +70,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   NGINX 1.14.0
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
+-   LIBRARYXL 3.8.3
 -   PHP 7.2.10
     -   phalcon 3.4.0
     -   redis 4.1.1
@@ -202,6 +203,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   oauth
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
+-   LIBRARY_XL_VERSION
 -   EXTENSION_YAML_VERSION
 -   EXTENSION_IGBINARY_VERSION
 -   EXTENSION_MSGPACK_VERSION
