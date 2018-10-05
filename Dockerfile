@@ -693,7 +693,7 @@ RUN set -xe; \
     # vips
     if in_array BUILD_PHP_EXTENSIONS "vips"; then \
         ext-lib libvips-dev; \
-        ext-src vips-${EXTENSION_VIPS_VERSION}; \
+        ext-pcl vips-${EXTENSION_VIPS_VERSION}; \
     fi; \
     \
     # oauth
