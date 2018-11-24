@@ -3,52 +3,54 @@ LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG PHP_VERSION=7.2.10
+ARG PHP_VERSION=7.2.12
 ARG PHP_GPGKEYS="1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F"
-ARG PHP_SHA256="01c2154a3a8e3c0818acbdbc1a956832c828a0380ce6d1d14fea495ea21804f0"
+ARG PHP_SHA256="989c04cc879ee71a5e1131db867f3c5102f1f7565f805e2bb8bde33f93147fe1"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
 ARG BUILD_EXTENSIONS
 
-ARG EXTENSION_YAML_VERSION=2.0.2
-ARG EXTENSION_IGBINARY_VERSION=2.0.7
-ARG EXTENSION_MSGPACK_VERSION=2.0.2
-ARG EXTENSION_APCU_VERSION=5.1.11
-ARG EXTENSION_MEMCACHED_VERSION=3.0.4
-ARG EXTENSION_REDIS_VERSION=4.1.1
-ARG EXTENSION_MONGODB_VERSION=1.5.3
-ARG EXTENSION_COUCHBASE_VERSION=2.4.6
-ARG EXTENSION_CASSANDRA_VERSION=1.3.2
-ARG EXTENSION_IMAGICK_VERSION=3.4.3
+ARG EXTENSION_PHALCON_VERSION=3.4.1
+ARG EXTENSION_SWOOLE_VERSION=4.2.8
 ARG EXTENSION_UUID_VERSION=1.0.4
+ARG EXTENSION_YAML_VERSION=2.0.3
+ARG EXTENSION_JSONNET_VERSION=1.3.1
+ARG EXTENSION_IGBINARY_VERSION=2.0.8
+ARG EXTENSION_MSGPACK_VERSION=2.0.2
+ARG EXTENSION_APCU_VERSION=5.1.14
+ARG EXTENSION_MEMCACHED_VERSION=3.0.4
+ARG EXTENSION_REDIS_VERSION=4.2.0
+ARG EXTENSION_MONGODB_VERSION=1.5.3
+ARG EXTENSION_COUCHBASE_VERSION=2.6.0
+ARG EXTENSION_CASSANDRA_VERSION=1.3.2
+ARG EXTENSION_AMQP_VERSION=1.9.3
+ARG EXTENSION_GEARMAN_VERSION=2.0.3
+ARG EXTENSION_SODIUM_VERSION=2.0.15
+ARG EXTENSION_SCREWIM_VERSION=1.0.1
 ARG EXTENSION_EV_VERSION=1.0.4
 ARG EXTENSION_UV_VERSION=0.2.2
-ARG EXTENSION_SSH2_VERSION=1.1.2
-ARG EXTENSION_PHALCON_VERSION=3.4.1
-ARG EXTENSION_SODIUM_VERSION=2.0.12
-ARG EXTENSION_SQLSRV_VERSION=5.4.0preview
-ARG EXTENSION_GEARMAN_VERSION=2.0.3
-ARG EXTENSION_AMQP_VERSION=1.9.3
-ARG EXTENSION_V8JS_VERSION=2.1.0
-ARG EXTENSION_V8_VERSION=0.2.2
-ARG EXTENSION_SCREWIM_VERSION=1.0.1
-ARG EXTENSION_SWOOLE_VERSION=4.2.1
-ARG EXTENSION_HTTP_VERSION=3.2.0
-ARG EXTENSION_XLSWRITER_VERSION=1.2.2
-ARG EXTENSION_XDEBUG_VERSION=2.6.1
-ARG EXTENSION_JSONNET_VERSION=1.3.1
 ARG EXTENSION_EIO_VERSION=2.0.4
 ARG EXTENSION_EVENT_VERSION=2.4.1
 ARG EXTENSION_MEMPROF_VERSION=2.0.0
-ARG EXTENSION_PSR_VERSION=0.5.0
-ARG EXTENSION_SEASLOG_VERSION=1.8.6
+ARG EXTENSION_HTTP_VERSION=3.2.0
+ARG EXTENSION_PSR_VERSION=0.6.1
 ARG EXTENSION_CALLEE_VERSION=0.0.0
+ARG EXTENSION_DECIMAL_VERSION=1.1.0
+ARG EXTENSION_IMAGICK_VERSION=3.4.3
 ARG EXTENSION_VIPS_VERSION=1.0.9
+ARG EXTENSION_SSH2_VERSION=1.1.2
+ARG EXTENSION_SQLSRV_VERSION=5.4.0preview
+ARG EXTENSION_V8JS_VERSION=2.1.0
+ARG EXTENSION_V8_VERSION=0.2.2
 ARG EXTENSION_OAUTH_VERSION=2.0.3
 ARG EXTENSION_EXCEL_VERSION=1.0.2
+ARG EXTENSION_XLSWRITER_VERSION=1.2.2
+ARG EXTENSION_XDEBUG_VERSION=2.6.1
+ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG DOCKERIZE_VERSION=0.6.1
 ARG LIBRARY_XL_VERSION=3.8.3
+ARG LIBRARY_VIPS_VERSION=8.7.0
 
 SHELL ["/bin/bash", "-c"]
 
@@ -132,6 +134,7 @@ ENV MINI_EXTENSIONS="${DEFAULT_EXTENSIONS}\
         excel\
         psr\
         callee\
+        decimal\
 "
 
 ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
@@ -142,7 +145,6 @@ ENV FULL_EXTENSIONS="${MINI_EXTENSIONS}\
         fileinfo\
         gd\
         imagick\
-        vips\
         ssh2\
         \
         dba\
@@ -172,6 +174,7 @@ COPY files/ /
 RUN set -xe; \
     source /init.sh; \
     \
+    # savedAptMark="$(apt-mark showmanual)"; \
     apt-get update; \
     apt-get upgrade -y; \
     \
@@ -211,7 +214,7 @@ RUN set -xe; \
             gnupg2 \
         "; \
     fi; \
-    apt-get install -y --no-install-recommends ${DEPS} ${ADD_DEPS} ${DEV_DEPS} ${LIB_DEPS}; \
+    apt-get install --no-install-recommends --no-install-suggests -y ${DEPS} ${ADD_DEPS} ${DEV_DEPS} ${LIB_DEPS}; \
     dpkg-reconfigure tzdata ; \
     \
     \
@@ -426,9 +429,22 @@ RUN set -xe; \
     \
     # gd
     if in_array BUILD_PHP_EXTENSIONS "gd"; then \
-        ext-lib libjpeg-dev libpng-dev libwebp-dev libxpm-dev libfreetype6-dev; \
-        ext-src gd --with-webp-dir --with-jpeg-dir --with-png-dir --with-zlib-dir \
-                   --with-xpm-dir --with-freetype-dir --enable-gd-native-ttf; \
+        ext-lib \
+                libjpeg-dev \
+                libpng-dev \
+                libwebp-dev \
+                libxpm-dev \
+                libfreetype6-dev \
+        ; \
+        \
+        ext-src gd --with-webp-dir \
+                   --with-jpeg-dir \
+                   --with-png-dir \
+                   --with-zlib-dir \
+                   --with-xpm-dir \
+                   --with-freetype-dir \
+                   --enable-gd-native-ttf \
+        ; \
     fi; \
     \
     # gettext
@@ -467,6 +483,15 @@ RUN set -xe; \
         cd $PECL_SRC_DIR; \
         git clone https://github.com/mpyw-junks/phpext-callee callee-${EXTENSION_JSONNET_VERSION}; \
         ext-pcl callee-${EXTENSION_JSONNET_VERSION} --enable-callee; \
+    fi; \
+    # decimal
+    if in_array BUILD_PHP_EXTENSIONS "decimal"; then \
+        cd $PECL_SRC_DIR; \
+        ext-lib libmpdec-dev; \
+        wget-retry https://github.com/php-decimal/ext-decimal/archive/v${EXTENSION_DECIMAL_VERSION}.tar.gz; \
+        tar -zxvf v${EXTENSION_DECIMAL_VERSION}.tar.gz; \
+        mv ext-decimal-${EXTENSION_DECIMAL_VERSION} decimal-${EXTENSION_DECIMAL_VERSION}; \
+        ext-pcl decimal-${EXTENSION_DECIMAL_VERSION}; \
     fi; \
     # jsonnet
     if in_array BUILD_PHP_EXTENSIONS "jsonnet"; then \
@@ -694,8 +719,28 @@ RUN set -xe; \
     \
     # vips
     if in_array BUILD_PHP_EXTENSIONS "vips"; then \
-        ext-lib libvips-dev; \
-        ext-pcl vips-${EXTENSION_VIPS_VERSION}; \
+        ext-lib \
+                \
+                glib-2.0-dev \
+                libexpat-dev \
+                librsvg2-dev \
+                libpng-dev \
+                libgif-dev \
+                libjpeg-dev \
+                libexif-dev \
+                liblcms2-dev \
+                liborc-dev \
+                ; \
+        \
+        url=https://github.com/libvips/libvips/releases/download; \
+        version=8.7.0; \
+        wget-retry $url/v$version/vips-$version.tar.gz; \
+        tar xf vips-$version.tar.gz; \
+        cd vips-$version; \
+        CXXFLAGS=-D_GLIBCXX_USE_CXX11_ABI=0 ./configure --prefix=/usr; \
+        make && make install; \
+        \
+        ext-pcl vips-${EXTENSION_VIPS_VERSION} --with-vips; \
     fi; \
     \
     # oauth
@@ -872,18 +917,19 @@ RUN set -xe; \
     # excel
     if in_array BUILD_PHP_EXTENSIONS "excel"; then \
         cd $PECL_SRC_DIR; \
-        wget http://www.libxl.com/download/libxl-lin-${LIBRARY_XL_VERSION}.tar.gz; \
+        wget-retry http://www.libxl.com/download/libxl-lin-${LIBRARY_XL_VERSION}.tar.gz; \
         tar -zxv -f libxl-lin-${LIBRARY_XL_VERSION}.tar.gz; \
         cp libxl-${LIBRARY_XL_VERSION}.0/lib64/libxl.so /usr/lib/libxl.so; \
         mkdir -p /usr/include/libxl_c/; \
         cp libxl-${LIBRARY_XL_VERSION}.0/include_c/* /usr/include/libxl_c/; \
         #git clone https://github.com/iliaal/php_excel.git -b php7 excel-${EXTENSION_EXCEL_VERSION}; \
-        wget https://github.com/iliaal/php_excel/releases/download/Excel-${EXTENSION_EXCEL_VERSION}-PHP7/excel-${EXTENSION_EXCEL_VERSION}-php7.tgz; \
+        wget-retry https://github.com/iliaal/php_excel/releases/download/Excel-${EXTENSION_EXCEL_VERSION}-PHP7/excel-${EXTENSION_EXCEL_VERSION}-php7.tgz; \
         tar zxvf excel-${EXTENSION_EXCEL_VERSION}-php7.tgz; \
         ext-pcl excel-${EXTENSION_EXCEL_VERSION} --with-libxl-incdir=/usr/include/libxl_c/; \
     fi;\
     # xlswriter
     if in_array BUILD_PHP_EXTENSIONS "xlswriter"; then \
+        cd $PECL_SRC_DIR; \
         ext-lib zlib1g-dev; \
         git clone https://github.com/jmcnamara/libxlsxwriter.git; \
         cd libxlsxwriter; \
@@ -932,9 +978,10 @@ RUN set -xe; \
     rm -rf /init.sh; \
     { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; }; \
     apt-get clean; \
-    apt-get purge --yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false ${DEV_DEPS} ${ADD_DEPS}; \
+    apt-get purge --yes --auto-remove ${DEV_DEPS} ${ADD_DEPS}; \
     rm -rf $SRC_DIR/*; \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
+    php -v;
 
 RUN chown -Rf www-data:www-data /var/www
 

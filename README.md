@@ -67,48 +67,50 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 ## version
 -   UBUNTU 18.04
 -   DOCKERIZE 0.6.1
--   NGINX 1.14.0
+-   NGINX 1.14.1
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
 -   LIBRARYXL 3.8.3
--   PHP 7.2.10
+-   PHP 7.2.12
     -   phalcon 3.4.0
-    -   redis 4.1.1
-    -   yaml 2.0.2
-    -   memcached 3.0.4
-    -   mongodb 1.5.3
-    -   ~~couchbase 2.4.6~~
-    -   ~~cassandra 1.3.2~~
-    -   apcu 5.1.11
+    -   swoole 4.2.8
     -   uuid 1.0.4
+    -   yaml 2.0.3
+    -   jsonnet 1.3.1
+    -   igbinary 2.0.8
+    -   msgpack 2.0.2
+    -   apcu 5.1.14
+    -   memcached 3.0.4
+    -   redis 4.2.0
+    -   mongodb 1.5.3
+    -   ~~couchbase 2.6.0~~
+    -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
-    -   v8js 2.1.0
-    -   v8 0.2.2
-    -   sodium 2.0.12
+    -   gearman 2.0.3
+    -   sodium 2.0.15
     -   ev 1.0.4
     -   uv 0.2.2
     -   eio 2.0.4
-    -   ssh2 1.1.2
-    -   gearman 2.0.3
-    -   imagick 3.4.3
-    -   igbinary 2.0.7
-    -   msgpack 2.0.2
-    -   swoole 4.2.1
+    -   event 2.4.1
+    -   memprop 2.0.0
     -   http 3.2.0
+    -   psr 0.6.1
+    -   callee
+    -   decimal 1.1.0
+    -   imagick 3.4.3
+    -   vips 1.0.9
+    -   ssh2 1.1.2
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
     -   pdo_sqlsrv 5.4.0preview
-    -   xlswriter 1.2.2
-    -   xdebug 2.6.1
-    -   jsonnet 1.3.1
-    -   memprop 2.0.0
-    -   psr 0.5.0
-    -   seaslog 1.8.6
-    -   callee
-    -   vips 1.0.9
+    -   v8js 2.1.0
+    -   v8 0.2.2
     -   oauth 2.0.3
     -   excel 1.0.2
+    -   xlswriter 1.2.2
+    -   xdebug 2.6.1
+    -   seaslog 1.8.6
 
 ## Build Options
 -   REPOGITORY_URL
@@ -199,45 +201,50 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
         -   seaslog
         -   psr
         -   callee
+        -   decimal
         -   vips
         -   oauth
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
 -   LIBRARY_XL_VERSION
+-   LIBRARY_VIPS_VERSION
+-   EXTENSION_PHALCON_VERSION
+-   EXTENSION_SWOOLE_VERSION
+-   EXTENSION_UUID_VERSION
 -   EXTENSION_YAML_VERSION
+-   EXTENSION_JSONNET_VERSION
 -   EXTENSION_IGBINARY_VERSION
 -   EXTENSION_MSGPACK_VERSION
 -   EXTENSION_APCU_VERSION
 -   EXTENSION_MEMCACHED_VERSION
 -   EXTENSION_REDIS_VERSION
 -   EXTENSION_MONGODB_VERSION
--   EXTENSION_IMAGICK_VERSION
--   EXTENSION_UUID_VERSION
+-   EXTENSION_COUCHBASE_VERSION
+-   EXTENSION_CASSANDRA_VERSION
+-   EXTENSION_AMQP_VERSION
+-   EXTENSION_GEARMAN_VERSION
+-   EXTENSION_SODIUM_VERSION
+-   EXTENSION_SCREWIM_VERSION
 -   EXTENSION_EV_VERSION
 -   EXTENSION_UV_VERSION
--   EXTENSION_SSH2_VERSION
--   EXTENSION_PHALCON_VERSION
--   EXTENSION_SODIUM_VERSION
--   EXTENSION_SQLSRV_VERSION
--   EXTENSION_GEARMAN_VERSION
--   EXTENSION_AMQP_VERSION
--   EXTENSION_V8JS_VERSION
--   EXTENSION_V8_VERSION
--   EXTENSION_SCREWIM_VERSION
--   EXTENSION_SWOOLE_VERSION
--   EXTENSION_HTTP_VERSION
--   EXTENSION_XLSWRITER_VERSION
--   EXTENSION_EXCEL_VERSION
--   EXTENSION_XDEBUG_VERSION
--   EXTENSION_JSONNET_VERSION
 -   EXTENSION_EIO_VERSION
 -   EXTENSION_EVENT_VERSION
 -   EXTENSION_MEMPROF_VERSION
+-   EXTENSION_HTTP_VERSION
 -   EXTENSION_PSR_VERSION
--   EXTENSION_SEASLOG_VERSION
 -   EXTENSION_CALLEE_VERSION
+-   EXTENSION_DECIMAL_VERSION
+-   EXTENSION_IMAGICK_VERSION
 -   EXTENSION_VIPS_VERSION
+-   EXTENSION_SSH2_VERSION
+-   EXTENSION_SQLSRV_VERSION
+-   EXTENSION_V8JS_VERSION
+-   EXTENSION_V8_VERSION
 -   EXTENSION_OAUTH_VERSION
+-   EXTENSION_EXCEL_VERSION
+-   EXTENSION_XLSWRITER_VERSION
+-   EXTENSION_XDEBUG_VERSION
+-   EXTENSION_SEASLOG_VERSION
 -   DOCKERIZE_VERSION
 
 ## Examples

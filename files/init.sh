@@ -157,7 +157,7 @@ ext-src()
 }
 ext-lib()
 {
-    $sudo apt-get install -y $@
+    $sudo apt-get install -y --no-install-recommends --no-install-suggests $@
 }
 wget-retry()
 {
