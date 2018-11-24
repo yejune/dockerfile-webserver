@@ -108,7 +108,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   v8 0.2.2
     -   oauth 2.0.3
     -   excel 1.0.2
-    -   xlswriter 1.2.2
+    -   xlswriter 1.2.3
     -   xdebug 2.6.1
     -   seaslog 1.8.6
 
