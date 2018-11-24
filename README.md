@@ -75,7 +75,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   phalcon 3.4.0
     -   swoole 4.2.8
     -   uuid 1.0.4
-    -   yaml 2.0.3
+    -   yaml 2.0.4
     -   jsonnet 1.3.1
     -   igbinary 2.0.8
     -   msgpack 2.0.2
