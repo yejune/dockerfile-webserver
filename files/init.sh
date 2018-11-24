@@ -115,6 +115,7 @@ ext-src()
 
     local extensions=("filter" "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib" "phar" "hash");
     local periods=("session" "pdo");
+    local last=("decimal");
 
     if in_array extensions "${name}"; then
         echo ""
@@ -145,6 +146,9 @@ ext-src()
 
         if in_array periods "${name}"; then
             ini_filename="1_${name}"
+        fi
+        if in_array last "${name}"; then
+            ini_filename="z_${name}"
         fi
         if [ ! -f "${PHP_CONF_DIR}/${ini_filename}.ini" ]; then
             if [ "${name}" = "opcache" ]; then
