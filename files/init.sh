@@ -46,6 +46,9 @@ phpize-install()
 
     local arrIN=(${lib_fullname//-/ })
     local lib_shortname="${arrIN[0]}"
+    local ini_filename="${lib_shortname}"
+
+    local after=("decimal");
 
     if [ ! -d "${PECL_SRC_DIR}/${lib_fullname}" ]; then
         pecl-download $lib_fullname
@@ -74,8 +77,12 @@ phpize-install()
 
     find "${PHP_EXTENSION_DIR}/${lib_shortname}.so"
 
-    if [ ! -f "${PHP_CONF_DIR}/${lib_shortname}.ini" ]; then
-        echo "extension=${lib_shortname}.so" > "${PHP_CONF_DIR}/${lib_shortname}.ini"
+    if in_array after "${lib_shortname}"; then
+        ini_filename="z_${lib_shortname}"
+    fi
+
+    if [ ! -f "${PHP_CONF_DIR}/${ini_filename}.ini" ]; then
+        echo "extension=${lib_shortname}.so" > "${PHP_CONF_DIR}/${ini_filename}.ini"
     fi
 
 	cd ..
@@ -114,8 +121,7 @@ ext-src()
     fi
 
     local extensions=("filter" "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib" "phar" "hash");
-    local periods=("session" "pdo");
-    local last=("decimal");
+    local prev=("session" "pdo");
 
     if in_array extensions "${name}"; then
         echo ""
@@ -144,12 +150,10 @@ ext-src()
 
         local ini_filename="${name}"
 
-        if in_array periods "${name}"; then
+        if in_array prev "${name}"; then
             ini_filename="1_${name}"
         fi
-        if in_array last "${name}"; then
-            ini_filename="z_${name}"
-        fi
+
         if [ ! -f "${PHP_CONF_DIR}/${ini_filename}.ini" ]; then
             if [ "${name}" = "opcache" ]; then
                 echo "zend_extension=${name}.so" > "${PHP_CONF_DIR}/${ini_filename}.ini"

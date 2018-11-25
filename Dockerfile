@@ -50,6 +50,7 @@ ARG EXTENSION_XDEBUG_VERSION=2.6.1
 ARG EXTENSION_SEASLOG_VERSION=1.8.6
 ARG DOCKERIZE_VERSION=0.6.1
 ARG LIBRARY_XL_VERSION=3.8.3
+ARG LIBRARY_XLSWRITER_VERSION=0.8.4
 ARG LIBRARY_VIPS_VERSION=8.7.0
 
 SHELL ["/bin/bash", "-c"]
@@ -931,12 +932,16 @@ RUN set -xe; \
     # xlswriter
     if in_array BUILD_PHP_EXTENSIONS "xlswriter"; then \
         cd $PECL_SRC_DIR; \
-        ext-lib zlib1g-dev; \
-        git clone https://github.com/jmcnamara/libxlsxwriter.git; \
+        #git clone https://github.com/jmcnamara/libxlsxwriter.git; \
+        wget-retry https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_${LIBRARY_XLSWRITER_VERSION}.tar.gz; \
+        tar zxvf RELEASE_${LIBRARY_XLSWRITER_VERSION}.tar.gz; \
+        mv libxlsxwriter-RELEASE_${LIBRARY_XLSWRITER_VERSION} libxlsxwriter; \
         cd libxlsxwriter; \
         make; \
         make install; \
-        ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION}; \
+        # ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION}; \
+        printf "yes\n" | pecl install xlswriter-${EXTENSION_XLSWRITER_VERSION}; \
+        echo "extension=xlswriter.so" > ${PHP_CONF_DIR}/xlswriter.ini; \
     fi;\
     # xdebug
     if in_array BUILD_PHP_EXTENSIONS "xdebug"; then \

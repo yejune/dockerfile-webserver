@@ -70,7 +70,8 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   NGINX 1.14.1
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
--   LIBRARYXL 3.8.3
+-   LIBXL 3.8.3
+-   LIBXLSWRITER 0.8.4
 -   PHP 7.2.12
     -   phalcon 3.4.0
     -   swoole 4.2.8
@@ -207,6 +208,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBRARY_V8_VERSION
 -   LIBRARY_RABBITMQ_VERSION
 -   LIBRARY_XL_VERSION
+-   LIBRARY_XLSWRITER_VERSION
 -   LIBRARY_VIPS_VERSION
 -   EXTENSION_PHALCON_VERSION
 -   EXTENSION_SWOOLE_VERSION

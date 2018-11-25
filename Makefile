@@ -84,10 +84,12 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_XDEBUG_VERSION=$(EXTENSION_XDEBUG_VERSION) \
 		--build-arg EXTENSION_SEASLOG_VERSION=$(EXTENSION_SEASLOG_VERSION) \
 		--build-arg LIBRARY_XL_VERSION=$(LIBRARY_XL_VERSION) \
+		--build-arg LIBRARY_XLSWRITER_VERSION=$(LIBRARY_XLSWRITER_VERSION) \
 		--build-arg LIBRARY_VIPS_VERSION=$(LIBRARY_VIPS_VERSION) \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file $(DOCKERFILE) \
 	.
+
 
 	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
 
