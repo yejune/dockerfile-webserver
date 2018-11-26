@@ -92,7 +92,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   ev 1.0.4
     -   uv 0.2.2
     -   eio 2.0.4
-    -   event 2.4.1
+    -   event 2.4.2
     -   memprop 2.0.0
     -   http 3.2.0
     -   psr 0.6.1
