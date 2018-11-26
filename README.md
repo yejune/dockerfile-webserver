@@ -74,7 +74,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXLSWRITER 0.8.4
 -   PHP 7.2.12
     -   phalcon 3.4.0
-    -   swoole 4.2.8
+    -   swoole 4.2.9
     -   uuid 1.0.4
     -   yaml 2.0.4
     -   jsonnet 1.3.1
