@@ -74,7 +74,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXLSWRITER 0.8.4
 -   PHP 7.2.12
     -   phalcon 3.4.0
-    -   swoole 4.2.8
+    -   swoole 4.2.9
     -   uuid 1.0.4
     -   yaml 2.0.4
     -   jsonnet 1.3.1
@@ -92,7 +92,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   ev 1.0.4
     -   uv 0.2.2
     -   eio 2.0.4
-    -   event 2.4.1
+    -   event 2.4.2
     -   memprop 2.0.0
     -   http 3.2.0
     -   psr 0.6.1
@@ -111,7 +111,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   excel 1.0.2
     -   xlswriter 1.2.3
     -   xdebug 2.6.1
-    -   seaslog 1.8.6
+    -   seaslog 1.9.0
 
 ## Build Options
 -   REPOGITORY_URL
