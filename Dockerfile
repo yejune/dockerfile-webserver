@@ -52,6 +52,7 @@ ARG DOCKERIZE_VERSION=0.6.1
 ARG LIBRARY_XL_VERSION=3.8.3
 ARG LIBRARY_XLSWRITER_VERSION=0.8.4
 ARG LIBRARY_VIPS_VERSION=8.7.0
+ARG LIBRARY_V8_VERSION=7.1
 
 SHELL ["/bin/bash", "-c"]
 
@@ -233,7 +234,7 @@ RUN set -xe; \
     # done; \
     # test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
     # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
-    add-apt-repository ppa:nginx/stable; \
+    add-apt-repository -y ppa:nginx/stable; \
     apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx; \
     # forward request and error logs to docker log collector
@@ -863,18 +864,18 @@ RUN set -xe; \
     # v8js
     if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
         cd $PECL_SRC_DIR; \
-        rm -rf libv8; \
-        git clone https://github.com/yejune/libv8 -b bionic; \
-        cp -r libv8/opt/libv8 /opt/libv8/; \
+        add-apt-repository -y ppa:stesie/libv8; \
+        apt-get update; \
+        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
         ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8; \
     fi; \
     \
     # v8
     if in_array BUILD_PHP_EXTENSIONS "v8"; then \
         cd $PECL_SRC_DIR; \
-        rm -rf libv8; \
-        git clone https://github.com/yejune/libv8 -b bionic; \
-        cp -r libv8/opt/libv8 /opt/libv8/; \
+        add-apt-repository -y ppa:stesie/libv8; \
+        apt-get update; \
+        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
         ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8; \
     fi; \
     \
