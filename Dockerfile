@@ -864,18 +864,18 @@ RUN set -xe; \
     # v8js
     if in_array BUILD_PHP_EXTENSIONS "v8js"; then \
         cd $PECL_SRC_DIR; \
-        add-apt-repository -y ppa:stesie/libv8; \
-        apt-get update; \
-        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+        rm -rf libv8; \
+        git clone https://github.com/yejune/libv8 -b bionic; \
+        cp -r libv8/opt/libv8 /opt/libv8/; \
         ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8; \
     fi; \
     \
     # v8
     if in_array BUILD_PHP_EXTENSIONS "v8"; then \
         cd $PECL_SRC_DIR; \
-        add-apt-repository -y ppa:stesie/libv8; \
-        apt-get update; \
-        ext-lib libv8-${LIBRARY_V8_VERSION}-dev; \
+        rm -rf libv8; \
+        git clone https://github.com/yejune/libv8 -b bionic; \
+        cp -r libv8/opt/libv8 /opt/libv8/; \
         ext-pcl v8-${EXTENSION_V8_VERSION} --with-v8=/opt/libv8; \
     fi; \
     \
