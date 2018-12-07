@@ -129,7 +129,7 @@ build-72: ## Build PHP 7.2 images
 
 build-73: ## Build PHP 7.3 images
 	@make build \
-		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		EXTENSIONS="$(FULL_EXTENSIONS)" \
 		PHP_VERSION="$(PHP73_VERSION)" \
 		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
 		PHP_SHA256="$(PHP73_SHA256)" \

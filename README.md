@@ -73,7 +73,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXL 3.8.3
 -   LIBXLSWRITER 0.8.4
 -   PHP 7.2.12
-    -   phalcon 3.4.0
+    -   phalcon 3.4.2
     -   swoole 4.2.9
     -   uuid 1.0.4
     -   yaml 2.0.4
