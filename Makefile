@@ -112,24 +112,33 @@ build-71: ## Build PHP 7.1 images
 
 build-72: ## Build PHP 7.2 images
 	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(PHP72_VERSION)" \
 		DOCKERFILE="Dockerfile"
 
-	# @make build \
-	# 	EXTENSIONS="$(MINI_EXTENSIONS)" \
-	# 	PHP_VERSION="$(PHP72_VERSION)" \
-	# 	PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
-	# 	PHP_SHA256="$(PHP72_SHA256)" \
-	# 	TAG="$(PHP72_VERSION)-mini" \
-	# 	DOCKERFILE="Dockerfile"
+	@make build \
+		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		PHP_VERSION="$(PHP72_VERSION)" \
+		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
+		PHP_SHA256="$(PHP72_SHA256)" \
+		TAG="$(PHP72_VERSION)-full" \
+		DOCKERFILE="Dockerfile.72"
+
+build-72a: ## Build PHP 7.2 images
+	@make build \
+		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		PHP_VERSION="$(PHP72_VERSION)" \
+		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
+		PHP_SHA256="$(PHP72_SHA256)" \
+		TAG="$(PHP72_VERSION)-full" \
+		DOCKERFILE="Dockerfile.72"
 
 build-73: ## Build PHP 7.3 images
 	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		PHP_VERSION="$(PHP73_VERSION)" \
 		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
 		PHP_SHA256="$(PHP73_SHA256)" \
@@ -144,6 +153,15 @@ build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(tag)" \
 		DOCKERFILE="Dockerfile"
+
+	@docker push yejune/webserver:$(PREFIX)$(tag)
+
+build-test-new: ## Dockerfile.test 로 빌드. Usage: make build-test-new tag="test11"
+	docker build \
+		--tag yejune/webserver:$(PREFIX)$(tag) \
+		--file Dockerfile.73 \
+		--build-arg BUILD_EXTENSIONS="$(FULL_EXTENSIONS)" \
+	.
 
 	@docker push yejune/webserver:$(PREFIX)$(tag)
 
@@ -166,7 +184,7 @@ push-71: ## Push built PHP 7.1 images to Docker Hub
 
 push-72: ## Push built PHP 7.2 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)
-	# @docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-mini
+	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-full
 	# @docker tag yejune/webserver:$(PREFIX)$(PHP72_VERSION) yejune/webserver:$(PREFIX)latest
 	# @docker push yejune/webserver:$(PREFIX)latest
 

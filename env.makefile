@@ -83,13 +83,14 @@ REPOGITORY_URL:=ap-northeast-2.ec2.archive.ubuntu.com
 # PHP73_SHA256:=11582176003e0e8ca06dbdebab0921d539cab2ad795c0d90f146977859e21c26
 # PHP73_GPGKEYS:=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
 
-PHP71_VERSION:=7.1.24
-PHP71_SHA256:=e70dcec0ae28b6bc308b78972ec15aa850808819cc765f505aa51e5a7e2fa5d7
-PHP71_GPGKEYS:=A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 1729F83938DA44E27BA0F4D3DBDB397470D12172
+#PHP71_VERSION:=7.1.24
+#PHP71_SHA256:=e70dcec0ae28b6bc308b78972ec15aa850808819cc765f505aa51e5a7e2fa5d7
+#PHP71_GPGKEYS:=A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 1729F83938DA44E27BA0F4D3DBDB397470D12172
 
-PHP72_VERSION:=7.2.12
-PHP72_SHA256:=989c04cc879ee71a5e1131db867f3c5102f1f7565f805e2bb8bde33f93147fe1
-PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+#PHP72_VERSION:=7.2.12
+#PHP72_SHA256:=989c04cc879ee71a5e1131db867f3c5102f1f7565f805e2bb8bde33f93147fe1
+#PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+
 
 #PHP73_VERSION:=7.3.0RC6
 #PHP73_SHA256:=8120b5830e24d5fabc96da693ab924852e6c2a95829ad994d6a5107c69787848
@@ -98,6 +99,14 @@ PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995
 PHP73_VERSION:=7.3.0
 PHP73_SHA256:=7d195cad55af8b288c3919c67023a14ff870a73e3acc2165a6d17a4850a560b5
 PHP73_GPGKEYS:=CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
+
+PHP72_VERSION:=7.2.13
+PHP72_SHA256:=14b0429abdb46b65c843e5882c9a8c46b31dfbf279c747293b8ab950c2644a4b
+PHP72_GPGKEYS:=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+
+PHP71_VERSION:=7.1.25
+PHP71_SHA256:=0fd8dad1903cd0b2d615a1fe4209f99e53b7292403c8ffa1919c0f4dd1eada88
+PHP71_GPGKEYS:=A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 1729F83938DA44E27BA0F4D3DBDB397470D12172
 
 
 LIBRARY_V8_VERSION:=6.6
@@ -113,7 +122,7 @@ EXTENSION_YAML_VERSION:=2.0.4
 EXTENSION_JSONNET_VERSION:=1.3.1
 EXTENSION_IGBINARY_VERSION:=2.0.8
 EXTENSION_MSGPACK_VERSION:=2.0.2
-EXTENSION_APCU_VERSION:=5.1.14
+EXTENSION_APCU_VERSION:=5.1.15
 EXTENSION_MEMCACHED_VERSION:=3.0.4
 EXTENSION_REDIS_VERSION:=4.2.0
 EXTENSION_MONGODB_VERSION:=1.5.3
@@ -135,7 +144,7 @@ EXTENSION_DECIMAL_VERSION:=1.1.0
 EXTENSION_IMAGICK_VERSION:=3.4.3
 EXTENSION_VIPS_VERSION:=1.0.9
 EXTENSION_SSH2_VERSION:=1.1.2
-EXTENSION_SQLSRV_VERSION:=5.4.0preview
+EXTENSION_SQLSRV_VERSION:=5.5.0preview
 EXTENSION_V8JS_VERSION:=2.1.0
 EXTENSION_V8_VERSION:=0.2.2
 EXTENSION_OAUTH_VERSION:=2.0.3
@@ -145,50 +154,83 @@ EXTENSION_XDEBUG_VERSION:=2.6.1
 EXTENSION_SEASLOG_VERSION:=1.9.0
 DOCKERIZE_VERSION:=0.6.1
 
+
+# ocbc
+# oci8
 define DEFAULT_EXTENSIONS
     bcmath\
+    bz2\
     calendar\
     ctype\
+    curl\
+    date\
+    dba\
+    dom\
+    enchant\
+    exif\
+    fileinfo\
+    filter\
+    ftp\
+    gd\
     gettext\
     gmp\
     hash\
     iconv\
+    imap\
+    interbase\
     intl\
-    pcntl\
-    shmop\
-    posix\
-    \
-    pdo\
-    pdo_mysql\
-    session\
-    sockets\
-    apcu\
-    opcache\
-    \
     json\
-    \
-    dom\
-    xml\
-    xmlreader\
-    xmlwriter\
-    simplexml\
-    xsl\
-    soap\
-    xmlrpc\
-    wddx\
-    \
-    zip\
-    bz2\
+    ldap\
+    libxml\
+    mbstring\
+    mysqli\
+    mysqlnd\
+    opcache\
+    openssl\
+    pcntl\
+    pcre\
+    pdo\
+    pdo_dblib\
+    pdo_firebird\
+    pdo_mysql\
+    pdo_pgsql\
+    pdo_sqlite\
+    pgsql\
     phar\
-    \
+    posix\
+    pspell\
+    readline\
+    recode\
+    reflection\
+    session\
+    shmop\
+    simplexml\
+    snmp\
+    soap\
+    sockets\
+    sodium\
+    spl\
+    sqlite3\
+    standard\
+    sysvmsg\
+    sysvsem\
+    sysvshm\
     tidy\
     tokenizer\
-    \
-    sodium
+    wddx\
+    xml\
+    xmlreader\
+    xmlrpc\
+    xmlwriter\
+    xsl\
+    zip\
+    zlib
 endef
 
-define MINI_EXTENSIONS
-    ${DEFAULT_EXTENSIONS}\
+# v8js
+# msgpack
+# vips
+define FULL_EXTENSIONS
     phalcon\
     \
     uuid\
@@ -213,35 +255,17 @@ define MINI_EXTENSIONS
     xlswriter\
     psr\
     callee\
-    decimal
-endef
-
-define FULL_EXTENSIONS
-    ${MINI_EXTENSIONS}\
-    snmp\
+    decimal\
     \
-    exif\
-    fileinfo\
-    gd\
+    \
     imagick\
     ssh2\
     \
-    dba\
-    enchant\
-    pspell\
-    recode\
     couchbase\
     cassandra\
-    sqlite3\
-    pdo_pgsql\
-    pdo_sqlite\
-    pdo_sqlsrv\
     v8js\
     v8\
     \
-    sysvsem\
-    sysvshm\
-    sysvmsg\
     \
     memprof\
     seaslog\

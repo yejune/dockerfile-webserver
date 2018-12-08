@@ -102,11 +102,7 @@ ext-pcl()
         done
     fi
 
-    if [ -f "/usr/local/bin/installer/pecl/${name}.sh" ]; then
-        source "/usr/local/bin/installer/pecl/${name}.sh"
-    else
-        phpize-install $fullname $configure_option
-    fi
+    phpize-install $fullname $configure_option
 }
 ext-src()
 {
