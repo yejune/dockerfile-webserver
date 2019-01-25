@@ -2,10 +2,13 @@ FROM ubuntu:18.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
+ENV PHP_CPPFLAGS="$PHP_CFLAGS"
+ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ARG PHP_VERSION=7.3.0
+ARG PHP_VERSION=7.3.1
 ARG PHP_GPGKEYS="CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D"
-ARG PHP_SHA256="7d195cad55af8b288c3919c67023a14ff870a73e3acc2165a6d17a4850a560b5"
+ARG PHP_SHA256="cfe93e40be0350cd53c4a579f52fe5d8faf9c6db047f650a4566a2276bf33362"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
@@ -16,8 +19,8 @@ ARG DOCKERIZE_VERSION=0.6.1
 SHELL ["/bin/bash", "-c"]
 
 RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
-        sed -i "s/archive.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
-        sed -i "s/security.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/archive.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/security.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
     fi
 
 ENV PHP_INI_DIR=/etc/php \
@@ -110,6 +113,7 @@ RUN set -xe; \
     apt-get upgrade -y; \
     \
     DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip"; \
+    #ntp \
     \
     DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
     \
@@ -146,13 +150,8 @@ RUN set -xe; \
         "; \
     fi; \
     apt-get install --no-install-recommends --no-install-suggests -y ${DEPS} ${ADD_DEPS} ${DEV_DEPS} ${LIB_DEPS}; \
-    export LANGUAGE=ko_KR.UTF-8; \
-    export LANG=ko_KR.UTF-8; \
-    locale-gen ko_KR ko_KR.UTF-8; \
-    locale-gen en_US.UTF-8; \
-    update-locale LANG=ko_KR.UTF-8; \
-    dpkg-reconfigure locales; \
     dpkg-reconfigure tzdata; \
+    #service ntp restart; \
     \
     \
     # Install nginx
@@ -207,6 +206,7 @@ RUN set -xe; \
         rm -rf "$GNUPGHOME"; \
     fi; \
     \
+    locale-gen en_US.UTF-8; \
     \
     # php
     tar -Jxf $SRC_DIR/php.tar.xz -C "${PHP_SRC_DIR}" --strip-components=1; \
@@ -230,9 +230,6 @@ RUN set -xe; \
     PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"; \
     \
     ./configure \
-        CFLAGS="$PHP_CFLAGS" \
-        CPPFLAGS="$PHP_CPPFLAGS" \
-        LDFLAGS="$PHP_LDFLAGS" \
         --build="${BUILD_ARCH}" \
         --sysconfdir="${PHP_INI_DIR}" \
         --with-libdir="lib/${DEV_MULTI_ARCH}" \
@@ -251,6 +248,9 @@ RUN set -xe; \
         \
         # --disable-cgi \
         # --disable-short-tags \
+        \
+        # make sure invalid --configure-flags are fatal errors intead of just warnings
+		--enable-option-checking=fatal \
         --enable-hash \
         --with-mhash \
         \

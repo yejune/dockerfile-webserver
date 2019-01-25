@@ -74,21 +74,22 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXLSWRITER 0.8.4
 -   PHP 7.2.13
     -   phalcon 3.4.2
-    -   swoole 4.2.9
+    -   swoole 4.2.10
     -   uuid 1.0.4
     -   yaml 2.0.4
     -   jsonnet 1.3.1
     -   igbinary 2.0.8
-    -   msgpack 2.0.2
+    -   msgpack 2.0.3
     -   apcu 5.1.15
-    -   memcached 3.0.4
+    -   memcached 3.1.3
     -   redis 4.2.0
     -   mongodb 1.5.3
     -   ~~couchbase 2.6.0~~
     -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
     -   gearman 2.0.3
-    -   sodium 2.0.15
+    -   sodium 2.0.12
+    -   mcrypt 1.0.2
     -   ev 1.0.4
     -   uv 0.2.2
     -   eio 2.0.4
@@ -97,7 +98,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   http 3.2.0
     -   psr 0.6.1
     -   callee
-    -   decimal 1.1.0
+    -   decimal 1.1.1
     -   imagick 3.4.3
     -   vips 1.0.9
     -   ssh2 1.1.2
@@ -226,6 +227,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_AMQP_VERSION
 -   EXTENSION_GEARMAN_VERSION
 -   EXTENSION_SODIUM_VERSION
+-   EXTENSION_MCRYPT_VERSION
 -   EXTENSION_SCREWIM_VERSION
 -   EXTENSION_EV_VERSION
 -   EXTENSION_UV_VERSION

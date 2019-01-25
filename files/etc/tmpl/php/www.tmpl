@@ -27,11 +27,10 @@ php_admin_value[error_log] = /proc/self/fd/2
 ;php_admin_value[memory_limit] = 128M
 
 php_admin_value[session.save_handler] = files
-php_admin_value[session.save_path] = /var/lib/php/session
 
 ;Ensure worker stdout and stderr are sent to the main error log.
 catch_workers_output = yes
 
-security.limit_extensions = .php
+security.limit_extensions = {{ .Env.PHP_EXTENSIONS }}
 
 {{ .Env.PHP_EXTRACONF }}

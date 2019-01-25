@@ -63,6 +63,7 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_AMQP_VERSION=$(EXTENSION_AMQP_VERSION) \
 		--build-arg EXTENSION_GEARMAN_VERSION=$(EXTENSION_GEARMAN_VERSION) \
 		--build-arg EXTENSION_SODIUM_VERSION=$(EXTENSION_SODIUM_VERSION) \
+		--build-arg EXTENSION_MCRYPT_VERSION=$(EXTENSION_MCRYPT_VERSION) \
 		--build-arg EXTENSION_SCREWIM_VERSION=$(EXTENSION_SCREWIM_VERSION) \
 		--build-arg EXTENSION_EV_VERSION=$(EXTENSION_EV_VERSION) \
 		--build-arg EXTENSION_UV_VERSION=$(EXTENSION_UV_VERSION) \
@@ -95,55 +96,69 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 
 build-71: ## Build PHP 7.1 images
 	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
+		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		PHP_VERSION="$(PHP71_VERSION)" \
 		PHP_GPGKEYS="$(PHP71_GPGKEYS)" \
 		PHP_SHA256="$(PHP71_SHA256)" \
-		TAG="$(PHP71_VERSION)" \
-		DOCKERFILE="Dockerfile"
+		TAG="$(PHP71_VERSION)-base" \
+		DOCKERFILE="Base.Dockerfile"
 
 	# @make build \
 	# 	EXTENSIONS="$(MINI_EXTENSIONS)" \
 	# 	PHP_VERSION="$(PHP71_VERSION)" \
 	# 	PHP_GPGKEYS="$(PHP71_GPGKEYS)" \
 	# 	PHP_SHA256="$(PHP71_SHA256)" \
-	# 	TAG="$(PHP71_VERSION)-mini" \
-	# 	DOCKERFILE="Dockerfile"
+	# 	TAG="$(PHP71_VERSION)" \
+	# 	DOCKERFILE="Base.Dockerfile"
 
-build-72: ## Build PHP 7.2 images
+build-base-72: ## Build PHP 7.2 base images
 	@make build \
-		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		EXTENSIONS="$(FULL_EXTENSIONS)" \
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(PHP72_VERSION)" \
-		DOCKERFILE="Dockerfile"
+		DOCKERFILE="72.Dockerfile"
 
+build-extend-72: ## Build PHP 7.2 extend images
 	@make build \
 		EXTENSIONS="$(FULL_EXTENSIONS)" \
 		PHP_VERSION="$(PHP72_VERSION)" \
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)-full" \
-		DOCKERFILE="Dockerfile.72"
+		TAG="$(PHP72_VERSION)" \
+		DOCKERFILE="72.Dockerfile"
 
-build-72a: ## Build PHP 7.2 images
-	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
-		PHP_VERSION="$(PHP72_VERSION)" \
-		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
-		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)-full" \
-		DOCKERFILE="Dockerfile.72"
+build-72: ## Build PHP 7.2 images
+	@make build-base-72
+	@make build-extend-72
 
-build-73: ## Build PHP 7.3 images
+build-base-73: ## Build PHP 7.3 base image
+	docker build \
+		--tag yejune/webserver:$(PREFIX)$(PHP73_VERSION)-base \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg PHP_VERSION="$(PHP73_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP73_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file Base.Dockerfile \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP73_VERSION)-base"; fi;
+
+build-extend-73: ## Build PHP 7.3 extend images
 	@make build \
-		EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
 		PHP_VERSION="$(PHP73_VERSION)" \
 		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
 		PHP_SHA256="$(PHP73_SHA256)" \
 		TAG="$(PHP73_VERSION)" \
-		DOCKERFILE="Dockerfile"
+		DOCKERFILE="73.Dockerfile"
+
+build-73: ## Build PHP 7.3 images
+	@make build-base-73
+	@make build-extend-73
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
@@ -152,14 +167,14 @@ build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(tag)" \
-		DOCKERFILE="Dockerfile"
+		DOCKERFILE="Base.Dockerfile"
 
 	@docker push yejune/webserver:$(PREFIX)$(tag)
 
 build-test-new: ## Dockerfile.test 로 빌드. Usage: make build-test-new tag="test11"
 	docker build \
 		--tag yejune/webserver:$(PREFIX)$(tag) \
-		--file Dockerfile.73 \
+		--file 73.Dockerfile \
 		--build-arg BUILD_EXTENSIONS="$(FULL_EXTENSIONS)" \
 	.
 
@@ -179,16 +194,17 @@ build-all: ## Build all images
 	@make build-71
 
 push-71: ## Push built PHP 7.1 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)
-	# @docker push yejune/webserver:$(PREFIX)$(PHP71_VERSION)-mini
 
 push-72: ## Push built PHP 7.2 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)
-	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-full
 	# @docker tag yejune/webserver:$(PREFIX)$(PHP72_VERSION) yejune/webserver:$(PREFIX)latest
 	# @docker push yejune/webserver:$(PREFIX)latest
 
 push-73: ## Push built PHP 7.3 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)
 
 push-all: ## Push all built images to Docker Hub

@@ -35,6 +35,7 @@ export NGINX_HEADER=${NGINX_HEADER:-""}
 
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
+export PHP_EXTENSIONS=${PHP_EXTENSIONS:-".php"}
 
 #export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 #export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
@@ -43,6 +44,9 @@ export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
 
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
+
+export PHP_SESSION_SAVE_HANDLER=${PHP_SESSION_SAVE_HANDLER:-"files"}
+export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-"/var/lib/php/session"}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_ACCESS_LOG_LEVEL=""
@@ -114,6 +118,18 @@ if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else
     dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
+
+    if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
+        sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
+    fi
+
+    if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
+        mkdir -p "${PHP_SESSION_SAVE_PATH}/";
+        chown -R ${FPM_USER}:${FPM_GROUP} "${PHP_SESSION_SAVE_PATH}/";
+        chmod -R ug+rw "${PHP_SESSION_SAVE_PATH}/";
+
+        sed -i -e "s~.*session.save_path.*~session.save_path = ${PHP_SESSION_SAVE_PATH}~g" ${PHP_INI_DIR}/php.ini
+    fi
 
     if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
         # mkfifo ${SLOW_LOG_STREAM} && chmod 777 ${SLOW_LOG_STREAM}
