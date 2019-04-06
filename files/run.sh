@@ -35,12 +35,15 @@ export NGINX_HEADER=${NGINX_HEADER:-""}
 
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
-export PHP_EXTENSIONS=${PHP_EXTENSIONS:-".php"}
 
 #export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 #export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
 export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
+
+
+export PHP_EXTENSIONS=${PHP_EXTENSIONS:-".php .do"}
+export INDEX_FILENAME=${INDEX_FILENAME:-"index.php"}
 
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
@@ -292,6 +295,10 @@ stderr_logfile_maxbytes=0
     if [ "$USE_SSL" != "only" ]; then
         dockerize -template /etc/tmpl/nginx/site.tmpl > /etc/nginx/site.d/default.conf
     fi
+
+    mkdir -p /etc/nginx/common.d/
+    dockerize -template /etc/tmpl/nginx/common.d/location.tmpl > /etc/nginx/common.d/location.conf
+    dockerize -template /etc/tmpl/nginx/variables.tmpl > /etc/nginx/variables.conf
 
     rm -rf /etc/tmpl
 

@@ -71,23 +71,25 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBV8 6.6
 -   LIBRABBITMQ 0.8.0
 -   LIBXL 3.8.3
--   LIBXLSWRITER 0.8.4
--   PHP 7.2.13
-    -   phalcon 3.4.2
-    -   swoole 4.2.10
+-   LIBXLSWRITER 0.8.5
+-   PHP 7.3.3
+    -   phalcon 3.4.3
+    -   swoole 4.3.1
     -   uuid 1.0.4
     -   yaml 2.0.4
     -   jsonnet 1.3.1
-    -   igbinary 2.0.8
+    -   igbinary 3.0.1
     -   msgpack 2.0.3
+    -   mailparse 3.0.3
+    -   base58 0.1.3
     -   apcu 5.1.15
     -   memcached 3.1.3
-    -   redis 4.2.0
+    -   redis 4.3.0
     -   mongodb 1.5.3
     -   ~~couchbase 2.6.0~~
     -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
-    -   gearman 2.0.3
+    -   gearman 2.0.5
     -   sodium 2.0.12
     -   mcrypt 1.0.2
     -   ev 1.0.4
@@ -105,14 +107,14 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
-    -   pdo_sqlsrv 5.5.0preview
+    -   pdo_sqlsrv 5.6.1
     -   v8js 2.1.0
     -   v8 0.2.2
     -   oauth 2.0.3
     -   excel 1.0.2
     -   xlswriter 1.2.3
-    -   xdebug 2.6.1
-    -   seaslog 1.9.0
+    -   xdebug 2.7.0
+    -   seaslog 2.0.2
 
 ## Build Options
 -   REPOGITORY_URL

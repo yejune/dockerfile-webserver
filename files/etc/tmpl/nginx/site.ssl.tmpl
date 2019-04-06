@@ -3,7 +3,7 @@ server {
     listen      443 ssl;
     server_name {{ .Env.DOMAIN }};
     root        {{ .Env.WEBROOT }};
-    index       index.html index.php index.htm;
+    index       index.html index.php index.do index.htm;
     charset     utf-8;
 
     include     /etc/nginx/common.d/*.conf;
@@ -14,7 +14,7 @@ server {
     ssl_certificate /var/certs/{{ .Env.DOMAIN }}.crt;
     ssl_certificate_key /var/certs/{{ .Env.DOMAIN }}.key;
 
-    location ~ [^/]\.php(/|$)
+    location ~ [^/]\.(php|do)(/|$)
     {
         include /etc/nginx/variables.conf;
 

@@ -56,6 +56,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_JSONNET_VERSION=$(EXTENSION_JSONNET_VERSION) \
 		--build-arg EXTENSION_IGBINARY_VERSION=$(EXTENSION_IGBINARY_VERSION) \
 		--build-arg EXTENSION_MSGPACK_VERSION=$(EXTENSION_MSGPACK_VERSION) \
+		--build-arg EXTENSION_MAILPARSE_VERSION=$(EXTENSION_MAILPARSE_VERSION) \
+		--build-arg EXTENSION_BASE582_VERSION=$(EXTENSION_BASE58_VERSION) \
 		--build-arg EXTENSION_APCU_VERSION=$(EXTENSION_APCU_VERSION) \
 		--build-arg EXTENSION_MEMCACHED_VERSION=$(EXTENSION_MEMCACHED_VERSION) \
 		--build-arg EXTENSION_REDIS_VERSION=$(EXTENSION_REDIS_VERSION) \
@@ -135,6 +137,7 @@ build-72: ## Build PHP 7.2 images
 
 build-base-73: ## Build PHP 7.3 base image
 	docker build \
+		--no-cache \
 		--tag yejune/webserver:$(PREFIX)$(PHP73_VERSION)-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg PHP_VERSION="$(PHP73_VERSION)" \
