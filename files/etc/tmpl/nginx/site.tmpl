@@ -3,7 +3,7 @@ server {
     listen      80;
     server_name {{ .Env.DOMAIN }};
     root        {{ .Env.WEBROOT }};
-    index       index.html index.php index.do index.htm;
+    index       {{ .Env.PHP_EXTENSION_INDEX_STRING }};
     charset     utf-8;
 
     include     /etc/nginx/common.d/*.conf;
@@ -11,7 +11,7 @@ server {
     access_log  /var/log/nginx/access.log logformat{{ .Env.NGINX_ACCESS_LOG_LEVEL }};
     error_log   /var/log/nginx/error.log{{ .Env.NGINX_ERROR_LOG_LEVEL }};
 
-    location ~ [^/]\.(php|do)(/|$)
+    location ~ [^/]\.({{ .Env.PHP_EXTENSION_URL_REGEX }})(/|$)
     {
         include /etc/nginx/variables.conf;
 

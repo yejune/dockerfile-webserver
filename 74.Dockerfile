@@ -1,4 +1,4 @@
-FROM yejune/webserver:bionic-7.3.11-base
+FROM yejune/webserver:bionic-7.4.3-base
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -58,11 +58,12 @@ ARG EXTENSION_VLD_VERSION=0.16.0
 ARG EXTENSION_DATADOG_TRACE_VERSION=0.42.0
 ARG EXTENSION_GRPC_VERSION=1.28.0
 ARG EXTENSION_PSR_VERSION=1.0.0
+ARG EXTENSION_YACONF_VERSION=1.0.8
 ARG EXTENSION_HTTP_MESSAGE_VERSION=0.2.1
 ARG EXTENSION_WASM_VERSION=0.5.0
 ARG DOCKERIZE_VERSION=0.6.1
 ARG LIBRARY_XL_VERSION=3.8.3
-ARG LIBRARY_XLSWRITER_VERSION=0.8.5
+ARG LIBRARY_XLSWRITER_VERSION=0.9.1
 ARG LIBRARY_VIPS_VERSION=8.7.0
 ARG LIBRARY_V8_VERSION=7.5
 
@@ -70,8 +71,8 @@ SHELL ["/bin/bash", "-c"]
 
 
 RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
-        sed -i "s/:\/\/archive.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
-        sed -i "s/:\/\/security.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/archive.ubuntu.com/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/security.ubuntu.com/g" /etc/apt/sources.list; \
     fi
 
 ENV PHP_INI_DIR=/etc/php \

@@ -4,8 +4,12 @@ wget-retry https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_${LIBRARY_
 tar zxvf RELEASE_${LIBRARY_XLSWRITER_VERSION}.tar.gz
 mv libxlsxwriter-RELEASE_${LIBRARY_XLSWRITER_VERSION} libxlsxwriter
 cd libxlsxwriter
+make clean
 make
 make install
-# ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION}
-printf "yes\n" | pecl install xlswriter-${EXTENSION_XLSWRITER_VERSION}
-echo "extension=xlswriter.so" > ${PHP_CONF_DIR}/xlswriter.ini
+
+printf "yes\n" | ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION} --with-libxlsxwriter --enable-reader
+
+# # ext-pcl xlswriter-${EXTENSION_XLSWRITER_VERSION}
+# printf "yes\n" | pecl install xlswriter-${EXTENSION_XLSWRITER_VERSION}
+# echo "extension=xlswriter.so" > ${PHP_CONF_DIR}/xlswriter.ini

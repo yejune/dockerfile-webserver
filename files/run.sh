@@ -41,15 +41,23 @@ export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
 export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
 
-
-export PHP_EXTENSIONS=${PHP_EXTENSIONS:-".php .do"}
+export PHP_EXTENSIONS=${PHP_EXTENSIONS:-"php do"}
+export PHP_EXTENSION_STRING=".${PHP_EXTENSIONS// / .}"
+export PHP_EXTENSION_URL_REGEX="${PHP_EXTENSIONS// /|}"
+export PHP_EXTENSION_PATH_INFO_REGEX=".+\.${PHP_EXTENSIONS// /|.+\\.}"
+export PHP_EXTENSION_INDEX_STRING="index.${PHP_EXTENSIONS// / index.}"
 export INDEX_FILENAME=${INDEX_FILENAME:-"index.php"}
 
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
+export SERVER_NAME=${SERVER_NAME:-"NGINX"}
+export PHP_SESSION_NAME=${PHP_SESSION_NAME:-"PHPSESSID"}
 export PHP_SESSION_SAVE_HANDLER=${PHP_SESSION_SAVE_HANDLER:-"files"}
 export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-"/var/lib/php/session"}
+export PHP_SESSION_GC_MAXLIFETIME=${PHP_SESSION_GC_MAXLIFETIME:-""}
+export PHP_SESSION_GC_PROBABILITY=${PHP_SESSION_GC_PROBABILITY:-""}
+export PHP_SESSION_GC_DIVISOR=${PHP_SESSION_GC_DIVISOR:-""}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_ACCESS_LOG_LEVEL=""
@@ -60,6 +68,9 @@ export NGINX_CORS_ORIGIN=${NGINX_CORS_ORIGIN:-"*"}
 export NGINX_CORS_HEADERS=${NGINX_CORS_HEADERS:-"Origin,Accept,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization"}
 export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD"}
 export NGINX_CORS_EXPOSE_HEADERS=${NGINX_CORS_EXPOSE_HEADERS:-"X-Request-ID"}
+
+export LOCALE_GEN=${LOCALE_GEN:-"ko_KR.UTF-8"}
+
 # When responding to a credentialed request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the "*" wildcard.
 if [ "$NGINX_CORS_ORIGIN" = "*" ]; then
     export NGINX_CORS_CREDENTIALS="false";
@@ -120,18 +131,48 @@ fi
 if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else
+
+    locales=($LOCALE_GEN)
+    for i in "${locales[@]}"; do
+        locale-gen $i;
+    done
+
     dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
 
+    if [ ! -z "$PHP_SESSION_NAME" ]; then
+        # sed -i -e "s~.*session.name.*~session.name = ${PHP_SESSION_NAME}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.name] = ${PHP_SESSION_NAME} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
     if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
-        sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
+        # sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.save_handler] = ${PHP_SESSION_SAVE_HANDLER} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
+    if [ ! -z "$PHP_SESSION_GC_MAXLIFETIME" ]; then
+        # sed -i -e "s~.*session.gc_maxlifetime.*~session.gc_maxlifetime = ${PHP_SESSION_GC_MAXLIFETIME}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.gc_maxlifetime] = ${PHP_SESSION_GC_MAXLIFETIME} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
+    if [ ! -z "$PHP_SESSION_GC_PROBABILITY" ]; then
+        # sed -i -e "s~.*session.gc_probability.*~session.gc_probability = ${PHP_SESSION_GC_PROBABILITY}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.gc_probability] = ${PHP_SESSION_GC_PROBABILITY} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
+    if [ ! -z "$PHP_SESSION_GC_DIVISOR" ]; then
+        # sed -i -e "s~.*session.gc_divisor.*~session.gc_divisor = ${PHP_SESSION_GC_DIVISOR}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.gc_divisor] = ${PHP_SESSION_GC_DIVISOR} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
     if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
-        mkdir -p "${PHP_SESSION_SAVE_PATH}/";
-        chown -R ${FPM_USER}:${FPM_GROUP} "${PHP_SESSION_SAVE_PATH}/";
-        chmod -R ug+rw "${PHP_SESSION_SAVE_PATH}/";
+        if [[ ! "$PHP_SESSION_SAVE_PATH" =~ ":" ]]; then
+            mkdir -p "${PHP_SESSION_SAVE_PATH}/";
+            chown -R ${FPM_USER}:${FPM_GROUP} "${PHP_SESSION_SAVE_PATH}/";
+            chmod -R ug+rw "${PHP_SESSION_SAVE_PATH}/";
+        fi
 
-        sed -i -e "s~.*session.save_path.*~session.save_path = ${PHP_SESSION_SAVE_PATH}~g" ${PHP_INI_DIR}/php.ini
+        # sed -i -e "s~.*session.save_path.*~session.save_path = ${PHP_SESSION_SAVE_PATH}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.save_path] = ${PHP_SESSION_SAVE_PATH} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
     if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
@@ -175,11 +216,15 @@ else
 
     # Display Version Details or not
     if is_on "$SHOW_VERSION"; then
-        #sed -i -e "s/#more_clear_headers Server;//g" /etc/nginx/nginx.conf
+        sed -i -e "s/#more_clear_headers Server;//g" /etc/nginx/nginx.conf
         sed -i -e "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
         sed -i -e "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
     else
-        #sed -i -e "s/#more_clear_headers Server;/more_clear_headers Server;/g" /etc/nginx/nginx.conf
+        if [ ! -z "$SERVER_NAME" ]; then
+            sed -i -e "s/#more_clear_headers Server;/more_set_headers 'Server: ${SERVER_NAME}';/g" /etc/nginx/nginx.conf
+        else
+            sed -i -e "s/#more_clear_headers Server;/more_clear_headers Server;/g" /etc/nginx/nginx.conf
+        fi
         sed -i -e "s/server_tokens on;/server_tokens off;/g" /etc/nginx/nginx.conf
         sed -i -e "s/expose_php = On/expose_php = Off/g" ${PHP_INI_DIR}/php.ini
     fi
@@ -203,6 +248,30 @@ else
             else
                 if [ -f "${PHP_CONF_DIR}.stop/$ext.ini" ]; then
                     mv "${PHP_CONF_DIR}.stop/$ext.ini" "${PHP_CONF_DIR}/$ext.ini"
+                else
+                    if [ -f "${PHP_CONF_DIR}.stop/z_$ext.ini" ]; then
+                        mv "${PHP_CONF_DIR}.stop/z_$ext.ini" "${PHP_CONF_DIR}/z_$ext.ini"
+                    fi
+                fi
+            fi
+        done
+    fi
+
+
+    if [ ! -z "$PHP_UNLOAD_EXTENSIONS" ]; then
+        mkdir -p "${PHP_CONF_DIR}.stop/"
+        a=( $PHP_UNLOAD_EXTENSIONS )
+        for ((j=0; j<"${#a[@]}"; j++)); do
+            ext="${a[j]}"
+            if [ -f "${PHP_CONF_DIR}/1_$ext.ini" ]; then
+                mv "${PHP_CONF_DIR}/1_$ext.ini" "${PHP_CONF_DIR}.stop/1_$ext.ini"
+            else
+                if [ -f "${PHP_CONF_DIR}/$ext.ini" ]; then
+                    mv "${PHP_CONF_DIR}/$ext.ini" "${PHP_CONF_DIR}.stop/$ext.ini"
+                else
+                    if [ -f "${PHP_CONF_DIR}/z_$ext.ini" ]; then
+                        mv "${PHP_CONF_DIR}/z_$ext.ini" "${PHP_CONF_DIR}.stop/z_$ext.ini"
+                    fi
                 fi
             fi
         done
@@ -211,7 +280,7 @@ else
     # Display PHP error's or not
     if is_on "$DEBUG"; then
         echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    #    sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
+        # sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
         sed -i -e "s/display_errors\s*=\s*.*/display_errors = stderr/g" ${PHP_INI_DIR}/php.ini
     else
         echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf

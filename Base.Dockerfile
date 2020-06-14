@@ -6,9 +6,9 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ARG PHP_VERSION=7.3.4
+ARG PHP_VERSION=7.3.10
 ARG PHP_GPGKEYS="CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D"
-ARG PHP_SHA256="6fe79fa1f8655f98ef6708cde8751299796d6c1e225081011f4104625b923b83"
+ARG PHP_SHA256="42f00a15419e05771734b7159c8d39d639b8a5a6770413adfa2615f6f923d906"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
@@ -24,13 +24,16 @@ RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
     fi
 
 ENV PHP_INI_DIR=/etc/php \
+    PHP_CONF_DIR=/etc/php/conf.d \
     PHP_RUN_DIR=/run/php \
     PHP_LOG_DIR=/var/log/php \
     PHP_DATA_DIR=/var/lib/php \
     PHP_SRC_DIR=/usr/src/php \
-    PHP_CONF_DIR=/etc/php/conf.d \
     PECL_SRC_DIR=/usr/src/pecl \
-    SRC_DIR=/usr/src
+    SRC_DIR=/usr/src \
+    USR_LOCAL_BIN_DIR=/usr/local/bin \
+    USR_LIB_DIR=/usr/lib
+
 
 ENV DEFAULT_EXTENSIONS="\
         bcmath\
@@ -122,6 +125,7 @@ RUN set -xe; \
         libpcre2-dev \
         libpcre3-dev \
         \
+        libonig-dev \
         libcurl4-openssl-dev \
         libreadline6-dev \
         libssl-dev \
@@ -154,6 +158,10 @@ RUN set -xe; \
     #service ntp restart; \
     \
     \
+    add-apt-repository -y ppa:maxmind/ppa; \
+    apt-get update; \
+    apt-get install libmaxminddb0 libmaxminddb-dev mmdb-bin; \
+    \
     # Install nginx
     # found=''; \
     # for server in \
@@ -169,7 +177,7 @@ RUN set -xe; \
     # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
     add-apt-repository -y ppa:nginx/stable; \
     apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx; \
+    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx nginx-extras; \
     # forward request and error logs to docker log collector
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     #ln -sf /dev/stderr /var/log/nginx/error.log; \
@@ -179,8 +187,8 @@ RUN set -xe; \
     \
     \
     if [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz.asc"; \
+        PHP_URL="https://downloads.php.net/~derick/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~derick/php-${PHP_VERSION}.tar.xz.asc"; \
     else \
         PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
         PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
@@ -233,7 +241,6 @@ RUN set -xe; \
         --build="${BUILD_ARCH}" \
         --sysconfdir="${PHP_INI_DIR}" \
         --with-libdir="lib/${DEV_MULTI_ARCH}" \
-        --with-pcre-regex=/usr \
         \
         --disable-all \
         \
@@ -250,8 +257,13 @@ RUN set -xe; \
         # --disable-short-tags \
         \
         # make sure invalid --configure-flags are fatal errors intead of just warnings
-		--enable-option-checking=fatal \
-        --enable-hash \
+        --enable-option-checking=fatal \
+#        --with-pcre-regex=/usr \
+#        --enable-hash \
+        --enable-xml \
+#        --with-libxml \
+#        --enable-libxml \
+#        --with-libxml-dir \
         --with-mhash \
         \
         --enable-ipv6 \
@@ -268,14 +280,14 @@ RUN set -xe; \
         --with-readline \
         --enable-filter \
         \
-        --enable-xml \
-        --enable-libxml \
         --with-pear \
-        --with-libxml-dir \
         --enable-phar \
+        --with-pcre-jit \
         \
         # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
         $([[ $PHP_VERSION != "7.1."* ]] && echo '--with-password-argon2') \
+        $([[ $PHP_VERSION == "7.4."* ]] && echo '--with-libxml') \
+        $([[ $PHP_VERSION != "7.4."* ]] && echo '--enable-libxml --with-libxml-dir --with-onig') \
         # bundled pcre does not support JIT on s390x
         # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
         $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
@@ -287,6 +299,7 @@ RUN set -xe; \
     make -j "$(nproc)"; \
     make install; \
     make clean; \
+    pear upgrade pear; \
     \
     PHP_EXTENSION_DIR=$(php-config --extension-dir); \
     \
@@ -306,7 +319,11 @@ RUN set -xe; \
         if [ -f "/usr/local/script/${extension}.sh" ]; then \
             source "/usr/local/script/${extension}.sh"; \
         else \
-            ext-src $extension; \
+            if [ -f "/usr/local/extension/${extension}.sh" ]; then \
+                source "/usr/local/extension/${extension}.sh"; \
+            else \
+                ext-src $extension; \
+            fi; \
         fi; \
     done; \
     \

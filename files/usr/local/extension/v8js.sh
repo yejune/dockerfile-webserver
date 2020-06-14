@@ -1,8 +1,5 @@
-# cd $PECL_SRC_DIR
-# rm -rf libv8
-# git clone https://github.com/yejune/libv8 -b bionic
-# cp -r libv8/opt/libv8 /opt/libv8/
+add-apt-repository ppa:stesie/libv8
+apt-get update
 
-# git clone https://github.com/phpv8/v8js v8js-${EXTENSION_V8JS_VERSION}
-
-# ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8
+apt-get install -y libv8-${LIBRARY_V8_VERSION}-dev
+ext-pcl v8js-${EXTENSION_V8JS_VERSION} --with-v8js=/opt/libv8-${LIBRARY_V8_VERSION}/

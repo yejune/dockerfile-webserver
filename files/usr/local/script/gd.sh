@@ -4,10 +4,10 @@ ext-lib libjpeg-dev \
         libxpm-dev \
         libfreetype6-dev
 
-ext-src gd  --with-webp-dir \
-            --with-jpeg-dir \
-            --with-png-dir \
-            --with-zlib-dir \
-            --with-xpm-dir \
-            --with-freetype-dir \
-            --enable-gd-native-ttf
+ext-src gd  --enable-gd \
+            --with-webp \
+            --with-jpeg \
+            --with-xpm \
+            --with-freetype \
+            --with-webp-dir \
+            --enable-gd-jis-conv

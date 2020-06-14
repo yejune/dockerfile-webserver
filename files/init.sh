@@ -1,12 +1,6 @@
 #!/bin/bash
 set -ex
 
-if [[ `(which sudo 2> /dev/null)` = "" ]];then
-    sudo=""
-else
-    sudo="sudo"
-fi
-
 in_array()
 {
     local haystack
@@ -48,7 +42,7 @@ phpize-install()
     local lib_shortname="${arrIN[0]}"
     local ini_filename="${lib_shortname}"
 
-    local after=("decimal");
+    local after=("decimal" "couchbase");
 
     if [ ! -d "${PECL_SRC_DIR}/${lib_fullname}" ]; then
         pecl-download $lib_fullname
@@ -117,7 +111,7 @@ ext-src()
     fi
 
     local extensions=("filter" "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib" "phar" "hash");
-    local prev=("session" "pdo");
+    local prev=("session" "pdo", "json");
 
     if in_array extensions "${name}"; then
         echo ""

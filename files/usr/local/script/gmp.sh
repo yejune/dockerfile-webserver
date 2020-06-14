@@ -1,2 +1,4 @@
 ext-lib libgmp-dev
-ext-src gmp --with-gmp=/usr/include/x86_64-linux-gnu/gmp.h
+find / -name gmp.h
+ext-src gmp
+# --with-gmp=/usr/include/x86_64-linux-gnu/gmp.h

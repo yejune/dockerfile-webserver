@@ -30,6 +30,15 @@ class PhpEnvironment
         'TMPDIR',
         'PHP_LIB',
         '_',
+        'PHP_EXTENSION_STRING',
+        'PHP_EXTENSION_URL_REGEX',
+        'PHP_EXTENSION_PATH_INFO_REGEX',
+        'PHP_EXTENSION_INDEX_STRING',
+        'PHP_SESSION_GC_PROBABILITY',
+        'PHP_SESSION_GC_MAXLIFETIME',
+        'PHP_SESSION_GC_DIVISOR',
+        'SERVER_NAME',
+        'PHP_SESSION_NAME',
         'PHP_INI_DIR',
         'PHP_RUN_DIR',
         'PHP_LOG_DIR',
@@ -37,6 +46,8 @@ class PhpEnvironment
         'PHP_SRC_DIR',
         'PHP_CONF_DIR',
         'PECL_SRC_DIR',
+        'USR_LOCAL_BIN_DIR',
+        'USR_LIB_DIR',
         'SRC_DIR',
         'FPM_GROUP',
         'FASTCGI_PASS',
@@ -74,6 +85,7 @@ class PhpEnvironment
         'PHP_SESSION_SAVE_HANDLER',
         'PHP_SESSION_SAVE_PATH',
         'PHP_LOAD_EXTENSIONS',
+        'PHP_UNLOAD_EXTENSIONS',
         'PHP_VARIABLES_ORDER',
         'PHP_MEM_LIMIT',
         'PHP_UPLOAD_MAX_FILESIZE',
@@ -81,6 +93,7 @@ class PhpEnvironment
         'PHP_LDFLAGS',
         'PHP_CPPFLAGS',
         'PHP_CFLAGS',
+        'LOCALE_GEN',
         'REPOGITORY_URL',
         'LIBRARY_V8_VERSION',
         'LIBRARY_RABBITMQ_VERSION',
@@ -150,7 +163,7 @@ class PhpEnvironment
         $variables = static::getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            if ($key && $value) {
+            if ($key && strlen((string)$value)) {
                 echo 'env['.$key.']="'.addcslashes(str_replace(PHP_EOL, '\n', trim($value)), '"').'"'.PHP_EOL;
             }
         }
@@ -164,7 +177,7 @@ class PhpEnvironment
         $variables = static::getEnvironmentVariables();
 
         foreach ($variables as $key => $value) {
-            if ($key && $value) {
+            if ($key && strlen((string)$value)) {
                 echo $key.'="'.addcslashes(str_replace(PHP_EOL, '\n', trim($value)), '"').'"'.PHP_EOL;
             }
         }
