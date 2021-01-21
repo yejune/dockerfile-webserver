@@ -15,7 +15,7 @@ rm -rf ${EXTENSION_WASM_VERSION}.tar.gz
 #pecl install -B wasm
 
 export CXX="gcc"
-export EXTENSION=$PECL_SRC_DIR/php-ext-wasm-${EXTENSION_WASM_VERSION}/src
+export EXTENSION=$PECL_SRC_DIR/wasmer-php-${EXTENSION_WASM_VERSION}/src
 
 cd $EXTENSION
 PHP_PREFIX=$(php-config --prefix)

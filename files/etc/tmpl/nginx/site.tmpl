@@ -10,22 +10,23 @@ server {
 
     access_log  /var/log/nginx/access.log logformat{{ .Env.NGINX_ACCESS_LOG_LEVEL }};
     error_log   /var/log/nginx/error.log{{ .Env.NGINX_ERROR_LOG_LEVEL }};
+    {{ .Env.ERROR_PAGE }}
 
     location ~ [^/]\.({{ .Env.PHP_EXTENSION_URL_REGEX }})(/|$)
     {
         include /etc/nginx/variables.conf;
-
-        {{ .Env.NGINX_HEADER }}
-
         include /etc/nginx/cors.conf;
+
+        #try_files $uri =404;
 
         if (!-f $document_root$fastcgi_script_name) {
             return 404;
         }
 
         fastcgi_pass {{ .Env.FASTCGI_PASS }};
+        {{ .Env.NGINX_LOCATION }}
     }
 
-    {{ .Env.NGINX_LOCATION }}
+    {{ .Env.NGINX_SERVER }}
 
 }

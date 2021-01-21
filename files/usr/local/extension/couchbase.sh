@@ -5,6 +5,6 @@ echo "deb http://packages.couchbase.com/ubuntu bionic bionic/main" | tee /etc/ap
 
 # Will install or upgrade packages
 apt-get update
-ext-lib libcouchbase-dev libcouchbase2-bin
+ext-lib libcouchbase-dev libcouchbase3-bin
 
 ext-pcl couchbase-${EXTENSION_COUCHBASE_VERSION}

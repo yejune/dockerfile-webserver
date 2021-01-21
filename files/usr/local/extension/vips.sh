@@ -11,9 +11,9 @@ ext-lib \
         libexif-dev \
         liblcms2-dev \
         liborc-dev \
-        libvips-dev
+        libvips-dev \
+        libvips
 
-apt-mark manual libvips-dev
 
 # url=https://github.com/libvips/libvips/releases/download
 # version=8.7.2

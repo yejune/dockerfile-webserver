@@ -110,11 +110,10 @@ ext-src()
         done
     fi
 
-    local extensions=("filter" "readline" "libxml" "xml" "spl" "reflection" "standard" "pcre" "date" "ftp" "mysqlnd" "fpm" "mbstring" "curl" "openssl" "zlib" "phar" "hash");
-    local prev=("session" "pdo", "json");
+    local prepend=("session" "pdo" "json");
 
-    if in_array extensions "${name}"; then
-        echo ""
+    if  [ $(php -r "echo extension_loaded('${name}') ?: 0;") == 1 ] ; then
+        echo "${name} extension_loaded ok"
     else
         local ext_dir="${PHP_SRC_DIR}/ext/${name}"
         cd "${ext_dir}"
@@ -140,7 +139,7 @@ ext-src()
 
         local ini_filename="${name}"
 
-        if in_array prev "${name}"; then
+        if in_array prepend "${name}"; then
             ini_filename="1_${name}"
         fi
 

@@ -31,6 +31,8 @@ not_off() {
 export DOMAIN=${DOMAIN:-"_"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
 export NGINX_LOCATION=${NGINX_LOCATION:-""}
+export NGINX_HTTP=${NGINX_HTTP:-""}
+export NGINX_SERVER=${NGINX_SERVER:-""}
 export NGINX_HEADER=${NGINX_HEADER:-""}
 
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
@@ -58,6 +60,7 @@ export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-"/var/lib/php/session"}
 export PHP_SESSION_GC_MAXLIFETIME=${PHP_SESSION_GC_MAXLIFETIME:-""}
 export PHP_SESSION_GC_PROBABILITY=${PHP_SESSION_GC_PROBABILITY:-""}
 export PHP_SESSION_GC_DIVISOR=${PHP_SESSION_GC_DIVISOR:-""}
+export PHP_MAX_INPUT_VARS=${PHP_MAX_INPUT_VARS:-""}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_ACCESS_LOG_LEVEL=""
@@ -70,6 +73,9 @@ export NGINX_CORS_METHODS=${NGINX_CORS_METHODS:-"GET,POST,PUT,DELETE,PATCH,OPTIO
 export NGINX_CORS_EXPOSE_HEADERS=${NGINX_CORS_EXPOSE_HEADERS:-"X-Request-ID"}
 
 export LOCALE_GEN=${LOCALE_GEN:-"ko_KR.UTF-8"}
+
+#export ERROR_PAGE=${ERROR_PAGE:-"error_page  403 404 405 406 411 497 500 501 502 503 504 505 /error.html;"}
+export ERROR_PAGE=${ERROR_PAGE:-""}
 
 # When responding to a credentialed request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the "*" wildcard.
 if [ "$NGINX_CORS_ORIGIN" = "*" ]; then
@@ -164,6 +170,11 @@ else
         echo php_admin_value[session.gc_divisor] = ${PHP_SESSION_GC_DIVISOR} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
+    if [ ! -z "$PHP_MAX_INPUT_VARS" ]; then
+        # sed -i -e "s~.*session.gc_divisor.*~session.gc_divisor = ${PHP_MAX_INPUT_VARS}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[max_input_vars] = ${PHP_MAX_INPUT_VARS} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
     if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
         if [[ ! "$PHP_SESSION_SAVE_PATH" =~ ":" ]]; then
             mkdir -p "${PHP_SESSION_SAVE_PATH}/";
@@ -200,6 +211,13 @@ else
 
     if [ ! -z "$PHP_VARIABLES_ORDER" ]; then
         sed -i 's/variables_order = .*/variables_order = "${PHP_VARIABLES_ORDER}"/' ${PHP_INI_DIR}/php.ini
+    fi
+
+
+    dockerize -template /etc/tmpl/nginx/nginx.tmpl > /etc/nginx/nginx.conf
+
+    if [ ! -z "$NGINX_HTTP" ]; then
+        sed -i -e "s~include /etc/nginx/http.conf;~# include /etc/nginx/http.conf;~g" /etc/nginx/nginx.conf
     fi
 
     if [ "$LOG_FORMAT" = "json" ]; then
@@ -282,6 +300,7 @@ else
         echo php_flag[display_errors] = on >> ${PHP_INI_DIR}/php-fpm.d/www.conf
         # sed -i -e "s/display_errors\s*=\s*.*/display_errors = On/g" ${PHP_INI_DIR}/php.ini
         sed -i -e "s/display_errors\s*=\s*.*/display_errors = stderr/g" ${PHP_INI_DIR}/php.ini
+        sed -i -e "s/display_startup_errors\s*=\s*.*/display_startup_errors = On/g" ${PHP_INI_DIR}/php.ini
     else
         echo php_flag[display_errors] = off >> ${PHP_INI_DIR}/php-fpm.d/www.conf
         sed -i -e "s/display_errors\s*=\s*.*/display_errors = Off/g" ${PHP_INI_DIR}/php.ini

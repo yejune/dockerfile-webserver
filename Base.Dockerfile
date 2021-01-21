@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -6,9 +6,9 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ARG PHP_VERSION=7.3.10
-ARG PHP_GPGKEYS="CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D"
-ARG PHP_SHA256="42f00a15419e05771734b7159c8d39d639b8a5a6770413adfa2615f6f923d906"
+ARG PHP_VERSION=7.4.10
+ARG PHP_GPGKEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312"
+ARG PHP_SHA256="c2d90b00b14284588a787b100dee54c2400e7db995b457864d66f00ad64fb010"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
@@ -98,7 +98,6 @@ ENV DEFAULT_EXTENSIONS="\
         wddx\
         xml\
         xmlreader\
-        xmlrpc\
         xmlwriter\
         xsl\
         zip\
@@ -186,33 +185,37 @@ RUN set -xe; \
     # Install php
     \
     \
+    \
     if [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~derick/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~derick/php-${PHP_VERSION}.tar.xz.asc"; \
+        PHP_URL="https://downloads.php.net/~carusogabriel/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~carusogabriel/php-${PHP_VERSION}.tar.xz.asc"; \
+        \
+        wget-retry -O php.tar.xz "${PHP_URL}"; \
     else \
         PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
         PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
+        \
+        wget-retry -O php.tar.xz "${PHP_URL}"; \
+        \
+        if [ -n "$PHP_SHA256" ]; then \
+            echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+        fi; \
+        \
+        if [ -n "$PHP_ASC_URL" ]; then \
+            wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
+            export GNUPGHOME="$(mktemp -d)"; \
+            for key in $PHP_GPGKEYS; do \
+                gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
+                || gpg --keyserver pgp.mit.edu --recv-keys "$key" \
+                || gpg --keyserver keyserver.pgp.com --recv-keys "$key" \
+                || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" \
+                || gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key"; \
+            done; \
+            gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+            rm -rf "$GNUPGHOME"; \
+        fi; \
     fi; \
     \
-    wget-retry -O php.tar.xz "${PHP_URL}"; \
-    \
-    if [ -n "$PHP_SHA256" ]; then \
-        echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
-    fi; \
-    \
-    if [ -n "$PHP_ASC_URL" ]; then \
-        wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
-        export GNUPGHOME="$(mktemp -d)"; \
-        for key in $PHP_GPGKEYS; do \
-            gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
-            || gpg --keyserver pgp.mit.edu --recv-keys "$key" \
-            || gpg --keyserver keyserver.pgp.com --recv-keys "$key" \
-            || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" \
-            || gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key"; \
-        done; \
-        gpg --batch --verify php.tar.xz.asc php.tar.xz; \
-        rm -rf "$GNUPGHOME"; \
-    fi; \
     \
     locale-gen en_US.UTF-8; \
     \
@@ -286,8 +289,8 @@ RUN set -xe; \
         \
         # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
         $([[ $PHP_VERSION != "7.1."* ]] && echo '--with-password-argon2') \
-        $([[ $PHP_VERSION == "7.4."* ]] && echo '--with-libxml') \
-        $([[ $PHP_VERSION != "7.4."* ]] && echo '--enable-libxml --with-libxml-dir --with-onig') \
+        $([[ $PHP_VERSION == "7.4."* || $PHP_VERSION == "8."* ]] && echo '--with-libxml') \
+        $([[ $PHP_VERSION != "7.4."* && $PHP_VERSION != "8."* ]] && echo '--enable-libxml --with-libxml-dir --with-onig') \
         # bundled pcre does not support JIT on s390x
         # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
         $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
@@ -299,7 +302,7 @@ RUN set -xe; \
     make -j "$(nproc)"; \
     make install; \
     make clean; \
-    pear upgrade pear; \
+    # pear upgrade pear; \
     \
     PHP_EXTENSION_DIR=$(php-config --extension-dir); \
     \
@@ -316,6 +319,8 @@ RUN set -xe; \
     # src extension install
     for extension in "${BUILD_PHP_EXTENSIONS[@]}"; do \
         echo $extension; \
+        cd $PECL_SRC_DIR; \
+        php -r "echo extension_loaded('${extension}');"; \
         if [ -f "/usr/local/script/${extension}.sh" ]; then \
             source "/usr/local/script/${extension}.sh"; \
         else \

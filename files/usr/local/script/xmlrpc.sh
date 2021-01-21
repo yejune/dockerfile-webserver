@@ -1,2 +1,2 @@
 ext-lib libxml2 libxml2-dev
-ext-src xmlrpc
+ext-pcl xmlrpc
