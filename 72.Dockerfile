@@ -1,4 +1,4 @@
-FROM yejune/webserver:bionic-7.2.13-base
+FROM yejune/webserver:focal-7.2.13-base
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
