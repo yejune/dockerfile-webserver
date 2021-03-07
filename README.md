@@ -74,29 +74,29 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXLSWRITER 0.9.9
 -   PHP 7.4.10
     -   phalcon 4.0.4
-    -   swoole 4.6.1
+    -   swoole 4.6.3
     -   uuid 1.1.0
     -   apfd 1.0.2
     -   json_post 1.0.2
     -   yaml 2.2.0
     -   jsonnet 1.3.1
-    -   protobuf 3.14.0RC2
+    -   protobuf 3.15.5
     -   igbinary 3.2.2RC1
     -   msgpack 2.1.2
     -   mailparse 3.1.1
     -   base58 0.1.3
     -   apcu 5.1.15
     -   memcached 3.1.5
-    -   redis 5.3.2
+    -   redis 5.3.3
     -   mongodb 1.9.0
     -   rdkafka 5.0.0
-    -   couchbase 3.1.0
+    -   couchbase 3.1.1
     -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
     -   gearman 2.1.0
     -   sodium 2.0.23
     -   mcrypt 1.0.3
-    -   ev 1.0.9
+    -   ev 1.1.0
     -   uv 0.2.4
     -   eio 2.0.4
     -   event 3.0.2
@@ -104,14 +104,14 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   http 4.0.0
     -   psr 1.0.0
     -   callee
-    -   decimal 2.0.0
+    -   decimal 1.4.0
     -   imagick 3.4.4
     -   vips 1.0.12
-    -   ssh2 1.2
+    -   ssh2 1.3.1
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
-    -   pdo_sqlsrv 5.8.1
+    -   pdo_sqlsrv 5.9.0
     -   v8js 2.1.2
     -   v8 0.2.2
     -   oauth 2.0.7
@@ -122,8 +122,8 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   componere 3.1.2
     -   runkit7 4.0.0a2
     -   vld 0.17.0
-    -   datadog_trace 0.54.0
-    -   grpc 1.35.0
+    -   datadog_trace 0.56.0
+    -   grpc 1.36.0
     -   http_message 0.2.2
     -   yaconf 1.1.0
 

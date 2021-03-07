@@ -100,6 +100,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_DATADOG_TRACE_VERSION=$(EXTENSION_DATADOG_TRACE_VERSION) \
 		--build-arg EXTENSION_GRPC_VERSION=$(EXTENSION_GRPC_VERSION) \
 		--build-arg EXTENSION_HTTP_MESSAGE_VERSION=$(EXTENSION_HTTP_MESSAGE_VERSION) \
+		--build-arg EXTENSION_GEOSPATIAL_VERSION=$(EXTENSION_GEOSPATIAL_VERSION) \
+		--build-arg EXTENSION_EXCIMER_VERSION=$(EXTENSION_EXCIMER_VERSION) \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file $(DOCKERFILE) \
 	.
@@ -308,6 +310,12 @@ test:
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111/ip.php | grep "200 OK"
 	docker kill test-webserver
 
+test80:
+	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 80:80 yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:80/ip.php | grep "200 OK"
+
 test-all: ## 테스트
 	@make test-74
 	@make test-73
@@ -322,6 +330,9 @@ test-73:
 
 test-74:
 	@make test TAG="$(PHP74_VERSION)"
+
+test-80:
+	@make test80 TAG="$(PHP80_VERSION)"
 
 test-base-73:
 	@make test TAG="$(PHP73_VERSION)-base"
