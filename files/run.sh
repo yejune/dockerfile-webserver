@@ -35,6 +35,9 @@ export NGINX_HTTP=${NGINX_HTTP:-""}
 export NGINX_SERVER=${NGINX_SERVER:-""}
 export NGINX_HEADER=${NGINX_HEADER:-""}
 
+export PHP_LOG_BUFFERING_STRING=${PHP_LOG_BUFFERING_STRING:-""}
+export PHP_LOG_LIMIT_STRING=${PHP_LOG_LIMIT_STRING:-""}
+
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 
@@ -42,6 +45,9 @@ export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 #export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
 export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
+
+export PHP_LOG_LIMIT=${PHP_LOG_LIMIT:-""}
+export PHP_LOG_BUFFERING=${PHP_LOG_BUFFERING:-""}
 
 export PHP_EXTENSIONS=${PHP_EXTENSIONS:-"php do"}
 export PHP_EXTENSION_STRING=".${PHP_EXTENSIONS// / .}"
@@ -61,6 +67,8 @@ export PHP_SESSION_GC_MAXLIFETIME=${PHP_SESSION_GC_MAXLIFETIME:-""}
 export PHP_SESSION_GC_PROBABILITY=${PHP_SESSION_GC_PROBABILITY:-""}
 export PHP_SESSION_GC_DIVISOR=${PHP_SESSION_GC_DIVISOR:-""}
 export PHP_MAX_INPUT_VARS=${PHP_MAX_INPUT_VARS:-""}
+
+export OPENSSL_CONF=${OPENSSL_CONF:-""}
 
 export STAGE_NAME=${STAGE_NAME:-"production"}
 export NGINX_ACCESS_LOG_LEVEL=""
@@ -143,7 +151,24 @@ else
         locale-gen $i;
     done
 
+
+
+    if [ ! -z "$PHP_LOG_LIMIT" ]; then
+        export PHP_LOG_LIMIT_STRING="LOG_LIMIT=${PHP_LOG_LIMIT}"
+    fi
+
+    if [ ! -z "$PHP_LOG_BUFFERING" ]; then
+        export PHP_LOG_BUFFERING_STRING="LOG_BUFFERING=${PHP_LOG_BUFFERING}"
+    fi
+
     dockerize -template /etc/tmpl/php/www.tmpl > ${PHP_INI_DIR}/php-fpm.d/www.conf
+
+    dockerize -template /etc/tmpl/php/php-fpm.tmpl > ${PHP_INI_DIR}/php-fpm.conf
+
+
+    # if [ ! -z "$PHP_LOG_LIMIT" ]; then
+    #     echo php_admin_value[log_errors_max_len] = ${PHP_LOG_LIMIT} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    # fi
 
     if [ ! -z "$PHP_SESSION_NAME" ]; then
         # sed -i -e "s~.*session.name.*~session.name = ${PHP_SESSION_NAME}~g" ${PHP_INI_DIR}/php.ini
@@ -211,6 +236,11 @@ else
 
     if [ ! -z "$PHP_VARIABLES_ORDER" ]; then
         sed -i 's/variables_order = .*/variables_order = "${PHP_VARIABLES_ORDER}"/' ${PHP_INI_DIR}/php.ini
+    fi
+
+
+    if [ ! -z "$OPENSSL_CONF" ]; then
+        echo -e "\n${OPENSSL_CONF}" >> /etc/ssl/openssl.cnf
     fi
 
 

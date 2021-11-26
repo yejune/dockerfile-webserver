@@ -6,9 +6,9 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ARG PHP_VERSION=7.4.10
-ARG PHP_GPGKEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312"
-ARG PHP_SHA256="c2d90b00b14284588a787b100dee54c2400e7db995b457864d66f00ad64fb010"
+ARG PHP_VERSION=8.0.9
+ARG PHP_GPGKEYS="BFDDD28642824F8118EF77909B67A5C12229118F 1729F83938DA44E27BA0F4D3DBDB397470D12172"
+ARG PHP_SHA256="d5fc2e4fc780a32404d88c360e3e0009bc725d936459668e9c2ac992f2d83654"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
@@ -186,9 +186,14 @@ RUN set -xe; \
     \
     \
     \
-    if [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~carusogabriel/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~carusogabriel/php-${PHP_VERSION}.tar.xz.asc"; \
+    if [[ $PHP_VERSION == *"alpha"* ]]; then \
+        PHP_URL="https://downloads.php.net/~patrickallaert/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~patrickallaert/php-${PHP_VERSION}.tar.xz.asc"; \
+        \
+        wget-retry -O php.tar.xz "${PHP_URL}"; \
+    elif [[ $PHP_VERSION == *"RC"* ]]; then \
+        PHP_URL="https://downloads.php.net/~ramsey/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~ramsey/php-${PHP_VERSION}.tar.xz.asc"; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
     else \
@@ -276,6 +281,7 @@ RUN set -xe; \
         --enable-ftp \
         --enable-mbstring \
         --enable-mysqlnd \
+        --enable-tokenizer \
         \
         --with-curl \
         --with-openssl \

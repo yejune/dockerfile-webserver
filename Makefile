@@ -66,6 +66,9 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_REDIS_VERSION=$(EXTENSION_REDIS_VERSION) \
 		--build-arg EXTENSION_MONGODB_VERSION=$(EXTENSION_MONGODB_VERSION) \
 		--build-arg EXTENSION_RDKAFKA_VERSION=$(EXTENSION_RDKAFKA_VERSION) \
+		--build-arg EXTENSION_SIMPLE_KAFKA_CLIENT_VERSION=$(EXTENSION_SIMPLE_KAFKA_CLIENT_VERSION) \
+		--build-arg EXTENSION_VAR_REPRESENTATION_VERSION=$(EXTENSION_VAR_REPRESENTATION_VERSION) \
+		--build-arg EXTENSION_JSONPATH_VERSION=$(EXTENSION_JSONPATH_VERSION) \
 		--build-arg EXTENSION_AMQP_VERSION=$(EXTENSION_AMQP_VERSION) \
 		--build-arg EXTENSION_GEARMAN_VERSION=$(EXTENSION_GEARMAN_VERSION) \
 		--build-arg EXTENSION_SODIUM_VERSION=$(EXTENSION_SODIUM_VERSION) \
@@ -91,15 +94,21 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_XLSWRITER_VERSION=$(EXTENSION_XLSWRITER_VERSION) \
 		--build-arg EXTENSION_XDEBUG_VERSION=$(EXTENSION_XDEBUG_VERSION) \
 		--build-arg EXTENSION_SEASLOG_VERSION=$(EXTENSION_SEASLOG_VERSION) \
-		--build-arg LIBRARY_XL_VERSION=$(LIBRARY_XL_VERSION) \
-		--build-arg LIBRARY_XLSWRITER_VERSION=$(LIBRARY_XLSWRITER_VERSION) \
-		--build-arg LIBRARY_VIPS_VERSION=$(LIBRARY_VIPS_VERSION) \
 		--build-arg EXTENSION_COMPONERE_VERSION=$(EXTENSION_COMPONERE_VERSION) \
 		--build-arg EXTENSION_RUNKIT7_VERSION=$(EXTENSION_RUNKIT7_VERSION) \
 		--build-arg EXTENSION_VLD_VERSION=$(EXTENSION_VLD_VERSION) \
+		--build-arg EXTENSION_ZEPHIR_PARSER_VERSION=$(EXTENSION_ZEPHIR_PARSER_VERSION) \
 		--build-arg EXTENSION_DATADOG_TRACE_VERSION=$(EXTENSION_DATADOG_TRACE_VERSION) \
 		--build-arg EXTENSION_GRPC_VERSION=$(EXTENSION_GRPC_VERSION) \
 		--build-arg EXTENSION_HTTP_MESSAGE_VERSION=$(EXTENSION_HTTP_MESSAGE_VERSION) \
+		--build-arg EXTENSION_GEOSPATIAL_VERSION=$(EXTENSION_GEOSPATIAL_VERSION) \
+		--build-arg EXTENSION_EXCIMER_VERSION=$(EXTENSION_EXCIMER_VERSION) \
+		--build-arg EXTENSION_AWSCRT_VERSION=$(EXTENSION_AWSCRT_VERSION) \
+		--build-arg EXTENSION_XHPROF_VERSION=$(EXTENSION_XHPROF_VERSION) \
+		--build-arg EXTENSION_UOPZ_VERSION=$(EXTENSION_UOPZ_VERSION) \
+		--build-arg LIBRARY_XL_VERSION=$(LIBRARY_XL_VERSION) \
+		--build-arg LIBRARY_XLSWRITER_VERSION=$(LIBRARY_XLSWRITER_VERSION) \
+		--build-arg LIBRARY_VIPS_VERSION=$(LIBRARY_VIPS_VERSION) \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file $(DOCKERFILE) \
 	.
@@ -114,7 +123,7 @@ build-base-72: ## Build PHP 7.2 base images
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(PHP72_VERSION)" \
-		DOCKERFILE="72.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-extend-72: ## Build PHP 7.2 extend images
 	@make build \
@@ -123,7 +132,7 @@ build-extend-72: ## Build PHP 7.2 extend images
 		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
 		PHP_SHA256="$(PHP72_SHA256)" \
 		TAG="$(PHP72_VERSION)" \
-		DOCKERFILE="72.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-72: ## Build PHP 7.2 images
 	@make build-base-72
@@ -151,7 +160,7 @@ build-extend-73: ## Build PHP 7.3 extend images
 		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
 		PHP_SHA256="$(PHP73_SHA256)" \
 		TAG="$(PHP73_VERSION)" \
-		DOCKERFILE="73.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-73: ## Build PHP 7.3 images
 	@make build-base-73
@@ -180,7 +189,7 @@ build-extend-74: ## Build PHP 7.4 extend images
 		PHP_GPGKEYS="$(PHP74_GPGKEYS)" \
 		PHP_SHA256="$(PHP74_SHA256)" \
 		TAG="$(PHP74_VERSION)" \
-		DOCKERFILE="74.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-extend3-74: ## Build PHP 7.4 extend images
 	@make build \
@@ -189,7 +198,7 @@ build-extend3-74: ## Build PHP 7.4 extend images
 		PHP_GPGKEYS="$(PHP74_GPGKEYS)" \
 		PHP_SHA256="$(PHP74_SHA256)" \
 		TAG="$(PHP74_VERSION)_test" \
-		DOCKERFILE="74.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-74: ## Build PHP 7.4 images
 	@make build-base-74
@@ -219,12 +228,43 @@ build-extend-80: ## Build PHP 8.0 extend images
 		PHP_GPGKEYS="$(PHP80_GPGKEYS)" \
 		PHP_SHA256="$(PHP80_SHA256)" \
 		TAG="$(PHP80_VERSION)" \
-		DOCKERFILE="80.Dockerfile"
+		DOCKERFILE="Dockerfile"
 
 build-80: ## Build PHP 8.0 images
 	@make build-base-80
 	@make build-extend-80
 	@make push-80
+
+
+
+build-base-81: ## Build PHP 8.0 base image
+	docker build \
+		--no-cache \
+		--tag yejune/webserver:$(PREFIX)$(PHP81_VERSION)-base \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg PHP_VERSION="$(PHP81_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP81_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP81_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file Base.Dockerfile \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP81_VERSION)-base"; fi;
+
+build-extend-81: ## Build PHP 8.0 extend images
+	@make build \
+		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
+		PHP_VERSION="$(PHP81_VERSION)" \
+		PHP_GPGKEYS="$(PHP81_GPGKEYS)" \
+		PHP_SHA256="$(PHP81_SHA256)" \
+		TAG="$(PHP81_VERSION)" \
+		DOCKERFILE="Dockerfile"
+
+build-81: ## Build PHP 8.0 images
+	@make build-base-81
+	@make build-extend-81
+	@make push-81
 
 
 
@@ -242,7 +282,7 @@ build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 build-test-new: ## Dockerfile.test 로 빌드. Usage: make build-test-new tag="test11"
 	docker build \
 		--tag yejune/webserver:$(PREFIX)$(tag) \
-		--file 73.Dockerfile \
+		--file Dockerfile \
 		--build-arg BUILD_EXTENSIONS="$(FULL_EXTENSIONS)" \
 	.
 
@@ -280,6 +320,10 @@ push-80: ## Push built PHP 8.0 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP80_VERSION)-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP80_VERSION)
 
+push-81: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP81_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP81_VERSION)
+
 push-all: ## Push all built images to Docker Hub
 	@make push-74
 	@make push-73
@@ -302,11 +346,17 @@ build-and-push-all: ## Build all images and push them to Docker Hub
 	@make push-all
 
 test:
-	if [ ! -z "$(shell docker ps | grep 8111 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
-	docker run --rm -d --name=test-webserver -p 8111:80 yejune/webserver:$(PREFIX)$(TAG)
-	wget --tries=10 --no-check-certificate --spider http://localhost:8111 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:8111
-	curl --retry 10 --retry-delay 5 -L -I http://localhost:8111/ip.php | grep "200 OK"
+	if [ ! -z "$(shell docker ps | grep 8112 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 8112:80 yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:8112 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:8112
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:8112/ip.php | grep "200 OK"
 	docker kill test-webserver
+
+test80:
+	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 80:80 yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:80/ip.php | grep "200 OK"
 
 test-all: ## 테스트
 	@make test-74
@@ -323,8 +373,11 @@ test-73:
 test-74:
 	@make test TAG="$(PHP74_VERSION)"
 
-test-base-73:
-	@make test TAG="$(PHP73_VERSION)-base"
+test-80:
+	@make test80 TAG="$(PHP80_VERSION)"
+
+test-base-80:
+	@make test TAG="$(PHP80_VERSION)-base"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f

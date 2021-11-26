@@ -71,61 +71,64 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBV8 7.5
 -   LIBRABBITMQ 0.8.0
 -   LIBXL 3.8.3
--   LIBXLSWRITER 0.9.9
--   PHP 7.4.10
-    -   phalcon 4.0.4
-    -   swoole 4.6.1
-    -   uuid 1.1.0
-    -   apfd 1.0.2
-    -   json_post 1.0.2
-    -   yaml 2.2.0
+-   LIBXLSWRITER 1.1.4
+-   PHP 8.0.9
+    -   phalcon 5.0.0alpha7
+    -   swoole 4.8.2
+    -   uuid 1.2.0
+    -   apfd 1.0.3
+    -   json_post 1.1.0
+    -   yaml 2.2.2
     -   jsonnet 1.3.1
-    -   protobuf 3.14.0RC2
-    -   igbinary 3.2.2RC1
-    -   msgpack 2.1.2
-    -   mailparse 3.1.1
+    -   protobuf 3.19.1
+    -   igbinary 3.2.6
+    -   msgpack 2.2.0RC1
+    -   mailparse 3.1.2
     -   base58 0.1.3
     -   apcu 5.1.15
     -   memcached 3.1.5
-    -   redis 5.3.2
-    -   mongodb 1.9.0
-    -   rdkafka 5.0.0
-    -   couchbase 3.1.0
+    -   redis 5.3.5RC1
+    -   mongodb 1.11.1
+    -   rdkafka 6.0.0RC1
+    -   couchbase 3.2.1
     -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
     -   gearman 2.1.0
     -   sodium 2.0.23
-    -   mcrypt 1.0.3
-    -   ev 1.0.9
+    -   mcrypt 1.0.4
+    -   ev 1.1.6RC1
     -   uv 0.2.4
-    -   eio 2.0.4
-    -   event 3.0.2
-    -   memprop 2.1.2
-    -   http 4.0.0
-    -   psr 1.0.0
+    -   eio 3.0.0RC4
+    -   event 3.0.7RC1
+    -   memprop 3.0.1
+    -   http 4.2.1
+    -   psr 1.0.8
     -   callee
-    -   decimal 2.0.0
-    -   imagick 3.4.4
+    -   decimal 1.4.0
+    -   imagick 3.6.0
     -   vips 1.0.12
-    -   ssh2 1.2
+    -   ssh2 1.3.1
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
-    -   pdo_sqlsrv 5.8.1
+    -   pdo_sqlsrv 5.10.0beta1
     -   v8js 2.1.2
     -   v8 0.2.2
     -   oauth 2.0.7
     -   excel 1.0.2
-    -   xlswriter 1.3.7
-    -   xdebug 3.0.1
+    -   xlswriter 1.5.1
+    -   xdebug 3.1.1
     -   seaslog 2.2.0
     -   componere 3.1.2
-    -   runkit7 4.0.0a2
-    -   vld 0.17.0
-    -   datadog_trace 0.54.0
-    -   grpc 1.35.0
+    -   runkit7 4.0.0a3
+    -   vld 0.17.1
+    -   datadog_trace 0.67.0
+    -   grpc 1.42.0
     -   http_message 0.2.2
     -   yaconf 1.1.0
+    -   awscrt 1.1.0
+    -   zephir 0.14.0
+    -   zephir_parser 1.4.1
 
 ## Build Options
 -   REPOGITORY_URL

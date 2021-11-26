@@ -6,6 +6,5 @@ git clone https://github.com/php-memcached-dev/php-memcached memcached-${EXTENSI
 
 ext-pcl memcached-${EXTENSION_MEMCACHED_VERSION} \
         --enable-memcached-json \
-        --enable-memcached-igbinary
-
-#        --enable-memcached-msgpack \
+        --enable-memcached-igbinary \
+        --enable-memcached-msgpack \

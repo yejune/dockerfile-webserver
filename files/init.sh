@@ -30,7 +30,7 @@ pecl-download()
 
     tar zxf ${lib_fullname}.tgz
 
-    $sudo rm -rf ${lib_fullname}.tgz
+    # $sudo rm -rf ${lib_fullname}.tgz
 }
 phpize-install()
 {
@@ -67,7 +67,7 @@ phpize-install()
     make -j "$(nproc)"
     $sudo make install
     #make test
-    make clean
+    # make clean
 
     find "${PHP_EXTENSION_DIR}/${lib_shortname}.so"
 
@@ -80,7 +80,7 @@ phpize-install()
     fi
 
 	cd ..
-    $sudo rm -rf ${lib_fullname}
+    # $sudo rm -rf ${lib_fullname}
 }
 ext-pcl()
 {
@@ -110,7 +110,7 @@ ext-src()
         done
     fi
 
-    local prepend=("session" "pdo" "json");
+    local prepend=("session" "pdo" "json", "tokenizer");
 
     if  [ $(php -r "echo extension_loaded('${name}') ?: 0;") == 1 ] ; then
         echo "${name} extension_loaded ok"
@@ -135,7 +135,7 @@ ext-src()
         make -j "$(nproc)"
         #make test
         $sudo make install
-        make clean
+        # make clean
 
         local ini_filename="${name}"
 
@@ -150,6 +150,8 @@ ext-src()
                 echo "extension=${name}.so" > "${PHP_CONF_DIR}/${ini_filename}.ini"
             fi
         fi
+
+
     fi
 }
 ext-lib()

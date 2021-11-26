@@ -2,6 +2,7 @@ set $x_remote_addr             $remote_addr;
 set $x_protocol                $scheme;
 set $x_port                    $server_port;
 set $x_request_id              $request_id;
+set $qs                        $query_string;
 
 if ($http_host ~ "\.$") {
     return 404;
@@ -23,11 +24,15 @@ if ($http_x_request_id) {
     set $x_request_id          $http_x_request_id;
 }
 
+if ($qs) {
+    set $qs                    "?$qs";
+}
+
 include fastcgi_params;
-fastcgi_index                  {{ .Env.INDEX_FILENAME }};
-fastcgi_split_path_info        ^({{ .Env.PHP_EXTENSION_PATH_INFO_REGEX }})(/.+)$;
+fastcgi_index                  index.php;
+fastcgi_split_path_info        ^(.+\.php|.+\.do)(/.+)$;
 fastcgi_param PATH_INFO        $fastcgi_path_info;
 fastcgi_param SCRIPT_FILENAME  $document_root$fastcgi_script_name;
 fastcgi_param HTTP_REQUEST_ID  $x_request_id;
-
+fastcgi_param QSA              $qs;
 add_header X-Request-ID        $x_request_id always;

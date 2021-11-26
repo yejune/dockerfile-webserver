@@ -1,2 +1,4 @@
+cd $PECL_SRC_DIR
+
 ext-pcl apcu-${EXTENSION_APCU_VERSION}
 

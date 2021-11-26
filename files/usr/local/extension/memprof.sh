@@ -1,3 +1,5 @@
+cd $PECL_SRC_DIR
+
 ext-lib libjudy-dev
 
 git clone https://github.com/arnaud-lb/php-memory-profiler memprof-${EXTENSION_MEMPROF_VERSION}

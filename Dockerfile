@@ -1,104 +1,147 @@
-FROM ubuntu:18.04
+ARG PHP_VERSION
+FROM yejune/webserver:focal-${PHP_VERSION}-base
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG PHP_VERSION=7.3.0
-ARG PHP_GPGKEYS="CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D"
-ARG PHP_SHA256="7d195cad55af8b288c3919c67023a14ff870a73e3acc2165a6d17a4850a560b5"
+ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
+ENV PHP_CPPFLAGS="$PHP_CFLAGS"
+ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
 ARG BUILD_EXTENSIONS
 
+ARG EXTENSION_PHALCON_VERSION=5.0.0alpha7
+ARG EXTENSION_SWOOLE_VERSION=4.8.2
+ARG EXTENSION_UUID_VERSION=1.2.0
+ARG EXTENSION_APFD_VERSION=1.0.3
+ARG EXTENSION_JSONPOST_VERSION=1.1.0
+ARG EXTENSION_YAML_VERSION=2.2.2
+ARG EXTENSION_JSONNET_VERSION=1.3.1
+ARG EXTENSION_PROTOBUF_VERSION=3.19.1
+ARG EXTENSION_IGBINARY_VERSION=3.2.6
+ARG EXTENSION_MSGPACK_VERSION=2.2.0RC1
+ARG EXTENSION_MAILPARSE_VERSION=3.1.2
+ARG EXTENSION_BASE58_VERSION=1.0.2
+ARG EXTENSION_APCU_VERSION=5.1.21
+ARG EXTENSION_MEMCACHED_VERSION=3.1.5
+ARG EXTENSION_REDIS_VERSION=5.3.5RC1
+ARG EXTENSION_MONGODB_VERSION=1.11.1
+ARG EXTENSION_RDKAFKA_VERSION=6.0.0RC1
+ARG EXTENSION_SIMPLE_KAFKA_CLIENT_VERSION=0.1.4
+ARG EXTENSION_VAR_REPRESENTATION_VERSION=0.1.1
+ARG EXTENSION_JSONPATH_VERSION=0.9.5
+ARG EXTENSION_COUCHBASE_VERSION=3.2.1
+ARG EXTENSION_CASSANDRA_VERSION=1.3.2
+ARG EXTENSION_AMQP_VERSION=1.11.0RC1
+ARG EXTENSION_GEARMAN_VERSION=2.1.0
+ARG EXTENSION_SODIUM_VERSION=2.0.23
+ARG EXTENSION_MCRYPT_VERSION=1.0.4
+ARG EXTENSION_SCREWIM_VERSION=1.0.4
+ARG EXTENSION_EV_VERSION=1.1.6RC1
+ARG EXTENSION_UV_VERSION=0.2.4
+ARG EXTENSION_EIO_VERSION=3.0.0RC4
+ARG EXTENSION_EVENT_VERSION=3.0.7RC1
+ARG EXTENSION_MEMPROF_VERSION=3.0.1
+ARG EXTENSION_HTTP_VERSION=4.2.1
+ARG EXTENSION_CALLEE_VERSION=0.0.0
+ARG EXTENSION_DECIMAL_VERSION=1.4.0
+ARG EXTENSION_IMAGICK_VERSION=3.6.0
+ARG EXTENSION_VIPS_VERSION=1.0.12
+ARG EXTENSION_SSH2_VERSION=1.3.1
+ARG EXTENSION_SQLSRV_VERSION=5.10.0beta1
+ARG EXTENSION_V8JS_VERSION=2.1.2
+ARG EXTENSION_V8_VERSION=0.2.2
+ARG EXTENSION_OAUTH_VERSION=2.0.7
+ARG EXTENSION_EXCEL_VERSION=1.0.2
+ARG EXTENSION_XLSWRITER_VERSION=1.5.1
+ARG EXTENSION_XDEBUG_VERSION=3.1.1
+ARG EXTENSION_SEASLOG_VERSION=2.2.0
+ARG EXTENSION_COMPONERE_VERSION=3.1.2
+ARG EXTENSION_RUNKIT7_VERSION=4.0.0a3
+ARG EXTENSION_VLD_VERSION=0.17.1
+ARG EXTENSION_DATADOG_TRACE_VERSION=0.67.0
+ARG EXTENSION_GRPC_VERSION=1.42.0
+ARG EXTENSION_PSR_VERSION=1.1.0
+ARG EXTENSION_YACONF_VERSION=1.1.0
+ARG EXTENSION_HTTP_MESSAGE_VERSION=0.2.2
+ARG EXTENSION_WASM_VERSION=1.1.0
+ARG EXTENSION_ZEPHIR_PARSER_VERSION=1.4.1
+ARG EXTENSION_ZEPHIR_VERSION=0.14.0
+ARG EXTENSION_GEOSPATIAL_VERSION=0.3.1
+ARG EXTENSION_EXCIMER_VERSION=1.0.2
+ARG EXTENSION_AWSCRT_VERSION=1.0.8
+ARG EXTENSION_ZOOKEEPER_VERSION=1.0.0
+ARG EXTENSION_XHPROF_VERSION=2.3.5
+ARG EXTENSION_UOPZ_VERSION=7.1.1
 ARG DOCKERIZE_VERSION=0.6.1
+ARG LIBRARY_XL_VERSION=3.8.3
+ARG LIBRARY_XLSWRITER_VERSION=1.1.4
+ARG LIBRARY_VIPS_VERSION=8.10.0
+ARG LIBRARY_V8_VERSION=7.5
 
 SHELL ["/bin/bash", "-c"]
 
+
 RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
-        sed -i "s/archive.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
-        sed -i "s/security.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/archive.ubuntu.com/g" /etc/apt/sources.list; \
+        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/security.ubuntu.com/g" /etc/apt/sources.list; \
     fi
 
 ENV PHP_INI_DIR=/etc/php \
+    PHP_CONF_DIR=/etc/php/conf.d \
     PHP_RUN_DIR=/run/php \
     PHP_LOG_DIR=/var/log/php \
     PHP_DATA_DIR=/var/lib/php \
     PHP_SRC_DIR=/usr/src/php \
-    PHP_CONF_DIR=/etc/php/conf.d \
     PECL_SRC_DIR=/usr/src/pecl \
-    SRC_DIR=/usr/src
+    SRC_DIR=/usr/src \
+    USR_LOCAL_BIN_DIR=/usr/local/bin \
+    USR_LIB_DIR=/usr/lib
 
-ENV DEFAULT_EXTENSIONS="\
-        bcmath\
-        bz2\
-        calendar\
-        ctype\
-        curl\
-        date\
-        dba\
-        dom\
-        enchant\
-        exif\
-        fileinfo\
-        filter\
-        ftp\
-        gd\
-        gettext\
-        gmp\
-        hash\
-        iconv\
-        imap\
-        interbase\
-        intl\
-        json\
-        ldap\
-        libxml\
-        mbstring\
-        mysqli\
-        mysqlnd\
-        opcache\
-        openssl\
-        pcntl\
-        pcre\
-        pdo\
-        pdo_dblib\
-        pdo_firebird\
-        pdo_mysql\
-        pdo_pgsql\
-        pdo_sqlite\
-        pgsql\
-        phar\
-        posix\
-        pspell\
-        readline\
-        recode\
-        reflection\
-        session\
-        shmop\
-        simplexml\
-        snmp\
-        soap\
-        sockets\
-        sodium\
-        spl\
-        sqlite3\
-        standard\
-        sysvmsg\
-        sysvsem\
-        sysvshm\
-        tidy\
-        tokenizer\
-        wddx\
-        xml\
-        xmlreader\
-        xmlrpc\
-        xmlwriter\
-        xsl\
-        zip\
-        zlib\
+ENV FULL_EXTENSIONS="\
+    psr\
+    phalcon\
+    \
+    uuid\
+    jsonnet\
+    protobuf\
+    igbinary\
+    msgpack\
+    yaml\
+    memcached\
+    mongodb\
+    redis\
+    amqp\
+    gearman\
+    screwim\
+    ev\
+    uv\
+    eio\
+    event\
+    \
+    swoole\
+    http\
+    excel\
+    xlswriter\
+    callee\
+    decimal\
+    \
+    \
+    imagick\
+    ssh2\
+    \
+    couchbase\
+    cassandra\
+    v8js\
+    v8\
+    \
+    \
+    memprof\
+    seaslog\
+    oauth\
 "
-
 
 COPY files/ /
 
@@ -109,22 +152,12 @@ RUN set -xe; \
     apt-get update; \
     apt-get upgrade -y; \
     \
-    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip"; \
+    DEPS=""; \
     \
-    DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
+    DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make cmake re2c bison software-properties-common"; \
+    # cmake gcc-8 g++-8 \
     \
     LIB_DEPS=" \
-        libc-dev \
-        libpcre2-dev \
-        libpcre3-dev \
-        \
-        libcurl4-openssl-dev \
-        libreadline6-dev \
-        libssl-dev \
-        libxml2-dev \
-        zlib1g-dev \
-        libargon2-0 \
-        libargon2-0-dev \
     "; \
     \
     mkdir -p "${PHP_CONF_DIR}"; \
@@ -146,197 +179,39 @@ RUN set -xe; \
         "; \
     fi; \
     apt-get install --no-install-recommends --no-install-suggests -y ${DEPS} ${ADD_DEPS} ${DEV_DEPS} ${LIB_DEPS}; \
-    export LANGUAGE=ko_KR.UTF-8; \
-    export LANG=ko_KR.UTF-8; \
-    locale-gen ko_KR ko_KR.UTF-8; \
-    locale-gen en_US.UTF-8; \
-    update-locale LANG=ko_KR.UTF-8; \
-    dpkg-reconfigure locales; \
-    dpkg-reconfigure tzdata; \
     \
-    \
-    # Install nginx
-    # found=''; \
-    # for server in \
-    #     ha.pool.sks-keyservers.net \
-    #     hkp://keyserver.ubuntu.com:80 \
-    #     hkp://p80.pool.sks-keyservers.net:80 \
-    #     pgp.mit.edu \
-    # ; do \
-    #     echo "Fetching GPG key ${NGINX_GPGKEY} from $server"; \
-    #     apt-key adv --keyserver "${server}" --keyserver-options timeout=10 --recv-keys "${NGINX_GPGKEY}" && found=yes && break; \
-    # done; \
-    # test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
-    # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
-    add-apt-repository -y ppa:nginx/stable; \
-    apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx; \
-    # forward request and error logs to docker log collector
-    ln -sf /dev/stdout /var/log/nginx/access.log; \
-    #ln -sf /dev/stderr /var/log/nginx/error.log; \
-    \
-    \
-    # Install php
-    \
-    \
-    if [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~cmb/php-${PHP_VERSION}.tar.xz.asc"; \
-    else \
-        PHP_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror"; \
-        PHP_ASC_URL="https://secure.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"; \
-    fi; \
-    \
-    wget-retry -O php.tar.xz "${PHP_URL}"; \
-    \
-    if [ -n "$PHP_SHA256" ]; then \
-        echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
-    fi; \
-    \
-    if [ -n "$PHP_ASC_URL" ]; then \
-        wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
-        export GNUPGHOME="$(mktemp -d)"; \
-        for key in $PHP_GPGKEYS; do \
-            gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
-            || gpg --keyserver pgp.mit.edu --recv-keys "$key" \
-            || gpg --keyserver keyserver.pgp.com --recv-keys "$key" \
-            || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" \
-            || gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key"; \
-        done; \
-        gpg --batch --verify php.tar.xz.asc php.tar.xz; \
-        rm -rf "$GNUPGHOME"; \
-    fi; \
-    \
-    \
-    # php
-    tar -Jxf $SRC_DIR/php.tar.xz -C "${PHP_SRC_DIR}" --strip-components=1; \
-    cd "${PHP_SRC_DIR}"; \
     \
     BUILD_ARCH="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
-    DEV_MULTI_ARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
-    \
-    # https://bugs.php.net/bug.php?id=74125
-	if [ ! -d /usr/include/curl ]; then \
-		ln -sT "/usr/include/${DEV_MULTI_ARCH}/curl" /usr/local/include/curl; \
-	fi; \
-    # Apply stack smash protection to functions using local buffers and alloca()
-    # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
-    # Enable optimization (-O2)
-    # Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
-    # Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
-    # https://github.com/docker-library/php/issues/272
-    PHP_CFLAGS="-I${PHP_SRC_DIR} -fstack-protector-strong -fpic -fpie -O2"; \
-    PHP_CPPFLAGS="$PHP_CFLAGS"; \
-    PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"; \
-    \
-    ./configure \
-        CFLAGS="$PHP_CFLAGS" \
-        CPPFLAGS="$PHP_CPPFLAGS" \
-        LDFLAGS="$PHP_LDFLAGS" \
-        --build="${BUILD_ARCH}" \
-        --sysconfdir="${PHP_INI_DIR}" \
-        --with-libdir="lib/${DEV_MULTI_ARCH}" \
-        --with-pcre-regex=/usr \
-        \
-        --disable-all \
-        \
-        --with-config-file-path="${PHP_INI_DIR}" \
-        --with-config-file-scan-dir="${PHP_CONF_DIR}" \
-        \
-        # make sure invalid --configure-flags are fatal errors intead of just warnings
-        --enable-option-checking=fatal \
-        \
-        --with-fpm-user=www-data \
-        --with-fpm-group=www-data \
-        \
-        # --disable-cgi \
-        # --disable-short-tags \
-        --enable-hash \
-        --with-mhash \
-        \
-        --enable-ipv6 \
-        --enable-fpm \
-        --enable-opcache \
-        \
-        --enable-ftp \
-        --enable-mbstring \
-        --enable-mysqlnd \
-        \
-        --with-curl \
-        --with-openssl \
-        --with-zlib \
-        --with-readline \
-        --enable-filter \
-        \
-        --enable-xml \
-        --enable-libxml \
-        --with-pear \
-        --with-libxml-dir \
-        --enable-phar \
-        \
-        # https://wiki.php.net/rfc/argon2_password_hash (7.2+)
-        $([[ $PHP_VERSION != "7.1."* ]] && echo '--with-password-argon2') \
-        # bundled pcre does not support JIT on s390x
-        # https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
-        $(test "$BUILD_ARCH" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
-        \
-        --without-sqlite3 \
-        --without-pdo-sqlite \
-    ; \
-    \
-    make -j "$(nproc)"; \
-    make install; \
-    make clean; \
-    \
     PHP_EXTENSION_DIR=$(php-config --extension-dir); \
-    \
-    cp ${PHP_SRC_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini; \
-    echo "zend_extension=opcache.so" > ${PHP_CONF_DIR}/opcache.ini; \
     \
     if [ ! -z "${BUILD_EXTENSIONS}" ]; then \
         BUILD_PHP_EXTENSIONS=( $BUILD_EXTENSIONS ); \
     else \
-        BUILD_PHP_EXTENSIONS=( $DEFAULT_EXTENSIONS ); \
+        BUILD_PHP_EXTENSIONS=( $FULL_EXTENSIONS ); \
     fi; \
     \
     \
     # src extension install
     for extension in "${BUILD_PHP_EXTENSIONS[@]}"; do \
         echo $extension; \
+        new_extension_name=$extension; \
+        cd $PECL_SRC_DIR; \
+        php -r "echo extension_loaded('${extension}');"; \
         if [ -f "/usr/local/script/${extension}.sh" ]; then \
             source "/usr/local/script/${extension}.sh"; \
         else \
-            ext-src $extension; \
+            if [ -f "/usr/local/extension/${extension}.sh" ]; then \
+                source "/usr/local/extension/${extension}.sh"; \
+            else \
+                ext-src $extension; \
+            fi; \
         fi; \
+        \
+        if  [ $(php -r "echo extension_loaded('${new_extension_name}') ?: 0;") == 0 ] ; then \
+            exit 1; \
+        fi; \
+       declare extension_${extension}="${new_extension_name}"; \
     done; \
-    \
-    \
-    # Install filebeat
-    cd "${SRC_DIR}"; \
-    wget-retry -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
-    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" > /etc/apt/sources.list.d/elastic-6.x.list; \
-    apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" filebeat; \
-    \
-    # Install dockerize
-    cd $SRC_DIR; \
-    wget-retry https://github.com/jwilder/dockerize/releases/download/v${DOCKERIZE_VERSION}/dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
-    tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
-    rm -rf dockerize-linux-amd64-v${DOCKERIZE_VERSION}.tar.gz; \
-    \
-    # Install supervisor
-    apt-get install -y supervisor; \
-    mkdir -p /var/log/supervisor; \
-    \
-    # Install composer
-    wget-retry http://getcomposer.org/composer.phar; \
-    chmod +x composer.phar; \
-    mv composer.phar /usr/local/bin/composer; \
-    \
-    # Install phpunit
-    wget-retry https://phar.phpunit.de/phpunit.phar; \
-    chmod +x phpunit.phar; \
-    mv phpunit.phar /usr/local/bin/phpunit; \
     \
     \
     # clean
@@ -345,8 +220,16 @@ RUN set -xe; \
     apt-get clean; \
     apt-get purge --yes --auto-remove ${DEV_DEPS} ${ADD_DEPS}; \
     rm -rf $SRC_DIR/*; \
+    rm -rf $PECL_SRC_DIR/*; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
-    php -v;
+    for extension in "${BUILD_PHP_EXTENSIONS[@]}"; do \
+        name=extension_${extension}; \
+        if  [ $(php -r "echo extension_loaded('${!name}') ?: 0;") == 0 ] ; then \
+            exit 1; \
+        fi; \
+    done; \
+    php -v; \
+    php -m;
 
 RUN chown -Rf www-data:www-data /var/www
 
