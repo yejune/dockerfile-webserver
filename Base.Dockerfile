@@ -6,9 +6,9 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ARG PHP_VERSION=8.0.9
-ARG PHP_GPGKEYS="BFDDD28642824F8118EF77909B67A5C12229118F 1729F83938DA44E27BA0F4D3DBDB397470D12172"
-ARG PHP_SHA256="d5fc2e4fc780a32404d88c360e3e0009bc725d936459668e9c2ac992f2d83654"
+ARG PHP_VERSION=8.1.3
+ARG PHP_GPGKEYS="528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD"
+ARG PHP_SHA256="5d65a11071b47669c17452fb336c290b67c101efb745c1dbe7525b5caf546ec6"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
@@ -115,6 +115,7 @@ RUN set -xe; \
     apt-get upgrade -y; \
     \
     DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip"; \
+    #DEPS="sudo ${ADD_DEPS}" \
     #ntp \
     \
     DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
@@ -258,8 +259,8 @@ RUN set -xe; \
         # make sure invalid --configure-flags are fatal errors intead of just warnings
         --enable-option-checking=fatal \
         \
-        --with-fpm-user=www-data \
-        --with-fpm-group=www-data \
+        --with-fpm-user="${RUN_USER}" \
+        --with-fpm-group="${RUN_USER}" \
         \
         # --disable-cgi \
         # --disable-short-tags \
@@ -357,7 +358,7 @@ RUN set -xe; \
     mkdir -p /var/log/supervisor; \
     \
     # Install composer
-    wget-retry http://getcomposer.org/composer.phar; \
+    wget-retry https://getcomposer.org/composer.phar; \
     chmod +x composer.phar; \
     mv composer.phar /usr/local/bin/composer; \
     \
@@ -376,7 +377,16 @@ RUN set -xe; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     php -v;
 
-RUN chown -Rf www-data:www-data /var/www
+RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
+RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
+RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
+RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
+RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
+RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
+
+# RUN adduser --disabled-password --gecos '' docker
+# RUN adduser docker sudo
+# RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /var/www
 

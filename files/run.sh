@@ -352,7 +352,7 @@ else
             sed -i -e "s~;error_log = php_errors.log~error_log = ${LOG_STREAM}~g" ${PHP_INI_DIR}/php.ini
 
             echo "
-[program:php7-cli-log]
+[program:php8-cli-log]
 command = /usr/bin/tail -f ${LOG_STREAM}
 autostart = true
 autorestart = true

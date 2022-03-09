@@ -34,7 +34,6 @@ else
 	# endif
 endif
 
-
 include env.makefile
 
 help:
@@ -115,7 +114,6 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 
 	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
 
-
 build-base-72: ## Build PHP 7.2 base images
 	@make build \
 		EXTENSIONS="$(FULL_EXTENSIONS)" \
@@ -166,7 +164,6 @@ build-73: ## Build PHP 7.3 images
 	@make build-base-73
 	@make build-extend-73
 
-
 build-base-74: ## Build PHP 7.4 base image
 	docker build \
 		--no-cache \
@@ -204,8 +201,6 @@ build-74: ## Build PHP 7.4 images
 	@make build-base-74
 	@make build-extend-74
 
-
-
 build-base-80: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
@@ -235,8 +230,6 @@ build-80: ## Build PHP 8.0 images
 	@make build-extend-80
 	@make push-80
 
-
-
 build-base-81: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
@@ -265,8 +258,6 @@ build-81: ## Build PHP 8.0 images
 	@make build-base-81
 	@make build-extend-81
 	@make push-81
-
-
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
@@ -314,7 +305,6 @@ push-73: ## Push built PHP 7.3 images to Docker Hub
 push-74: ## Push built PHP 7.4 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP74_VERSION)-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP74_VERSION)
-
 
 push-80: ## Push built PHP 8.0 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP80_VERSION)-base

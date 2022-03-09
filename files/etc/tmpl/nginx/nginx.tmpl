@@ -1,5 +1,5 @@
 
-user www-data;
+user {{ .Env.FPM_USER }};
 worker_processes auto;
 pid /run/nginx.pid;
 load_module "/usr/lib/nginx/modules/ngx_http_headers_more_filter_module.so";

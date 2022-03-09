@@ -73,24 +73,24 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   LIBXL 3.8.3
 -   LIBXLSWRITER 1.1.4
 -   PHP 8.0.9
-    -   phalcon 5.0.0alpha7
-    -   swoole 4.8.2
+    -   phalcon 5.0.0beta3
+    -   swoole 4.8.7
     -   uuid 1.2.0
     -   apfd 1.0.3
     -   json_post 1.1.0
     -   yaml 2.2.2
     -   jsonnet 1.3.1
-    -   protobuf 3.19.1
-    -   igbinary 3.2.6
+    -   protobuf 3.20.0RC1
+    -   igbinary 3.2.7
     -   msgpack 2.2.0RC1
-    -   mailparse 3.1.2
+    -   mailparse 3.1.3
     -   base58 0.1.3
     -   apcu 5.1.15
-    -   memcached 3.1.5
-    -   redis 5.3.5RC1
-    -   mongodb 1.11.1
-    -   rdkafka 6.0.0RC1
-    -   couchbase 3.2.1
+    -   memcached 3.2.0RC1
+    -   redis 5.3.7
+    -   mongodb 1.12.1
+    -   rdkafka 6.0.1
+    -   couchbase 3.2.2
     -   ~~cassandra 1.3.2~~
     -   amqp 1.9.3
     -   gearman 2.1.0
@@ -100,35 +100,35 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   uv 0.2.4
     -   eio 3.0.0RC4
     -   event 3.0.7RC1
-    -   memprop 3.0.1
-    -   http 4.2.1
-    -   psr 1.0.8
+    -   memprop 3.0.2
+    -   http 4.2.2
+    -   psr 1.0.9
     -   callee
     -   decimal 1.4.0
-    -   imagick 3.6.0
-    -   vips 1.0.12
+    -   imagick 3.7.0
+    -   vips 1.0.13
     -   ssh2 1.3.1
     -   pdo_mysql
     -   pdo_sqlite
     -   pdo_pgsql
-    -   pdo_sqlsrv 5.10.0beta1
+    -   pdo_sqlsrv 5.10.0
     -   v8js 2.1.2
     -   v8 0.2.2
     -   oauth 2.0.7
     -   excel 1.0.2
     -   xlswriter 1.5.1
-    -   xdebug 3.1.1
+    -   xdebug 3.1.3
     -   seaslog 2.2.0
     -   componere 3.1.2
     -   runkit7 4.0.0a3
-    -   vld 0.17.1
-    -   datadog_trace 0.67.0
-    -   grpc 1.42.0
+    -   vld 0.17.2
+    -   datadog_trace 0.70.1
+    -   grpc 1.44.0
     -   http_message 0.2.2
-    -   yaconf 1.1.0
+    -   yaconf 1.1.1
     -   awscrt 1.1.0
-    -   zephir 0.14.0
-    -   zephir_parser 1.4.1
+    -   zephir 0.15.2
+    -   zephir_parser 1.5.0
 
 ## Build Options
 -   REPOGITORY_URL
