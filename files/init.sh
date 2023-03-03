@@ -153,6 +153,13 @@ ext-src()
 
 
     fi
+
+    # if  [ $(php -r "echo extension_loaded('${name}') ?: 0;") == 1 ] ; then
+    #     echo "${name} extension_loaded ok"
+    # else
+    #     echo "${name} extension_loaded error"
+    #     exit;
+    # fi
 }
 ext-lib()
 {

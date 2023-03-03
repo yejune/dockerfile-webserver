@@ -3,6 +3,7 @@ ext-pcl swoole-${EXTENSION_SWOOLE_VERSION} \
     --enable-openssl \
     --enable-sockets \
     --enable-mysqlnd \
+    --enable-swoole-curl \
     --enable-http2
 
     #  \

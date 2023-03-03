@@ -3,7 +3,7 @@
 
 class PhpEnvironment
 {
-    const VARIABLES_TO_DISCARD = [
+    public const VARIABLES_TO_DISCARD = [
         'USER',
         'HOME',
         'TERM',
@@ -61,6 +61,15 @@ class PhpEnvironment
         'NGINX_VERSION',
         'NJS_VERSION',
         'OPENSSL_CONF',
+        'KEEPALIVE_OFF',
+        'KEEPALIVE_OFF_STRING',
+        'KEEPALIVE',
+        'KEEPALIVE_REQUESTS',
+        'KEEPALIVE_TIMEOUT',
+        'PM_TYPE',
+        'PM_MAX_REQUESTS',
+        'PM_MAX_CHILDREN',
+        'PM_PROCESS_IDLE_TIMEOUT',
         'NGINX_GPGKEY',
         'NGINX_CORS',
         'NGINX_CORS_ORIGIN',
@@ -109,6 +118,7 @@ class PhpEnvironment
         'EXTENSION_IGBINARY_VERSION',
         'EXTENSION_MSGPACK_VERSION',
         'EXTENSION_APCU_VERSION',
+        'EXTENSION_APCU_BC_VERSION',
         'EXTENSION_MEMCACHED_VERSION',
         'EXTENSION_REDIS_VERSION',
         'EXTENSION_MONGODB_VERSION',
@@ -150,6 +160,8 @@ class PhpEnvironment
         'PROXY_VARIABLES_FIXED',
         'PM',
         'ERROR_PAGE',
+        'COREDUMP',
+        'GDB'
     ];
 
     public static function getEnvironmentVariables()

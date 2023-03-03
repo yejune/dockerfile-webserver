@@ -5,6 +5,8 @@ ext-lib libmemcached-dev
 git clone https://github.com/php-memcached-dev/php-memcached memcached-${EXTENSION_MEMCACHED_VERSION}
 
 ext-pcl memcached-${EXTENSION_MEMCACHED_VERSION} \
+        --includedir=/usr/src/php \
+        --enable-memcached-session \
         --enable-memcached-json \
         --enable-memcached-igbinary \
         --enable-memcached-msgpack \

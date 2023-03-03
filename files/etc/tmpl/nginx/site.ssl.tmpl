@@ -1,3 +1,9 @@
+upstream fastcgi_backend {
+    server {{ .Env.FASTCGI_PASS }};
+
+    {{ .Env.KEEPALIVE_OFF_STRING }}keepalive {{ .Env.KEEPALIVE }};
+}
+
 server {
 
     listen      443 ssl;
@@ -17,6 +23,9 @@ server {
 
     location ~ [^/]\.({{ .Env.PHP_EXTENSION_URL_REGEX }})(/|$)
     {
+        {{ .Env.KEEPALIVE_OFF_STRING }}keepalive_timeout {{ .Env.KEEPALIVE_TIMEOUT }};
+        {{ .Env.KEEPALIVE_OFF_STRING }}keepalive_requests {{ .Env.KEEPALIVE_REQUESTS }};
+
         include /etc/nginx/variables.conf;
         include /etc/nginx/cors.conf;
 
@@ -26,7 +35,8 @@ server {
             return 404;
         }
 
-        fastcgi_pass {{ .Env.FASTCGI_PASS }};
+        fastcgi_pass fastcgi_backend;
+        {{ .Env.KEEPALIVE_OFF_STRING }}fastcgi_keep_conn on;
         {{ .Env.NGINX_LOCATION }}
     }
 

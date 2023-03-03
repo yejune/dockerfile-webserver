@@ -44,6 +44,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
 		--tag yejune/webserver:$(PREFIX)$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg GDB="$(GDB)" \
+		--build-arg FROM="$(FROM)" \
 		--build-arg PHP_VERSION="$(PHP_VERSION)" \
 		--build-arg PHP_GPGKEYS="$(PHP_GPGKEYS)" \
 		--build-arg PHP_SHA256="$(PHP_SHA256)" \
@@ -61,6 +63,7 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_MAILPARSE_VERSION=$(EXTENSION_MAILPARSE_VERSION) \
 		--build-arg EXTENSION_BASE58_VERSION=$(EXTENSION_BASE58_VERSION) \
 		--build-arg EXTENSION_APCU_VERSION=$(EXTENSION_APCU_VERSION) \
+		--build-arg EXTENSION_APCU_BC_VERSION=$(EXTENSION_APCU_BC_VERSION) \
 		--build-arg EXTENSION_MEMCACHED_VERSION=$(EXTENSION_MEMCACHED_VERSION) \
 		--build-arg EXTENSION_REDIS_VERSION=$(EXTENSION_REDIS_VERSION) \
 		--build-arg EXTENSION_MONGODB_VERSION=$(EXTENSION_MONGODB_VERSION) \
@@ -105,6 +108,9 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg EXTENSION_AWSCRT_VERSION=$(EXTENSION_AWSCRT_VERSION) \
 		--build-arg EXTENSION_XHPROF_VERSION=$(EXTENSION_XHPROF_VERSION) \
 		--build-arg EXTENSION_UOPZ_VERSION=$(EXTENSION_UOPZ_VERSION) \
+		--build-arg EXTENSION_SIMDJSON_VERSION=$(EXTENSION_SIMDJSON_VERSION) \
+		--build-arg EXTENSION_BSDIFF_VERSION=$(EXTENSION_BSDIFF_VERSION) \
+		--build-arg EXTENSION_SOLR_VERSION=$(EXTENSION_SOLR_VERSION) \
 		--build-arg LIBRARY_XL_VERSION=$(LIBRARY_XL_VERSION) \
 		--build-arg LIBRARY_XLSWRITER_VERSION=$(LIBRARY_XLSWRITER_VERSION) \
 		--build-arg LIBRARY_VIPS_VERSION=$(LIBRARY_VIPS_VERSION) \
@@ -114,150 +120,69 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 
 	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
 
-build-base-72: ## Build PHP 7.2 base images
-	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
-		PHP_VERSION="$(PHP72_VERSION)" \
-		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
-		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)" \
-		DOCKERFILE="Dockerfile"
 
-build-extend-72: ## Build PHP 7.2 extend images
-	@make build \
-		EXTENSIONS="$(FULL_EXTENSIONS)" \
-		PHP_VERSION="$(PHP72_VERSION)" \
-		PHP_GPGKEYS="$(PHP72_GPGKEYS)" \
-		PHP_SHA256="$(PHP72_SHA256)" \
-		TAG="$(PHP72_VERSION)" \
-		DOCKERFILE="Dockerfile"
-
-build-72: ## Build PHP 7.2 images
-	@make build-base-72
-	@make build-extend-72
-
-build-base-73: ## Build PHP 7.3 base image
+build-debug-base-82: ## Build PHP 8.2 debug base image
 	docker build \
 		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP73_VERSION)-base \
+		--tag yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg PHP_VERSION="$(PHP73_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP73_SHA256)" \
+		--build-arg GDB="on" \
+		--build-arg PHP_VERSION="$(PHP82_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP82_SHA256)" \
 		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file Base.Dockerfile \
 	.
 
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP73_VERSION)-base"; fi;
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP82_VERSION)-debug-base"; fi;
 
-build-extend-73: ## Build PHP 7.3 extend images
+build-debug-extend-82: ## Build PHP 8.2 debug extend images
 	@make build \
+		FROM="yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base" \
+		TAG="$(PHP82_VERSION)-debug" \
 		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP73_VERSION)" \
-		PHP_GPGKEYS="$(PHP73_GPGKEYS)" \
-		PHP_SHA256="$(PHP73_SHA256)" \
-		TAG="$(PHP73_VERSION)" \
+		PHP_VERSION="$(PHP82_VERSION)" \
+		PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
+		PHP_SHA256="$(PHP82_SHA256)" \
 		DOCKERFILE="Dockerfile"
 
-build-73: ## Build PHP 7.3 images
-	@make build-base-73
-	@make build-extend-73
-
-build-base-74: ## Build PHP 7.4 base image
+build-base-82: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP74_VERSION)-base \
+		--tag yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg PHP_VERSION="$(PHP74_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP74_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP74_SHA256)" \
+		--build-arg PHP_VERSION="$(PHP82_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP82_SHA256)" \
 		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file Base.Dockerfile \
 	.
 
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP74_VERSION)-base"; fi;
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP82_VERSION)-base"; fi;
 
-build-extend-74: ## Build PHP 7.4 extend images
+
+build-extend-82: ## Build PHP 8.0 extend images
 	@make build \
+		FROM="yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base" \
+		TAG="$(PHP82_VERSION)" \
 		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP74_VERSION)" \
-		PHP_GPGKEYS="$(PHP74_GPGKEYS)" \
-		PHP_SHA256="$(PHP74_SHA256)" \
-		TAG="$(PHP74_VERSION)" \
+		PHP_VERSION="$(PHP82_VERSION)" \
+		PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
+		PHP_SHA256="$(PHP82_SHA256)" \
 		DOCKERFILE="Dockerfile"
 
-build-extend3-74: ## Build PHP 7.4 extend images
-	@make build \
-		EXTENSIONS="$(CUSTOM_EXTENSIONS3)" \
-		PHP_VERSION="$(PHP74_VERSION)" \
-		PHP_GPGKEYS="$(PHP74_GPGKEYS)" \
-		PHP_SHA256="$(PHP74_SHA256)" \
-		TAG="$(PHP74_VERSION)_test" \
-		DOCKERFILE="Dockerfile"
+build-82: ## Build PHP 8.0 images
+	@make build-base-82
+	@make build-extend-82
+	@make push-82
 
-build-74: ## Build PHP 7.4 images
-	@make build-base-74
-	@make build-extend-74
 
-build-base-80: ## Build PHP 8.0 base image
-	docker build \
-		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP80_VERSION)-base \
-		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg PHP_VERSION="$(PHP80_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP80_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP80_SHA256)" \
-		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
-		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
-		--file Base.Dockerfile \
-	.
-
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP80_VERSION)-base"; fi;
-
-build-extend-80: ## Build PHP 8.0 extend images
-	@make build \
-		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP80_VERSION)" \
-		PHP_GPGKEYS="$(PHP80_GPGKEYS)" \
-		PHP_SHA256="$(PHP80_SHA256)" \
-		TAG="$(PHP80_VERSION)" \
-		DOCKERFILE="Dockerfile"
-
-build-80: ## Build PHP 8.0 images
-	@make build-base-80
-	@make build-extend-80
-	@make push-80
-
-build-base-81: ## Build PHP 8.0 base image
-	docker build \
-		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP81_VERSION)-base \
-		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg PHP_VERSION="$(PHP81_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP81_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP81_SHA256)" \
-		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
-		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
-		--file Base.Dockerfile \
-	.
-
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP81_VERSION)-base"; fi;
-
-build-extend-81: ## Build PHP 8.0 extend images
-	@make build \
-		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP81_VERSION)" \
-		PHP_GPGKEYS="$(PHP81_GPGKEYS)" \
-		PHP_SHA256="$(PHP81_SHA256)" \
-		TAG="$(PHP81_VERSION)" \
-		DOCKERFILE="Dockerfile"
-
-build-81: ## Build PHP 8.0 images
-	@make build-base-81
-	@make build-extend-81
-	@make push-81
+build-debug-82: ## Build PHP 8.0 images
+	@make build-debug-base-82
+	@make build-debug-extend-82
+	@make push-debug-82
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
@@ -292,44 +217,23 @@ build-all: ## Build all images
 	@make build-73
 	@make build-72
 
-push-72: ## Push built PHP 7.2 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP72_VERSION)
-	# @docker tag yejune/webserver:$(PREFIX)$(PHP72_VERSION) yejune/webserver:$(PREFIX)latest
-	# @docker push yejune/webserver:$(PREFIX)latest
+push-82: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)
 
-push-73: ## Push built PHP 7.3 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP73_VERSION)
 
-push-74: ## Push built PHP 7.4 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP74_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP74_VERSION)
-
-push-80: ## Push built PHP 8.0 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP80_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP80_VERSION)
-
-push-81: ## Push built PHP 8.0 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP81_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP81_VERSION)
+push-debug-82: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug
 
 push-all: ## Push all built images to Docker Hub
 	@make push-74
 	@make push-73
 	@make push-72
 
-build-and-push-72: ## Build and push PHP 7.2 images to Docker Hub
-	@make build-72
-	@make push-72
-
-build-and-push-73: ## Build and push PHP 7.3 images to Docker Hub
-	@make build-73
-	@make push-73
-
-build-and-push-74: ## Build and push PHP 7.3 images to Docker Hub
-	@make build-74
-	@make push-74
+build-and-push-82: ## Build and push PHP 7.3 images to Docker Hub
+	@make build-82
+	@make push-82
 
 build-and-push-all: ## Build all images and push them to Docker Hub
 	@make build-all
@@ -353,21 +257,11 @@ test-all: ## 테스트
 	@make test-73
 	@make test-72
 
-test-72:
-	@make test TAG="$(PHP72_VERSION)"
-	#@make test TAG="$(PHP72_VERSION)-mini"
+test-82:
+	@make test80 TAG="$(PHP82_VERSION)"
 
-test-73:
-	@make test TAG="$(PHP73_VERSION)"
-
-test-74:
-	@make test TAG="$(PHP74_VERSION)"
-
-test-80:
-	@make test80 TAG="$(PHP80_VERSION)"
-
-test-base-80:
-	@make test TAG="$(PHP80_VERSION)-base"
+test-base-82:
+	@make test TAG="$(PHP82_VERSION)-base"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f

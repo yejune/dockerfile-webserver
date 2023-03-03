@@ -44,10 +44,21 @@ export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 #export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
 #export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
+export KEEPALIVE=${KEEPALIVE:-"8"}
+export KEEPALIVE_REQUESTS=${KEEPALIVE_REQUESTS:-"1000"}
+export KEEPALIVE_TIMEOUT=${KEEPALIVE_TIMEOUT:-"10"}
+
+if is_on "$KEEPALIVE_OFF"; then
+    export KEEPALIVE_OFF_STRING="#"
+else
+    export KEEPALIVE_OFF_STRING=""
+fi
+
 export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
 
 export PHP_LOG_LIMIT=${PHP_LOG_LIMIT:-""}
 export PHP_LOG_BUFFERING=${PHP_LOG_BUFFERING:-""}
+export COREDUMP=${COREDUMP:-""}
 
 export PHP_EXTENSIONS=${PHP_EXTENSIONS:-"php do"}
 export PHP_EXTENSION_STRING=".${PHP_EXTENSIONS// / .}"
@@ -98,26 +109,27 @@ export SLOW_LOG_STREAM=${SLOW_LOG_STREAM:-"/var/log/php/fpm.slow.log"};
 export TZ=${TZ:-"Asia/Seoul"}
 export PHP_VARIABLES_ORDER=${PHP_VARIABLES_ORDER:-"GPCS"}
 
+export PM_TYPE=${PM_TYPE:-"ondemand"}
+export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-"1000"}
+export PM_MAX_CHILDREN=${PM_MAX_CHILDREN:-"100"}
+export PM_PROCESS_IDLE_TIMEOUT=${PM_PROCESS_IDLE_TIMEOUT:-"60"}
+
 if [ ! -z $PM ]; then
     export PM=${PM}
 else
     PM=""
-    if [ ! -z $PM_TYPE ]; then
-        PM="$PM
+    PM="$PM
 pm = ${PM_TYPE}";
-    fi
-    if [ ! -z $PM_MAX_CHILDREN ]; then
-        PM="$PM
+
+    PM="$PM
 pm.max_children = ${PM_MAX_CHILDREN}";
-    fi
-    if [ ! -z $PM_MAX_REQUESTS ]; then
-        PM="$PM
+
+    PM="$PM
 pm.max_requests = ${PM_MAX_REQUESTS}";
-    fi
-    if [ ! -z $PM_PROCESS_IDLE_TIMEOUT ]; then
-        PM="$PM
+
+    PM="$PM
 pm.process_idle_timeout = ${PM_PROCESS_IDLE_TIMEOUT}";
-    fi
+
     if [ ! -z $PM_START_SERVERS ]; then
         PM="$PM
 pm.start_servers = ${PM_START_SERVERS}";
@@ -130,16 +142,7 @@ pm.min_spare_servers = ${PM_MIN_SPARE_SERVERS}";
         PM="$PM
 pm.max_spare_servers = ${PM_MAX_SPARE_SERVERS}";
     fi
-
-    if [ -z "$PM" ]; then
-        export PM="
-pm = ondemand
-pm.max_children = 100
-pm.process_idle_timeout = 60
-pm.max_requests = 500";
-    else
-        export PM=${PM}
-    fi
+    export PM=${PM}
 fi
 
 if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
@@ -424,6 +427,13 @@ stderr_logfile_maxbytes=0
     php /usr/local/bin/docker-php-env environment >> /etc/environment
 
     update-ca-certificates
+
+    if [ ! -z "$COREDUMP" ]; then
+        echo '/tmp/core-%e.%p' > /proc/sys/kernel/core_pattern
+        echo 0 > /proc/sys/kernel/core_uses_pid
+        ulimit -c unlimited
+    fi
+
 fi
 
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

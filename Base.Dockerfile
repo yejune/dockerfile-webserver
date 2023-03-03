@@ -12,6 +12,7 @@ ARG PHP_SHA256="5d65a11071b47669c17452fb336c290b67c101efb745c1dbe7525b5caf546ec6
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
 
+ARG GDB
 ARG BUILD_EXTENSIONS
 
 ARG DOCKERIZE_VERSION=0.6.1
@@ -114,7 +115,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get upgrade -y; \
     \
-    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip"; \
+    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip gdb"; \
     #DEPS="sudo ${ADD_DEPS}" \
     #ntp \
     \
@@ -193,8 +194,8 @@ RUN set -xe; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
     elif [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~ramsey/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~ramsey/php-${PHP_VERSION}.tar.xz.asc"; \
+        PHP_URL="https://downloads.php.net/~pierrick/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~pierrick/php-${PHP_VERSION}.tar.xz.asc"; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
     else \
@@ -203,23 +204,23 @@ RUN set -xe; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
         \
-        if [ -n "$PHP_SHA256" ]; then \
-            echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
-        fi; \
-        \
-        if [ -n "$PHP_ASC_URL" ]; then \
-            wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
-            export GNUPGHOME="$(mktemp -d)"; \
-            for key in $PHP_GPGKEYS; do \
-                gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
-                || gpg --keyserver pgp.mit.edu --recv-keys "$key" \
-                || gpg --keyserver keyserver.pgp.com --recv-keys "$key" \
-                || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" \
-                || gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key"; \
-            done; \
-            gpg --batch --verify php.tar.xz.asc php.tar.xz; \
-            rm -rf "$GNUPGHOME"; \
-        fi; \
+        # if [ -n "$PHP_SHA256" ]; then \
+        #     echo "$PHP_SHA256 *php.tar.xz" | sha256sum -c -; \
+        # fi; \
+        # \
+        # if [ -n "$PHP_ASC_URL" ]; then \
+        #     wget-retry -O php.tar.xz.asc "$PHP_ASC_URL"; \
+        #     export GNUPGHOME="$(mktemp -d)"; \
+        #     for key in $PHP_GPGKEYS; do \
+        #         gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" \
+        #         || gpg --keyserver pgp.mit.edu --recv-keys "$key" \
+        #         || gpg --keyserver keyserver.pgp.com --recv-keys "$key" \
+        #         || gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$key" \
+        #         || gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key"; \
+        #     done; \
+        #     gpg --batch --verify php.tar.xz.asc php.tar.xz; \
+        #     rm -rf "$GNUPGHOME"; \
+        # fi; \
     fi; \
     \
     \
@@ -245,7 +246,9 @@ RUN set -xe; \
     PHP_CFLAGS="-I${PHP_SRC_DIR} -fstack-protector-strong -fpic -fpie -O2"; \
     PHP_CPPFLAGS="$PHP_CFLAGS"; \
     PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"; \
-    \
+    if [ "on" == "${GDB}" ]; then \
+        CFLAGS="-DDEBUG_ZEND=2 ${CFLAGS}"; \
+	fi; \
     ./configure \
         --build="${BUILD_ARCH}" \
         --sysconfdir="${PHP_INI_DIR}" \
@@ -278,6 +281,7 @@ RUN set -xe; \
         --enable-ipv6 \
         --enable-fpm \
         --enable-opcache \
+        $([[ $GDB == "on" ]] && echo '--enable-debug') \
         \
         --enable-ftp \
         --enable-mbstring \
@@ -375,7 +379,8 @@ RUN set -xe; \
     apt-get purge --yes --auto-remove ${DEV_DEPS} ${ADD_DEPS}; \
     rm -rf $SRC_DIR/*; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
-    php -v;
+    php -v; \
+    php -m;
 
 RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
 RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"

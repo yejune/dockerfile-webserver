@@ -3,6 +3,7 @@
 This is a Phalcon application server image based on Nginx (with SSL support) and PHP7.
 
 ## volumes
+
 -   /var/www
     -   for your app code (e.g. using "-v /home/project/:/var/www/")
     -   with your document root in a directory named public/
@@ -17,6 +18,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   Adding trusted local certificates
 
 ## Env variables
+
 -   DOMAIN
     -   optionally
     -   domain name, null
@@ -54,7 +56,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   enable CORS
     -   yes, null
 -   NGINX_CORS_ORIGIN
-    -   optionally, default *
+    -   optionally, default \*
     -   Access-Control-Allow-Origin
 -   NGINX_CORS_METHODS
     -   optionally
@@ -65,6 +67,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   Modify REMOTE_ADDR, REQUEST_SCHEME, SERVER_PROTOCOL, SERVER_PORT variable to the value before forward
 
 ## version
+
 -   UBUNTU 18.04
 -   DOCKERIZE 0.6.1
 -   NGINX 1.16.1
@@ -85,7 +88,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   msgpack 2.2.0RC1
     -   mailparse 3.1.3
     -   base58 0.1.3
-    -   apcu 5.1.15
+    -   apcu 5.1.22
     -   memcached 3.2.0RC1
     -   redis 5.3.7
     -   mongodb 1.12.1
@@ -127,10 +130,11 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   http_message 0.2.2
     -   yaconf 1.1.1
     -   awscrt 1.1.0
-    -   zephir 0.15.2
-    -   zephir_parser 1.5.0
+    -   zephir 0.16.3
+    -   zephir_parser 1.5.1
 
 ## Build Options
+
 -   REPOGITORY_URL
 -   NGINX_VERSION
 -   NJS_VERSION
@@ -138,7 +142,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   PHP_VERSION
 -   PHP_GPGKEYS
 -   PHP_SHA256
-    -   file type php-*.tar.xz
+    -   file type php-\*.tar.xz
 -   BUILD_EXTENSIONS
     -   optionally
     -   null is all extensions
@@ -246,6 +250,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   EXTENSION_IGBINARY_VERSION
 -   EXTENSION_MSGPACK_VERSION
 -   EXTENSION_APCU_VERSION
+-   EXTENSION_APCU_BC_VERSION
 -   EXTENSION_MEMCACHED_VERSION
 -   EXTENSION_REDIS_VERSION
 -   EXTENSION_MONGODB_VERSION
@@ -286,15 +291,16 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
 -   DOCKERIZE_VERSION
 
 ## Examples
+
 -   build
-    -   ``docker build .``
+    -   `docker build .`
 -   run
-    -   ``docker run -p 80:80 -d yejune/webserver``
+    -   `docker run -p 80:80 -d yejune/webserver`
 -   only SSL
-    -   ``docker run -p 80:80 -p 443:443 -e USE_SSL=only -v `pwd`/var/certs:/var/certs -v `pwd`/var/certs:/usr/local/share/ca-certificates/local -v `pwd`:/var/www/ -d yejune/webserver``
+    -   `` docker run -p 80:80 -p 443:443 -e USE_SSL=only -v `pwd`/var/certs:/var/certs -v `pwd`/var/certs:/usr/local/share/ca-certificates/local -v `pwd`:/var/www/ -d yejune/webserver ``
 -   without SSL
-    -   ``docker run -p 80:80 -v `pwd`:/var/www/ -d yejune/webserver``
+    -   `` docker run -p 80:80 -v `pwd`:/var/www/ -d yejune/webserver ``
 -   using non-standard ports
-    -   ``docker run -p 8080:80 -p 8443:443 -e USE_SSL=on -v `pwd`/var/certs:/var/certs -v `pwd`:/var/www/ -d yejune/webserver``
+    -   `` docker run -p 8080:80 -p 8443:443 -e USE_SSL=on -v `pwd`/var/certs:/var/certs -v `pwd`:/var/www/ -d yejune/webserver ``
 -   logfile
-    -   ``docker run -p 80:80 -v `pwd`/var/log/nginx:/var/log/nginx -v `pwd`:/var/www/ -d yejune/webserver``
+    -   `` docker run -p 80:80 -v `pwd`/var/log/nginx:/var/log/nginx -v `pwd`:/var/www/ -d yejune/webserver ``

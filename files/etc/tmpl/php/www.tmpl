@@ -9,6 +9,7 @@ user = {{ .Env.FPM_USER }}
 group = {{ .Env.FPM_GROUP }}
 
 {{ .Env.PM }}
+{{ .Env.COREDUMP }}
 
 ;slow log to filebeat
 ;slowlog = /var/log/php/fpm.slow.log;
