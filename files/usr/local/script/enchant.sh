@@ -1,2 +1,2 @@
-ext-lib libenchant1c2a libenchant-dev
+ext-lib libenchant-2-dev
 ext-src enchant

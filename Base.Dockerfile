@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -176,8 +176,8 @@ RUN set -xe; \
     # done; \
     # test -z "$found" && echo >&2 "error: failed to fetch GPG key ${NGINX_GPGKEY}" && exit 1; \
     # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
-    add-apt-repository -y ppa:nginx/stable; \
-    apt-get update; \
+    # add-apt-repository -y ppa:nginx/stable; \
+    # apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx nginx-extras; \
     # forward request and error logs to docker log collector
     ln -sf /dev/stdout /var/log/nginx/access.log; \

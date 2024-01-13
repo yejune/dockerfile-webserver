@@ -178,6 +178,37 @@ build-82: ## Build PHP 8.0 images
 	@make build-extend-82
 	@make push-82
 
+build-base-83: ## Build PHP 8.0 base image
+	docker build \
+		--no-cache \
+		--tag yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg PHP_VERSION="$(PHP83_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP83_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP83_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file Base.Dockerfile \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP83_VERSION)-base"; fi;
+
+
+build-extend-83: ## Build PHP 8.0 extend images
+	@make build \
+		FROM="yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base" \
+		TAG="$(PHP83_VERSION)" \
+		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
+		PHP_VERSION="$(PHP83_VERSION)" \
+		PHP_GPGKEYS="$(PHP83_GPGKEYS)" \
+		PHP_SHA256="$(PHP83_SHA256)" \
+		DOCKERFILE="Dockerfile"
+
+build-83: ## Build PHP 8.0 images
+	@make build-base-83
+	@make build-extend-83
+	@make push-83
+
 
 build-debug-82: ## Build PHP 8.0 images
 	@make build-debug-base-82
@@ -222,6 +253,11 @@ push-82: ## Push built PHP 8.0 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)
 
 
+push-83: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP83_VERSION)
+
+
 push-debug-82: ## Push built PHP 8.0 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base
 	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug
@@ -234,6 +270,10 @@ push-all: ## Push all built images to Docker Hub
 build-and-push-82: ## Build and push PHP 7.3 images to Docker Hub
 	@make build-82
 	@make push-82
+
+build-and-push-83: ## Build and push PHP 7.3 images to Docker Hub
+	@make build-83
+	@make push-83
 
 build-and-push-all: ## Build all images and push them to Docker Hub
 	@make build-all
@@ -259,6 +299,9 @@ test-all: ## 테스트
 
 test-82:
 	@make test80 TAG="$(PHP82_VERSION)"
+
+test-83:
+	@make test80 TAG="$(PHP83_VERSION)"
 
 test-base-82:
 	@make test TAG="$(PHP82_VERSION)-base"
