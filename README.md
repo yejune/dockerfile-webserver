@@ -130,8 +130,8 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   http_message 0.2.2
     -   yaconf 1.1.1
     -   awscrt 1.1.0
-    -   zephir 0.16.3
-    -   zephir_parser 1.5.1
+    -   zephir 0.17.0
+    -   zephir_parser 1.6.0
 
 ## Build Options
 

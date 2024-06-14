@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -132,8 +132,8 @@ RUN set -xe; \
         libssl-dev \
         libxml2-dev \
         zlib1g-dev \
-        libargon2-0 \
-        libargon2-0-dev \
+        libargon2-1 \
+        libargon2-dev \
     "; \
     \
     mkdir -p "${PHP_CONF_DIR}"; \
