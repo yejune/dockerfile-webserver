@@ -282,13 +282,16 @@ else
 
     sed -i -e "s~.*date.timezone.*~date.timezone = ${TZ}~g" ${PHP_INI_DIR}/php.ini
 
-    if is_on "$XDEBUG"; then
-        if [ -f "${PHP_CONF_DIR}/xdebug.ini.stop" ]; then
-            mv ${PHP_CONF_DIR}/xdebug.ini.stop ${PHP_CONF_DIR}/xdebug.ini
+    if [ ! -z "$XDEBUG" ]; then
+        if is_on "$XDEBUG"; then
+            if [ -f "${PHP_CONF_DIR}/xdebug.ini.stop" ]; then
+                mv ${PHP_CONF_DIR}/xdebug.ini.stop ${PHP_CONF_DIR}/xdebug.ini
+            fi
         fi
-    else 
-        if [ -f "${PHP_CONF_DIR}/xdebug.ini" ]; then
-            mv ${PHP_CONF_DIR}/xdebug.ini ${PHP_CONF_DIR}/xdebug.ini.stop
+        if is_off "$XDEBUG"; then
+            if [ -f "${PHP_CONF_DIR}/xdebug.ini" ]; then
+                mv ${PHP_CONF_DIR}/xdebug.ini ${PHP_CONF_DIR}/xdebug.ini.stop
+            fi
         fi
     fi
 
