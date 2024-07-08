@@ -2,6 +2,11 @@
 
 This is a Phalcon application server image based on Nginx (with SSL support) and PHP7.
 
+## Build
+
+php env.php > env.version
+sudo make build-and-push-83
+
 ## volumes
 
 -   /var/www
@@ -120,7 +125,7 @@ This is a Phalcon application server image based on Nginx (with SSL support) and
     -   oauth 2.0.7
     -   excel 1.0.2
     -   xlswriter 1.5.1
-    -   xdebug 3.1.3
+    -   xdebug 3.3.2
     -   seaslog 2.2.0
     -   componere 3.1.2
     -   runkit7 4.0.0a3

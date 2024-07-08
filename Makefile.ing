@@ -1,0 +1,84 @@
+#!make
+
+.DEFAULT_GOAL := help
+.PHONY: *
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+
+PREFIX := $(if $(filter master,$(BRANCH)),,$(BRANCH)-)
+
+OSFLAG :=
+ifeq ($(OS),Windows_NT)
+	OSFLAG += WIN
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S),Linux)
+		OSFLAG += LINUX
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		OSFLAG += OSX
+	endif
+endif
+
+include env.version
+include env.makefile
+
+help: ## Display this help message
+	@echo "Usage: make [target] [arg=\"val\"...]"
+	@echo ""
+	@echo "Targets:"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+define build_image
+	docker build --no-cache \
+		--tag yejune/webserver:$(PREFIX)$(1) \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg PHP_VERSION="$(2)" \
+		--build-arg PHP_GPGKEYS="$(3)" \
+		--build-arg PHP_SHA256="$(4)" \
+		--build-arg BUILD_EXTENSIONS="$(5)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		$(foreach ext,$(6),--build-arg EXTENSION_$(ext)_VERSION=$$(EXTENSION_$(ext)_VERSION)) \
+		--file $(7) \
+		.
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(1)"; fi;
+endef
+
+define push_image
+	docker push yejune/webserver:$(PREFIX)$(1)
+endef
+
+build-base-83: ## Build PHP 8.3 base image
+	$(call build_image,$(PHP83_VERSION)-base,$(PHP83_VERSION),$(PHP83_GPGKEYS),$(PHP83_SHA256),$(DEFAULT_EXTENSIONS),,Base.Dockerfile)
+
+build-extend-83: ## Build PHP 8.3 extend image
+	$(call build_image,$(PHP83_VERSION),$(PHP83_VERSION),$(PHP83_GPGKEYS),$(PHP83_SHA256),$(CUSTOM_EXTENSIONS),$(EXTENSIONS),Dockerfile)
+
+build-83: ## Build PHP 8.3 images
+	@make build-base-83
+	@make build-extend-83
+	@make push-83
+
+push-83: ## Push built PHP 8.3 images to Docker Hub
+	$(call push_image,$(PHP83_VERSION)-base)
+	$(call push_image,$(PHP83_VERSION))
+
+test: ## Run test on the built image
+	if [ ! -z "$(shell docker ps | grep 8112 | awk '{ print $$(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 8112:80 yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:8112 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:8112
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:8112/ip.php | grep "200 OK"
+	docker kill test-webserver
+
+test80: ## Run test on port 80
+	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $$(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 80:80 -v $$(pwd)/www/info.php:/var/www/public/info.php yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
+	curl --retry 10 --retry-delay 5  http://localhost:80/info.php
+	docker kill test-webserver
+
+test-83: ## Run test for PHP 8.3
+	@make test80 TAG="$(PHP83_VERSION)"
+
+clean: ## Clean all containers and images on the system
+	-@docker ps -a -q | xargs docker rm -f
+	-@docker images -q | xargs docker rmi -f

@@ -286,6 +286,10 @@ else
         if [ -f "${PHP_CONF_DIR}/xdebug.ini.stop" ]; then
             mv ${PHP_CONF_DIR}/xdebug.ini.stop ${PHP_CONF_DIR}/xdebug.ini
         fi
+    else 
+        if [ -f "${PHP_CONF_DIR}/xdebug.ini" ]; then
+            mv ${PHP_CONF_DIR}/xdebug.ini ${PHP_CONF_DIR}/xdebug.ini.stop
+        fi
     fi
 
     if [ ! -z "$PHP_LOAD_EXTENSIONS" ]; then

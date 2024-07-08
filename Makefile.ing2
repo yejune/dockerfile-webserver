@@ -1,0 +1,138 @@
+.DEFAULT_GOAL := help
+.PHONY: *
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+
+ifeq ($(BRANCH), master)
+	PREFIX=
+else
+	PREFIX=$(BRANCH)-
+endif
+
+OSFLAG :=
+ifeq ($(OS), Windows_NT)
+	OSFLAG += WIN
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S), Linux)
+		OSFLAG += LINUX
+	endif
+	ifeq ($(UNAME_S), Darwin)
+		OSFLAG += OSX
+	endif
+endif
+
+include env.version
+include env.makefile
+
+help:
+	@echo "\033[33mUsage:\033[0m\n  make [target] [arg=\"val\"...]\n\n\033[33mTargets:\033[0m"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+build: ## Build the Docker image. Usage: make build TAG="8.3" PHP_VERSION="..."
+	docker build --no-cache \
+		--tag yejune/webserver:$(PREFIX)$(TAG) \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg GDB="$(GDB)" \
+		--build-arg FROM="$(FROM)" \
+		--build-arg PHP_VERSION="$(PHP_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(EXTENSIONS)" \
+		$(foreach var, $(filter EXTENSION_% LIBRARY_%,$(.VARIABLES)), --build-arg $(var)=${$(var)}) \
+		--file $(DOCKERFILE) \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
+
+build-debug-base-84: ## Build PHP 8.4 debug base image
+	docker build \
+		--no-cache \
+		--tag yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug-base \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg GDB="on" \
+		--build-arg PHP_VERSION="$(PHP84_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP84_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file Base.Dockerfile \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP84_VERSION)-debug-base"; fi;
+
+build-debug-extend-84: ## Build PHP 8.4 debug extended images
+	@make build \
+		FROM="yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug-base" \
+		TAG="$(PHP84_VERSION)-debug" \
+		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
+		PHP_VERSION="$(PHP84_VERSION)" \
+		PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		PHP_SHA256="$(PHP84_SHA256)" \
+		DOCKERFILE="Dockerfile"
+
+build-base-84: ## Build PHP 8.4 base image
+	docker build \
+		--no-cache \
+		--tag yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base \
+		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
+		--build-arg PHP_VERSION="$(PHP84_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP84_SHA256)" \
+		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
+		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
+		--file Base.Dockerfile \
+	.
+
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP84_VERSION)-base"; fi;
+
+build-extend-84: ## Build PHP 8.4 extended images
+	@make build \
+		FROM="yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base" \
+		TAG="$(PHP84_VERSION)" \
+		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
+		PHP_VERSION="$(PHP84_VERSION)" \
+		PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		PHP_SHA256="$(PHP84_SHA256)" \
+		DOCKERFILE="Dockerfile"
+
+build-all: ## Build all PHP images
+	@make build-83
+	@make build-84
+
+push-83: ## Push built PHP 8.3 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP83_VERSION)
+
+push-84: ## Push built PHP 8.4 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)
+
+push-all: ## Push all built images to Docker Hub
+	@make push-83
+	@make push-84
+
+test:
+	if [ ! -z "$(shell docker ps | grep 8112 | awk '{ print $$1 }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 8112:80 yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:8112 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:8112
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:8112/ip.php | grep "200 OK"
+	docker kill test-webserver
+
+test80:
+	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $$1 }')" ]; then docker rm -f test-webserver > /dev/null; fi
+	docker run --rm -d --name=test-webserver -p 80:80 -v $$(pwd)/www/info.php:/var/www/public/info.php yejune/webserver:$(PREFIX)$(TAG)
+	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
+	curl --retry 10 --retry-delay 5 http://localhost:80/info.php
+
+test-83:
+	@make test80 TAG="$(PHP83_VERSION)"
+
+test-84:
+	@make test80 TAG="$(PHP84_VERSION)"
+
+test-base-84:
+	@make test TAG="$(PHP84_VERSION)-base"
+
+clean: ## Clean all containers and images on the system
+	-@docker ps -a -q | xargs docker rm -f
+	-@docker images -q | xargs docker rmi -f

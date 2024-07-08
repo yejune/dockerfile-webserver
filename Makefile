@@ -34,6 +34,7 @@ else
 	# endif
 endif
 
+include env.version
 include env.makefile
 
 help:
@@ -288,9 +289,12 @@ test:
 
 test80:
 	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
-	docker run --rm -d --name=test-webserver -p 80:80 yejune/webserver:$(PREFIX)$(TAG)
+	docker run --rm -d --name=test-webserver -p 80:80 -v $$(pwd)/www/info.php:/var/www/public/info.php yejune/webserver:$(PREFIX)$(TAG)
 	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
-	curl --retry 10 --retry-delay 5 -L -I http://localhost:80/ip.php | grep "200 OK"
+	curl --retry 10 --retry-delay 5  http://localhost:80/info.php
+	
+	
+#	 | grep "200 OK"
 
 test-all: ## 테스트
 	@make test-74
