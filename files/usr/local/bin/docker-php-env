@@ -160,7 +160,13 @@ class PhpEnvironment
         'PM',
         'ERROR_PAGE',
         'COREDUMP',
-        'GDB'
+        'GDB',
+        'SSL_DOMAINS',
+        'USE_SSL',
+        'LOG_FORMAT',
+        'SLOW_LOG_STREAM',
+        'LOG_STREAM',
+        'UPLOAD_TARGET'
     ];
 
     public static function getEnvironmentVariables()

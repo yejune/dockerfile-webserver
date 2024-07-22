@@ -1,7 +1,7 @@
 server {
 
     listen      443 ssl;
-    server_name {{ .Env.DOMAIN }};
+    server_name {{ .Env.SSL_DOMAIN }};
     root        {{ .Env.WEBROOT }};
     index       {{ .Env.PHP_EXTENSION_INDEX_STRING }};
     charset     utf-8;
@@ -12,8 +12,8 @@ server {
     error_log   /var/log/nginx/error.log{{ .Env.NGINX_ERROR_LOG_LEVEL }};
     {{ .Env.ERROR_PAGE }}
 
-    ssl_certificate /var/certs/{{ .Env.DOMAIN }}.crt;
-    ssl_certificate_key /var/certs/{{ .Env.DOMAIN }}.key;
+    ssl_certificate /var/certs/{{ .Env.SSL_DOMAIN }}.crt;
+    ssl_certificate_key /var/certs/{{ .Env.SSL_DOMAIN }}.key;
 
     location ~ [^/]\.({{ .Env.PHP_EXTENSION_URL_REGEX }})(/|$)
     {

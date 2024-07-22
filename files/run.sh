@@ -28,7 +28,8 @@ not_off() {
     fi
 }
 
-export DOMAIN=${DOMAIN:-"_"}
+export USE_SSL=${USE_SSL:-"off"}
+export SSL_DOMAINS=${SSL_DOMAINS:-"_"}
 export WEBROOT=${WEBROOT:-"/var/www/public"}
 export NGINX_LOCATION=${NGINX_LOCATION:-""}
 export NGINX_HTTP=${NGINX_HTTP:-""}
@@ -406,20 +407,17 @@ stderr_logfile_maxbytes=0
     mkdir -p /etc/nginx/site.d
 
     if not_off "$USE_SSL"; then
-        ORG_DOMAIN=$DOMAIN
-        IN=$DOMAIN
-        domains=$(echo $IN | tr ";" "\n")
+        domains=$(echo $SSL_DOMAINS | tr ";" "\n")
         for domainName in $domains
         do
             if [ ! -z "$domainName" ]; then
-                export DOMAIN=${domainName}
+                export SSL_DOMAIN=${domainName}
                 dockerize -template /etc/tmpl/nginx/site.ssl.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
             fi
         done
-
-        export DOMAIN=${ORG_DOMAIN}
     fi
 
+    # ssl only 이면 생성안함. off여도 생성함. ssl_domains를 기본값이 _
     if [ "$USE_SSL" != "only" ]; then
         dockerize -template /etc/tmpl/nginx/site.tmpl > /etc/nginx/site.d/default.conf
     fi
