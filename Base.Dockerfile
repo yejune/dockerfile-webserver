@@ -347,7 +347,7 @@ RUN set -xe; \
     # Install filebeat
     cd "${SRC_DIR}"; \
     wget-retry -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
-    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" > /etc/apt/sources.list.d/elastic-6.x.list; \
+    echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list; \
     apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" filebeat; \
     \

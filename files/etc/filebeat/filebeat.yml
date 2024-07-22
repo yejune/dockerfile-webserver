@@ -1,6 +1,6 @@
 filebeat:
-  prospectors:
-    - input_type: log
+  inputs:
+    - type: log
       fields:
         type: php-slow
         status: 524
@@ -14,27 +14,28 @@ filebeat:
         match: after
         max_lines: 500
         timeout: 5s
-    - input_type: log
+    - type: log
       fields:
         type: php-error
         status: 525
       paths:
         - /var/log/php/fpm.error.log
       encoding: plain
-    - input_type: log
+    - type: log
       fields:
         type: nginx-error
         status: 526
       paths:
         - /var/log/nginx/error.log
       encoding: plain
-    - input_type: log
+    - type: log
       fields:
         type: supervisor-error
         status: 527
       paths:
         - /var/log/supervisor/supervisor.log
       encoding: plain
+
 output:
   console:
     enabled: true
