@@ -149,6 +149,10 @@ endef
 #   decimal\
 
 define CUSTOM_EXTENSIONS
+    msgpack\
+    igbinary\
+    memcached\
+    xlswriter\
     xdebug\
     jsonpath\
     var_representation\
@@ -163,10 +167,6 @@ define CUSTOM_EXTENSIONS
     apcu\
     simdjson\
     bsdiff\
-    msgpack\
-    igbinary\
-    memcached\
-    xlswriter\
     yaml\
     imagick\
     mailparse\

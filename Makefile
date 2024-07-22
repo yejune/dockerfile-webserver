@@ -307,8 +307,9 @@ test-82:
 test-83:
 	@make test80 TAG="$(PHP83_VERSION)"
 
-test-base-82:
-	@make test TAG="$(PHP82_VERSION)-base"
+test-base-83:
+	docker rm -f test-webserver
+	@make test TAG="$(PHP83_VERSION)-base"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f
