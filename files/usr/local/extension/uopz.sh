@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl uopz-${EXTENSION_UOPZ_VERSION}

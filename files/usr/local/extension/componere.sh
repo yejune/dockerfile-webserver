@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 
 
 ext-pcl componere-${EXTENSION_COMPONERE_VERSION}

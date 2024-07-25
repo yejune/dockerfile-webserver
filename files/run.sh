@@ -396,8 +396,8 @@ stderr_logfile_maxbytes=0
     dockerize -template /etc/tmpl/nginx/cors.tmpl > /etc/nginx/cors.conf
 
     if is_off "$NGINX_CORS"; then
-        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.ssl.tmpl
-        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.tmpl
+        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.https.tmpl
+        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.http.tmpl
     fi
 
     if is_off "$NGINX_ACCESS_LOG"; then
@@ -412,14 +412,16 @@ stderr_logfile_maxbytes=0
         do
             if [ ! -z "$domainName" ]; then
                 export SSL_DOMAIN=${domainName}
-                dockerize -template /etc/tmpl/nginx/site.ssl.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
+                dockerize -template /etc/tmpl/nginx/site.https.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
             fi
         done
     fi
 
     # ssl only 이면 생성안함. off여도 생성함. ssl_domains를 기본값이 _
-    if [ "$USE_SSL" != "only" ]; then
-        dockerize -template /etc/tmpl/nginx/site.tmpl > /etc/nginx/site.d/default.conf
+    if [ "$USE_SSL" = "only" ]; then
+        dockerize -template /etc/tmpl/nginx/site.default.tmpl > /etc/nginx/site.d/default.conf
+    else
+        dockerize -template /etc/tmpl/nginx/site.http.tmpl > /etc/nginx/site.d/default.conf
     fi
 
     mkdir -p /etc/nginx/common.d/

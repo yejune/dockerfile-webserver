@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl redis-${EXTENSION_REDIS_VERSION}

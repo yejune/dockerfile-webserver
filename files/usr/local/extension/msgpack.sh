@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl msgpack-${EXTENSION_MSGPACK_VERSION}

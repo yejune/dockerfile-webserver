@@ -57,4 +57,3 @@ zephir help || exit 1;
 # new_extension_name="Zephir Parser";
 
 
-curl https://get.wasmer.io -sSfL | sh

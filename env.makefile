@@ -149,6 +149,7 @@ endef
 #   decimal\
 
 define CUSTOM_EXTENSIONS
+    wasmer\
     msgpack\
     igbinary\
     memcached\

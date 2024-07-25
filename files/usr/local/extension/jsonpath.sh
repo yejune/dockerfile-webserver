@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl jsonpath-${EXTENSION_JSONPATH_VERSION}

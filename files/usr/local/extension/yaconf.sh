@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 
 
 ext-pcl yaconf-${EXTENSION_YACONF_VERSION}

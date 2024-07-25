@@ -162,6 +162,7 @@ class PhpEnvironment
         'COREDUMP',
         'GDB',
         'SSL_DOMAINS',
+        'SSL_DOMAIN',
         'USE_SSL',
         'LOG_FORMAT',
         'SLOW_LOG_STREAM',

@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 pecl install xdebug-${EXTENSION_XDEBUG_VERSION}
 XDEBUG_INI="${PHP_CONF_DIR}/xdebug.ini"
 echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > ${XDEBUG_INI}

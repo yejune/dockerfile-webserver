@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 ext-lib libnghttp2-dev libhiredis-dev libpq-dev
 ext-pcl swoole-${EXTENSION_SWOOLE_VERSION} \
     --enable-openssl \
