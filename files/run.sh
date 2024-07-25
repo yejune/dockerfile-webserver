@@ -417,9 +417,8 @@ stderr_logfile_maxbytes=0
         done
     fi
 
-    # ssl only 이면 생성안함. off여도 생성함. ssl_domains를 기본값이 _
     if [ "$USE_SSL" = "only" ]; then
-        dockerize -template /etc/tmpl/nginx/site.default.tmpl > /etc/nginx/site.d/default.conf
+        dockerize -template /etc/tmpl/nginx/site.default.tmpl > /etc/nginx/site.d/zzz.default.conf
     else
         dockerize -template /etc/tmpl/nginx/site.http.tmpl > /etc/nginx/site.d/default.conf
     fi

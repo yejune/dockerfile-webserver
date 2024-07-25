@@ -31,9 +31,14 @@ EXTENSION_RUNKIT7_VERSION:=4.0.0a6
 EXTENSION_CALLEE_VERSION:=0.0.0
 EXTENSION_SCREWIM_VERSION:=1.0.5
 
-# ocbc
-# oci8
-# pdo_dblib\
+#    ocbc
+#    oci8
+#    pdo_dblib\
+#    pdo_firebird\
+#    snmp\
+#    ldap\
+#    mysqli\
+#    soap\
 
 define DEFAULT_EXTENSIONS
     bcmath\
@@ -57,17 +62,14 @@ define DEFAULT_EXTENSIONS
     imap\
     intl\
     json\
-    ldap\
     libxml\
     mbstring\
     mysqlnd\
-    mysqli\
     opcache\
     openssl\
     pcntl\
     pcre\
     pdo\
-    pdo_firebird\
     pdo_mysql\
     pdo_pgsql\
     pdo_sqlite\
@@ -80,8 +82,6 @@ define DEFAULT_EXTENSIONS
     session\
     shmop\
     simplexml\
-    snmp\
-    soap\
     sockets\
     sodium\
     spl\
@@ -149,7 +149,6 @@ endef
 #   decimal\
 
 define CUSTOM_EXTENSIONS
-    wasmer\
     msgpack\
     igbinary\
     memcached\
