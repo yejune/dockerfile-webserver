@@ -2,18 +2,12 @@
 
 REPOGITORY_URL:=ap-northeast-2.ec2.archive.ubuntu.com
 
-PHP81_GPGKEYS:=528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD
-
-PHP81_VERSION:=8.1.11
-PHP81_SHA256:=3005198d7303f87ab31bc30695de76e8ad62783f806b6ab9744da59fe41cc5bd
-
-# tar.xz
-PHP82_VERSION:=8.2.4
-PHP82_SHA256:=bc7bf4ca7ed0dd17647e3ea870b6f062fcb56b243bfdef3f59ff7f94e96176a8
-
-
 PHP83_VERSION:=8.3.9
 PHP83_SHA256:=bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77
+
+
+PHP84_VERSION:=8.4.0
+PHP84_SHA256:=bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77
 
 
 # LIBRARY_V8_VERSION:=7.5
@@ -39,6 +33,8 @@ EXTENSION_SCREWIM_VERSION:=1.0.5
 #    ldap\
 #    mysqli\
 #    soap\
+#    dba\
+#    imap\
 
 define DEFAULT_EXTENSIONS
     bcmath\
@@ -47,7 +43,6 @@ define DEFAULT_EXTENSIONS
     ctype\
     curl\
     date\
-    dba\
     dom\
     enchant\
     exif\
@@ -59,7 +54,6 @@ define DEFAULT_EXTENSIONS
     gmp\
     hash\
     iconv\
-    imap\
     intl\
     json\
     libxml\
@@ -139,43 +133,43 @@ endef
 #    vld\
 #    oauth\
 
-#   awscrt\
-#   protobuf\
-#   ssh2\
-#   grpc\
-#   excimer\
-#   phalcon\
-#   swoole\
-#   decimal\
+#    awscrt\
+#    protobuf\
+#    ssh2\
+#    grpc\
+#    excimer\
+#    phalcon\
+#    swoole\
+#    decimal\
+#    memcached\
+#    msgpack\
+#    igbinary\
+#    xdebug\
+#    var_representation\
+#    eio\
+#    ev\
+#    uv\
+#    yaconf\
+#    json_post\
+#    jsonpath\
+#    gearman\
+#    simdjson\
+#    bsdiff\
+#    apfd\
+#    mailparse\
 
 define CUSTOM_EXTENSIONS
-    msgpack\
-    igbinary\
-    memcached\
+    vips\
+    imagick\
+    mongodb\
+    uuid\
     xlswriter\
-    xdebug\
-    jsonpath\
-    var_representation\
-    eio\
-    ev\
-    uv\
     geospatial\
     seaslog\
     base58\
     zephir_parser\
-    gearman\
     apcu\
-    simdjson\
-    bsdiff\
     yaml\
-    imagick\
-    mailparse\
-    json_post\
-    apfd\
-    yaconf\
-    uuid\
-    vips\
-    mongodb\
     psr\
     \
     redis\

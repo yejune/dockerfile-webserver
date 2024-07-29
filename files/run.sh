@@ -30,7 +30,7 @@ not_off() {
 
 export USE_SSL=${USE_SSL:-"off"}
 export SSL_DOMAINS=${SSL_DOMAINS:-"_"}
-export WEBROOT=${WEBROOT:-"/var/www/public"}
+export WEBROOT_DIR=${WEBROOT_DIR:-"/var/www/public"}
 export NGINX_LOCATION=${NGINX_LOCATION:-""}
 export NGINX_HTTP=${NGINX_HTTP:-""}
 export NGINX_SERVER=${NGINX_SERVER:-""}
@@ -68,8 +68,8 @@ export PHP_EXTENSION_PATH_INFO_REGEX=".+\.${PHP_EXTENSIONS// /|.+\\.}"
 export PHP_EXTENSION_INDEX_STRING="index.${PHP_EXTENSIONS// / index.}"
 export INDEX_FILENAME=${INDEX_FILENAME:-"index.php"}
 
-export FPM_USER=${FPM_USER:-"www-data"}
-export FPM_GROUP=${FPM_GROUP:-"www-data"}
+# export FPM_USER=${FPM_USER:-"www-data"}
+# export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
 export RESPONSE_SERVER_NAME=${RESPONSE_SERVER_NAME:-"BLUETOOLS"}
 export PHP_SESSION_NAME=${PHP_SESSION_NAME:-"PHPSESSID"}
@@ -150,12 +150,13 @@ if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else
 
-    locales=($LOCALE_GEN)
-    for i in "${locales[@]}"; do
-        locale-gen $i;
+    # 개행, 콤마, 공백을 구분자로 사용하여 로케일 분리
+    echo -e "$LOCALE_GEN" | while read -r locale; do
+        if [ -n "$locale" ]; then
+            echo "Generating locale: $locale"
+            locale-gen "$locale"
+        fi
     done
-
-
 
     if [ ! -z "$PHP_LOG_LIMIT" ]; then
         export PHP_LOG_LIMIT_STRING="LOG_LIMIT=${PHP_LOG_LIMIT}"
@@ -439,7 +440,6 @@ stderr_logfile_maxbytes=0
         echo 0 > /proc/sys/kernel/core_uses_pid
         ulimit -c unlimited
     fi
-
 fi
 
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

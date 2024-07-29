@@ -15,7 +15,10 @@ ARG REPOGITORY_URL="archive.ubuntu.com"
 ARG GDB
 ARG BUILD_EXTENSIONS
 
-ARG DOCKERIZE_VERSION=0.6.1
+ARG FPM_USER="www-data"
+ARG FPM_GROUP="www-data"
+
+ARG DOCKERIZE_VERSION=0.7.0
 
 SHELL ["/bin/bash", "-c"]
 
@@ -33,7 +36,9 @@ ENV PHP_INI_DIR=/etc/php \
     PECL_SRC_DIR=/usr/src/pecl \
     SRC_DIR=/usr/src \
     USR_LOCAL_BIN_DIR=/usr/local/bin \
-    USR_LIB_DIR=/usr/lib
+    USR_LIB_DIR=/usr/lib \
+    FPM_GROUP=${FPM_GROUP} \
+    FPM_USER=${FPM_USER}
 
 
 ENV DEFAULT_EXTENSIONS="\
@@ -262,8 +267,8 @@ RUN set -xe; \
         # make sure invalid --configure-flags are fatal errors intead of just warnings
         --enable-option-checking=fatal \
         \
-        --with-fpm-user="${RUN_USER}" \
-        --with-fpm-group="${RUN_USER}" \
+        --with-fpm-user="${FPM_USER}" \
+        --with-fpm-group="${FPM_GROUP}" \
         \
         # --disable-cgi \
         # --disable-short-tags \
@@ -382,12 +387,12 @@ RUN set -xe; \
     php -v; \
     php -m;
 
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
-RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/www/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/tmpl/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/nginx/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/log/nginx/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/log/php/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/environment"
 
 # RUN adduser --disabled-password --gecos '' docker
 # RUN adduser docker sudo

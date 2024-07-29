@@ -99,7 +99,7 @@ http {
     }
 
     include /etc/nginx/http.conf;
-    {{ .Env.NGINX_HTTP }}
+    {{ replace .Env.NGINX_HTTP "\\n" "\n" -1 }}
 
     include /etc/nginx/mime.types;
     default_type application/octet-stream;

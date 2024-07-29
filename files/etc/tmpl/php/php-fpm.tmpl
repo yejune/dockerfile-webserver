@@ -8,8 +8,8 @@ pid = /run/php-fpm.pid
 ; Default Value: notice
 log_level = notice
 
-{{ .Env.PHP_LOG_LIMIT_STRING }}
-{{ .Env.PHP_LOG_BUFFERING_STRING }}
+{{ replace .Env.PHP_LOG_LIMIT_STRING "\\n" "\n" -1 }}
+{{ replace .Env.PHP_LOG_BUFFERING_STRING "\\n" "\n" -1 }}
 
 ; Error log file
 ; If it's set to "syslog", log is sent to syslogd instead of being written

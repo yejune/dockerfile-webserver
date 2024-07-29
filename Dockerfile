@@ -235,12 +235,12 @@ RUN set -xe; \
     php -v; \
     php -m;
 
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
-RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
+# RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
 
 WORKDIR /var/www
 
