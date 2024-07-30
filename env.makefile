@@ -141,7 +141,6 @@ endef
 #    phalcon\
 #    swoole\
 #    decimal\
-#    memcached\
 #    msgpack\
 #    igbinary\
 #    xdebug\
@@ -159,6 +158,7 @@ endef
 #    mailparse\
 
 define CUSTOM_EXTENSIONS
+    memcached\
     vips\
     imagick\
     mongodb\
