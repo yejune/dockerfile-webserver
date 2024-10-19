@@ -38,7 +38,7 @@ class PhpEnvironment
         'PHP_SESSION_GC_MAXLIFETIME',
         'PHP_SESSION_GC_DIVISOR',
         'PHP_MAX_INPUT_VARS',
-        'SERVER_NAME',
+        'RESPONSE_SERVER_NAME',
         'PHP_SESSION_NAME',
         'PHP_INI_DIR',
         'PHP_RUN_DIR',

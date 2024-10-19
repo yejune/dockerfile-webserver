@@ -12,9 +12,15 @@ PHP82_VERSION:=8.2.4
 PHP82_SHA256:=bc7bf4ca7ed0dd17647e3ea870b6f062fcb56b243bfdef3f59ff7f94e96176a8
 
 
-PHP83_VERSION:=8.3.9
-PHP83_SHA256:=bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77
+PHP83_VERSION:=8.3.12
+PHP83_SHA256:=f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
 
+
+PHP84_VERSION:=8.4.0RC2
+PHP84_SHA256:=
+
+RC_USER:=calvinb
+ALPHA_USER:=krakjoe
 
 # LIBRARY_V8_VERSION:=7.5
 # LIBRARY_XL_VERSION:=3.8.3
@@ -24,7 +30,7 @@ PHP83_SHA256:=bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77
 LIBRARY_XLSWRITER_VERSION:=1.1.5
 DOCKERIZE_VERSION:=0.7.0
 
-EXTENSION_ZEPHIR_VERSION:=0.17.0
+#EXTENSION_ZEPHIR_VERSION:=0.17.0
 #EXTENSION_EXCEL_VERSION:=1.1.0
 EXTENSION_EV_VERSION:=1.1.6RC1
 EXTENSION_RUNKIT7_VERSION:=4.0.0a6
@@ -32,8 +38,10 @@ EXTENSION_CALLEE_VERSION:=0.0.0
 EXTENSION_SCREWIM_VERSION:=1.0.5
 
 # ocbc
-# oci8
 # pdo_dblib\
+# ldap\
+# pdo_firebird\
+
 
 define DEFAULT_EXTENSIONS
     bcmath\
@@ -54,10 +62,8 @@ define DEFAULT_EXTENSIONS
     gmp\
     hash\
     iconv\
-    imap\
     intl\
     json\
-    ldap\
     libxml\
     mbstring\
     mysqlnd\
@@ -67,14 +73,12 @@ define DEFAULT_EXTENSIONS
     pcntl\
     pcre\
     pdo\
-    pdo_firebird\
     pdo_mysql\
     pdo_pgsql\
     pdo_sqlite\
     pgsql\
     phar\
     posix\
-    pspell\
     readline\
     reflection\
     session\
@@ -147,6 +151,9 @@ endef
 #   phalcon\
 #   swoole\
 #   decimal\
+#   imap\
+#   pspell\
+#   oci8
 
 define CUSTOM_EXTENSIONS
     xdebug\

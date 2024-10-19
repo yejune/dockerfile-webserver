@@ -11,7 +11,8 @@ ARG PHP_GPGKEYS="528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146D
 ARG PHP_SHA256="5d65a11071b47669c17452fb336c290b67c101efb745c1dbe7525b5caf546ec6"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
-
+ARG RC_USER="patrickallaert"
+ARG ALPHA_USER="krakjoe"
 ARG GDB
 ARG BUILD_EXTENSIONS
 
@@ -189,13 +190,13 @@ RUN set -xe; \
     \
     \
     if [[ $PHP_VERSION == *"alpha"* ]]; then \
-        PHP_URL="https://downloads.php.net/~patrickallaert/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~patrickallaert/php-${PHP_VERSION}.tar.xz.asc"; \
+        PHP_URL="https://downloads.php.net/~${ALPHA_USER}/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~${ALPHA_USER}/php-${PHP_VERSION}.tar.xz.asc"; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
     elif [[ $PHP_VERSION == *"RC"* ]]; then \
-        PHP_URL="https://downloads.php.net/~pierrick/php-${PHP_VERSION}.tar.xz"; \
-        PHP_ASC_URL="https://downloads.php.net/~pierrick/php-${PHP_VERSION}.tar.xz.asc"; \
+        PHP_URL="https://downloads.php.net/~${RC_USER}/php-${PHP_VERSION}.tar.xz"; \
+        PHP_ASC_URL="https://downloads.php.net/~${RC_USER}/php-${PHP_VERSION}.tar.xz.asc"; \
         \
         wget-retry -O php.tar.xz "${PHP_URL}"; \
     else \

@@ -43,6 +43,7 @@ help:
 
 build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
+	--platform=linux/amd64 \
 		--tag yejune/webserver:$(PREFIX)$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg GDB="$(GDB)" \
@@ -50,6 +51,8 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 		--build-arg PHP_VERSION="$(PHP_VERSION)" \
 		--build-arg PHP_GPGKEYS="$(PHP_GPGKEYS)" \
 		--build-arg PHP_SHA256="$(PHP_SHA256)" \
+		--build-arg RC_USER="$(RC_USER)" \
+		--build-arg ALPHA_USER="$(ALPHA_USER)" \
 		--build-arg BUILD_EXTENSIONS="$(EXTENSIONS)" \
 		--build-arg EXTENSION_PHALCON_VERSION=$(EXTENSION_PHALCON_VERSION) \
 		--build-arg EXTENSION_SWOOLE_VERSION=$(EXTENSION_SWOOLE_VERSION) \
@@ -122,66 +125,71 @@ build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(TAG)"; fi;
 
 
-build-debug-base-82: ## Build PHP 8.2 debug base image
+build-debug-base-84: ## Build PHP 8.2 debug base image
 	docker build \
 		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base \
+		--platform=linux/amd64 \
+		--tag yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg GDB="on" \
-		--build-arg PHP_VERSION="$(PHP82_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP82_SHA256)" \
+		--build-arg PHP_VERSION="$(PHP84_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP84_SHA256)" \
 		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file Base.Dockerfile \
 	.
 
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP82_VERSION)-debug-base"; fi;
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP84_VERSION)-debug-base"; fi;
 
-build-debug-extend-82: ## Build PHP 8.2 debug extend images
+build-debug-extend-84: ## Build PHP 8.2 debug extend images
 	@make build \
-		FROM="yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base" \
-		TAG="$(PHP82_VERSION)-debug" \
+		FROM="yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug-base" \
+		TAG="$(PHP84_VERSION)-debug" \
 		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP82_VERSION)" \
-		PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
-		PHP_SHA256="$(PHP82_SHA256)" \
+		PHP_VERSION="$(PHP84_VERSION)" \
+		PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		PHP_SHA256="$(PHP84_SHA256)" \
 		DOCKERFILE="Dockerfile"
 
-build-base-82: ## Build PHP 8.0 base image
+build-base-84: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
-		--tag yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base \
+		--platform=linux/amd64 \
+		--tag yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base \
+		--build-arg RC_USER="$(RC_USER)" \
+		--build-arg ALPHA_USER="$(ALPHA_USER)" \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
-		--build-arg PHP_VERSION="$(PHP82_VERSION)" \
-		--build-arg PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
-		--build-arg PHP_SHA256="$(PHP82_SHA256)" \
+		--build-arg PHP_VERSION="$(PHP84_VERSION)" \
+		--build-arg PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		--build-arg PHP_SHA256="$(PHP84_SHA256)" \
 		--build-arg BUILD_EXTENSIONS="$(DEFAULT_EXTENSIONS)" \
 		--build-arg DOCKERIZE_VERSION=$(DOCKERIZE_VERSION) \
 		--file Base.Dockerfile \
 	.
 
-	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP82_VERSION)-base"; fi;
+	if [ $(OSFLAG) = "LINUX" ]; then make test TAG="$(PHP84_VERSION)-base"; fi;
 
 
-build-extend-82: ## Build PHP 8.0 extend images
+build-extend-84: ## Build PHP 8.0 extend images
 	@make build \
-		FROM="yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base" \
-		TAG="$(PHP82_VERSION)" \
+		FROM="yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base" \
+		TAG="$(PHP84_VERSION)" \
 		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
-		PHP_VERSION="$(PHP82_VERSION)" \
-		PHP_GPGKEYS="$(PHP82_GPGKEYS)" \
-		PHP_SHA256="$(PHP82_SHA256)" \
+		PHP_VERSION="$(PHP84_VERSION)" \
+		PHP_GPGKEYS="$(PHP84_GPGKEYS)" \
+		PHP_SHA256="$(PHP84_SHA256)" \
 		DOCKERFILE="Dockerfile"
 
-build-82: ## Build PHP 8.0 images
-	@make build-base-82
-	@make build-extend-82
-	@make push-82
+build-84: ## Build PHP 8.0 images
+	@make build-base-84
+	@make build-extend-84
+	@make push-84
 
 build-base-83: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
+		--platform=linux/amd64 \
 		--tag yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg PHP_VERSION="$(PHP83_VERSION)" \
@@ -211,10 +219,10 @@ build-83: ## Build PHP 8.0 images
 	@make push-83
 
 
-build-debug-82: ## Build PHP 8.0 images
-	@make build-debug-base-82
-	@make build-debug-extend-82
-	@make push-debug-82
+build-debug-84: ## Build PHP 8.0 images
+	@make build-debug-base-84
+	@make build-debug-extend-84
+	@make push-debug-84
 
 build-test: ## Build PHP 7.2 image. Usage: make build-test tag="test11"
 	@make build \
@@ -249,9 +257,9 @@ build-all: ## Build all images
 	@make build-73
 	@make build-72
 
-push-82: ## Push built PHP 8.0 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)
+push-84: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)
 
 
 push-83: ## Push built PHP 8.0 images to Docker Hub
@@ -259,18 +267,18 @@ push-83: ## Push built PHP 8.0 images to Docker Hub
 	@docker push yejune/webserver:$(PREFIX)$(PHP83_VERSION)
 
 
-push-debug-82: ## Push built PHP 8.0 images to Docker Hub
-	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug-base
-	@docker push yejune/webserver:$(PREFIX)$(PHP82_VERSION)-debug
+push-debug-84: ## Push built PHP 8.0 images to Docker Hub
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug-base
+	@docker push yejune/webserver:$(PREFIX)$(PHP84_VERSION)-debug
 
 push-all: ## Push all built images to Docker Hub
 	@make push-74
 	@make push-73
 	@make push-72
 
-build-and-push-82: ## Build and push PHP 7.3 images to Docker Hub
-	@make build-82
-	@make push-82
+build-and-push-84: ## Build and push PHP 7.3 images to Docker Hub
+	@make build-84
+	@make push-84
 
 build-and-push-83: ## Build and push PHP 7.3 images to Docker Hub
 	@make build-83
@@ -292,8 +300,8 @@ test80:
 	docker run --rm -d --name=test-webserver -p 80:80 -v $$(pwd)/www/info.php:/var/www/public/info.php yejune/webserver:$(PREFIX)$(TAG)
 	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
 	curl --retry 10 --retry-delay 5  http://localhost:80/info.php
-	
-	
+
+
 #	 | grep "200 OK"
 
 test-all: ## 테스트
@@ -301,14 +309,14 @@ test-all: ## 테스트
 	@make test-73
 	@make test-72
 
-test-82:
-	@make test80 TAG="$(PHP82_VERSION)"
+test-84:
+	@make test80 TAG="$(PHP84_VERSION)"
 
 test-83:
 	@make test80 TAG="$(PHP83_VERSION)"
 
-test-base-82:
-	@make test TAG="$(PHP82_VERSION)-base"
+test-base-84:
+	@make test TAG="$(PHP84_VERSION)-base"
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f

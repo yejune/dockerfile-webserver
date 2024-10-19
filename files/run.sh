@@ -70,10 +70,10 @@ export INDEX_FILENAME=${INDEX_FILENAME:-"index.php"}
 export FPM_USER=${FPM_USER:-"www-data"}
 export FPM_GROUP=${FPM_GROUP:-"www-data"}
 
-export SERVER_NAME=${SERVER_NAME:-"NGINX"}
+export RESPONSE_SERVER_NAME=${RESPONSE_SERVER_NAME:-"NGINX"}
 export PHP_SESSION_NAME=${PHP_SESSION_NAME:-"PHPSESSID"}
-export PHP_SESSION_SAVE_HANDLER=${PHP_SESSION_SAVE_HANDLER:-"files"}
-export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-"/var/lib/php/session"}
+export PHP_SESSION_SAVE_HANDLER=${PHP_SESSION_SAVE_HANDLER:-""}
+export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-""}
 export PHP_SESSION_GC_MAXLIFETIME=${PHP_SESSION_GC_MAXLIFETIME:-""}
 export PHP_SESSION_GC_PROBABILITY=${PHP_SESSION_GC_PROBABILITY:-""}
 export PHP_SESSION_GC_DIVISOR=${PHP_SESSION_GC_DIVISOR:-""}
@@ -169,18 +169,13 @@ else
     dockerize -template /etc/tmpl/php/php-fpm.tmpl > ${PHP_INI_DIR}/php-fpm.conf
 
 
-    # if [ ! -z "$PHP_LOG_LIMIT" ]; then
-    #     echo php_admin_value[log_errors_max_len] = ${PHP_LOG_LIMIT} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    # fi
+    if [ ! -z "$PHP_LOG_LIMIT" ]; then
+        echo php_admin_value[log_errors_max_len] = ${PHP_LOG_LIMIT} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
 
     if [ ! -z "$PHP_SESSION_NAME" ]; then
         # sed -i -e "s~.*session.name.*~session.name = ${PHP_SESSION_NAME}~g" ${PHP_INI_DIR}/php.ini
         echo php_admin_value[session.name] = ${PHP_SESSION_NAME} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    fi
-
-    if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
-        # sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
-        echo php_admin_value[session.save_handler] = ${PHP_SESSION_SAVE_HANDLER} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
     if [ ! -z "$PHP_SESSION_GC_MAXLIFETIME" ]; then
@@ -201,6 +196,11 @@ else
     if [ ! -z "$PHP_MAX_INPUT_VARS" ]; then
         # sed -i -e "s~.*session.gc_divisor.*~session.gc_divisor = ${PHP_MAX_INPUT_VARS}~g" ${PHP_INI_DIR}/php.ini
         echo php_admin_value[max_input_vars] = ${PHP_MAX_INPUT_VARS} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
+    if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
+        # sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.save_handler] = ${PHP_SESSION_SAVE_HANDLER} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
     if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
@@ -271,8 +271,8 @@ else
         sed -i -e "s/server_tokens off;/server_tokens on;/g" /etc/nginx/nginx.conf
         sed -i -e "s/expose_php = Off/expose_php = On/g" ${PHP_INI_DIR}/php.ini
     else
-        if [ ! -z "$SERVER_NAME" ]; then
-            sed -i -e "s/#more_clear_headers Server;/more_set_headers 'Server: ${SERVER_NAME}';/g" /etc/nginx/nginx.conf
+        if [ ! -z "$RESPONSE_SERVER_NAME" ]; then
+            sed -i -e "s/#more_clear_headers Server;/more_set_headers 'Server: ${RESPONSE_SERVER_NAME}';/g" /etc/nginx/nginx.conf
         else
             sed -i -e "s/#more_clear_headers Server;/more_clear_headers Server;/g" /etc/nginx/nginx.conf
         fi
