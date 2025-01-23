@@ -16,8 +16,8 @@ PHP83_VERSION:=8.3.12
 PHP83_SHA256:=f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
 
 
-PHP84_VERSION:=8.4.0RC2
-PHP84_SHA256:=
+PHP84_VERSION:=8.4.3
+PHP84_SHA256:=5c42173cbde7d0add8249c2e8a0c19ae271f41d8c47d67d72bdf91a88dcc7e4b
 
 RC_USER:=calvinb
 ALPHA_USER:=krakjoe
@@ -28,7 +28,7 @@ ALPHA_USER:=krakjoe
 # LIBRARY_RABBITMQ_VERSION:=0.8.0
 
 LIBRARY_XLSWRITER_VERSION:=1.1.5
-DOCKERIZE_VERSION:=0.7.0
+DOCKERIZE_VERSION:=0.9.1
 
 #EXTENSION_ZEPHIR_VERSION:=0.17.0
 #EXTENSION_EXCEL_VERSION:=1.1.0
@@ -41,6 +41,7 @@ EXTENSION_SCREWIM_VERSION:=1.0.5
 # pdo_dblib\
 # ldap\
 # pdo_firebird\
+# enchant\
 
 
 define DEFAULT_EXTENSIONS
@@ -50,9 +51,7 @@ define DEFAULT_EXTENSIONS
     ctype\
     curl\
     date\
-    dba\
     dom\
-    enchant\
     exif\
     fileinfo\
     filter\
@@ -67,7 +66,6 @@ define DEFAULT_EXTENSIONS
     libxml\
     mbstring\
     mysqlnd\
-    mysqli\
     opcache\
     openssl\
     pcntl\
@@ -84,8 +82,6 @@ define DEFAULT_EXTENSIONS
     session\
     shmop\
     simplexml\
-    snmp\
-    soap\
     sockets\
     sodium\
     spl\
@@ -105,84 +101,70 @@ define DEFAULT_EXTENSIONS
     ffi
 endef
 
-# jsonnet
-#
-#
-# couchbase
-
 ### php 8
-#    v8js\
-#    excel\
-#    xmlrpc\
-#    callee\
-#    http\
-#    pdo_sqlsrv\
-#    wasm\
-#    zookeeper\
-#    event\
-#    couchbase\
-#    uopz\
-#    simple_kafka\
-#    rdkafka\
-#    componere\
-#    ddtrace\
-#    excimer\
-#    swoole\
-#    fiber\
-#    http_message\
-#    solr\
-#    apcu_bc\
-#    grpc\
-#    awscrt\
-#    protobuf\
-#    ssh2\
-#    xhprof\
-#    runkit7\
-#    gearman\
-#    memprof\
-#    vld\
-#    oauth\
-
-#   awscrt\
-#   protobuf\
-#   ssh2\
-#   grpc\
-#   excimer\
-#   phalcon\
-#   swoole\
-#   decimal\
-#   imap\
-#   pspell\
-#   oci8
+#    apfd
+#    awscrt
+#    bsdiff
+#    callee
+#    componere
+#    couchbase
+#    ddtrace
+#    decimal
+#    excimer
+#    excel
+#    fiber
+#    gearman
+#    grpc
+#    http
+#    http_message
+#    igbinary
+#    imap
+#    json_post
+#    jsonpath
+#    mailparse
+#    memcached
+#    memprof
+#    msgpack
+#    oci8
+#    oauth
+#    pdo_sqlsrv
+#    phalcon
+#    protobuf
+#    pspell
+#    rdkafka
+#    runkit7
+#    simple_kafka
+#    simdjson
+#    solr
+#    ssh2
+#    swoole
+#    var_representation
+#    v8js
+#    vips
+#    vld
+#    uopz
+#    uv
+#    eio
+#    event
+#    ev
+#    v8js
+#    wasm
+#    xhprof
+#    xmlrpc
+#    yaconf
+#    zookeeper
+#    zephir_parser
+#    seaslog
 
 define CUSTOM_EXTENSIONS
-    xdebug\
-    jsonpath\
-    var_representation\
-    eio\
-    ev\
-    uv\
-    geospatial\
-    seaslog\
-    base58\
-    zephir_parser\
-    gearman\
-    apcu\
-    simdjson\
-    bsdiff\
-    msgpack\
-    igbinary\
-    memcached\
     xlswriter\
-    yaml\
     imagick\
-    mailparse\
-    json_post\
-    apfd\
-    yaconf\
-    uuid\
-    vips\
     mongodb\
+    uuid\
+    geospatial\
+    base58\
+    apcu\
+    yaml\
     psr\
     \
     redis\

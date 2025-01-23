@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl var_representation-${EXTENSION_VAR_REPRESENTATION_VERSION}

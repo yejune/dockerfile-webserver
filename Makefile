@@ -43,7 +43,8 @@ help:
 
 build: ## Build image. Usage: make build TAG="7.2.x" PHP_VERSION="..." ...
 	docker build --no-cache \
-	--platform=linux/amd64 \
+		--platform=linux/amd64 \
+		--progress=plain \
 		--tag yejune/webserver:$(PREFIX)$(TAG) \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg GDB="$(GDB)" \
@@ -190,6 +191,7 @@ build-base-83: ## Build PHP 8.0 base image
 	docker build \
 		--no-cache \
 		--platform=linux/amd64 \
+		--progress=plain \
 		--tag yejune/webserver:$(PREFIX)$(PHP83_VERSION)-base \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg PHP_VERSION="$(PHP83_VERSION)" \
@@ -299,24 +301,29 @@ test80:
 	if [ ! -z "$(shell docker ps | grep 80 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
 	docker run --rm -d --name=test-webserver -p 80:80 -v $$(pwd)/www/info.php:/var/www/public/info.php yejune/webserver:$(PREFIX)$(TAG)
 	wget --tries=10 --no-check-certificate --spider http://localhost:80 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:80
-	curl --retry 10 --retry-delay 5  http://localhost:80/info.php
+	curl --retry 10 --retry-delay 5 -L -I http://localhost:80/info.php | grep "200 OK"
+	docker kill test-webserver
 
 
 #	 | grep "200 OK"
 
 test-all: ## 테스트
-	@make test-74
-	@make test-73
-	@make test-72
+	@make test-83
+	@make test-base-83
+	@make test-84
+	@make test-base-84
 
-test-84:
-	@make test80 TAG="$(PHP84_VERSION)"
 
 test-83:
 	@make test80 TAG="$(PHP83_VERSION)"
+test-base-83:
+	@make test80 TAG="$(PHP83_VERSION)-base"
 
+test-84:
+	@make test80 TAG="$(PHP84_VERSION)"
 test-base-84:
-	@make test TAG="$(PHP84_VERSION)-base"
+	@make test80 TAG="$(PHP84_VERSION)-base"
+
 
 clean: ## Clean all containers and images on the system
 	-@docker ps -a -q | xargs docker rm -f

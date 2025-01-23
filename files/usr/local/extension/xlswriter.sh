@@ -1,5 +1,11 @@
 cd $PECL_SRC_DIR
 #git clone https://github.com/jmcnamara/libxlsxwriter.git
+
+
+# wget-retry https://github.com/jmcnamara/libxlsxwriter/archive/refs/tags/v${LIBRARY_XLSWRITER_VERSION}.tar.gz
+# tar zxvf v${LIBRARY_XLSWRITER_VERSION}.tar.gz
+# mv libxlsxwriter-${LIBRARY_XLSWRITER_VERSION} libxlsxwriter
+
 wget-retry https://github.com/jmcnamara/libxlsxwriter/archive/RELEASE_${LIBRARY_XLSWRITER_VERSION}.tar.gz
 tar zxvf RELEASE_${LIBRARY_XLSWRITER_VERSION}.tar.gz
 mv libxlsxwriter-RELEASE_${LIBRARY_XLSWRITER_VERSION} libxlsxwriter

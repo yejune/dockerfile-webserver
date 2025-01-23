@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl oauth-${EXTENSION_OAUTH_VERSION}

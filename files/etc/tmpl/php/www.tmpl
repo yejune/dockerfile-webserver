@@ -8,8 +8,8 @@ listen.mode = 0666
 user = {{ .Env.FPM_USER }}
 group = {{ .Env.FPM_GROUP }}
 
-{{ .Env.PM }}
-{{ .Env.COREDUMP }}
+{{ replace .Env.PM "\\n" "\n" -1 }}
+{{ replace .Env.COREDUMP "\\n" "\n" -1 }}
 
 ;slow log to filebeat
 ;slowlog = /var/log/php/fpm.slow.log;
@@ -19,7 +19,7 @@ group = {{ .Env.FPM_GROUP }}
 ;/var/log/php/fpm.access.log
 ;access.log = /proc/self/fd/2;
 
-;json.access.format = '{"fields": {"type": "php-access", "host": "%{HTTP_HOST}e", "request_id": "%{HTTP_REQUEST_ID}e", "remote_addr": "%{REMOTE_ADDR}e", "remote_user": "%u", "scheme": "%{REQUEST_SCHEME}e", "port": "%{SERVER_PORT}e", "status": %s, "request": "%m %r%Q%q", "request_uri": "%{REQUEST_URI}e", "request_time": %{seconds}d, "request_date": "%t", "request_method": "%m", "user_agent": "%{HTTP_USER_AGENT}e", "referer": "%{HTTP_REFERER}e", "filename": "%f", "peak_memory": "%{mega}MM", "used_cpu": "%{total}C"}}'
+;json.access.format = '{"@timestamp": "%{%Y-%m-%dT%H:%M:%S%z}t", "fields": {"status": %s, "type": "php-access", "request_id": "%{HTTP_REQUEST_ID}e", "request_method": "%m", "scheme": "%{REQUEST_SCHEME}e", "port": "%{SERVER_PORT}e", "host": "%{HTTP_HOST}e", "request_uri": "%{REQUEST_URI}e", "qs": "%{QUERY_STRING}e", "http_version": "%{SERVER_PROTOCOL}e", "request_time": %{seconds}d, "request_date": "%t", "user_agent": "%{HTTP_USER_AGENT}e", "referer": "%{HTTP_REFERER}e", "remote_addr": "%{REMOTE_ADDR}e", "remote_user": "%u"}, "extra": {"filename": "%f", "peak_memory": "%{mega}MM", "used_cpu": "%{total}C"}}'
 
 ;main.access.format = %{REMOTE_ADDR}e - %u %t "%m %{REQUEST_URI}e %Q%q" %s %f %{seconds}d %{mega}MM %C%%
 
@@ -32,4 +32,4 @@ catch_workers_output = yes
 
 security.limit_extensions = {{ .Env.PHP_EXTENSION_STRING }}
 
-{{ .Env.PHP_EXTRACONF }}
+{{ replace .Env.PHP_EXTRACONF "\\n" "\n" -1 }}

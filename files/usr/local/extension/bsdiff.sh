@@ -1,2 +1,3 @@
+cd $PECL_SRC_DIR
 
 ext-pcl bsdiff-${EXTENSION_BSDIFF_VERSION}

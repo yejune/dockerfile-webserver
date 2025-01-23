@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 
 # # Only needed during first-time setup:
 # wget -O - http://packages.couchbase.com/ubuntu/couchbase.key | apt-key add -

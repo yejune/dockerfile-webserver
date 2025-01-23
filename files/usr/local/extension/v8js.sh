@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 add-apt-repository ppa:stesie/libv8
 apt-get update
 

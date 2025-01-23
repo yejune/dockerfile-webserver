@@ -1,8 +1,8 @@
-ARG FROM
+ARG FROM="yejune/webserver:noble-numbat-8.3.12-base"
 FROM ${FROM}
 LABEL maintainer="k@yejune.com"
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
@@ -84,6 +84,7 @@ ARG LIBRARY_XL_VERSION=3.8.3
 ARG LIBRARY_XLSWRITER_VERSION=1.1.4
 ARG LIBRARY_VIPS_VERSION=8.10.0
 ARG LIBRARY_V8_VERSION=7.5
+ARG ZEPHIR_BRANCH=development
 
 SHELL ["/bin/bash", "-c"]
 
@@ -235,12 +236,12 @@ RUN set -xe; \
     php -v; \
     php -m;
 
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
-RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
+# RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
+# RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
 
 WORKDIR /var/www
 

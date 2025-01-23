@@ -28,8 +28,9 @@ not_off() {
     fi
 }
 
-export DOMAIN=${DOMAIN:-"_"}
-export WEBROOT=${WEBROOT:-"/var/www/public"}
+export USE_SSL=${USE_SSL:-"off"}
+export SSL_DOMAINS=${SSL_DOMAINS:-"_"}
+export WEBROOT_DIR=${WEBROOT_DIR:-"/var/www/public"}
 export NGINX_LOCATION=${NGINX_LOCATION:-""}
 export NGINX_HTTP=${NGINX_HTTP:-""}
 export NGINX_SERVER=${NGINX_SERVER:-""}
@@ -41,9 +42,13 @@ export PHP_LOG_LIMIT_STRING=${PHP_LOG_LIMIT_STRING:-""}
 export PHP_INI_DIR=${PHP_INI_DIR:-"/etc/php"}
 export PHP_EXTRACONF=${PHP_EXTRACONF:-""}
 
-#export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
-#export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
+# export FPM_LISTEN=${FPM_LISTEN:-"0.0.0.0:9000"}
+# export FASTCGI_PASS=${FASTCGI_PASS:-"0.0.0.0:9000"}
+# export FPM_USER=${FPM_USER:-"www-data"}
+# export FPM_GROUP=${FPM_GROUP:-"www-data"}
 export FPM_LISTEN=${FPM_LISTEN:-"/dev/shm/php-fpm.sock"}
+export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
+
 export KEEPALIVE=${KEEPALIVE:-"8"}
 export KEEPALIVE_REQUESTS=${KEEPALIVE_REQUESTS:-"1000"}
 export KEEPALIVE_TIMEOUT=${KEEPALIVE_TIMEOUT:-"10"}
@@ -53,8 +58,6 @@ if is_on "$KEEPALIVE_OFF"; then
 else
     export KEEPALIVE_OFF_STRING=""
 fi
-
-export FASTCGI_PASS=${FASTCGI_PASS:-"unix:/dev/shm/php-fpm.sock"}
 
 export PHP_LOG_LIMIT=${PHP_LOG_LIMIT:-""}
 export PHP_LOG_BUFFERING=${PHP_LOG_BUFFERING:-""}
@@ -67,10 +70,7 @@ export PHP_EXTENSION_PATH_INFO_REGEX=".+\.${PHP_EXTENSIONS// /|.+\\.}"
 export PHP_EXTENSION_INDEX_STRING="index.${PHP_EXTENSIONS// / index.}"
 export INDEX_FILENAME=${INDEX_FILENAME:-"index.php"}
 
-export FPM_USER=${FPM_USER:-"www-data"}
-export FPM_GROUP=${FPM_GROUP:-"www-data"}
-
-export RESPONSE_SERVER_NAME=${RESPONSE_SERVER_NAME:-"NGINX"}
+export RESPONSE_SERVER_NAME=${RESPONSE_SERVER_NAME:-"BLUETOOLS"}
 export PHP_SESSION_NAME=${PHP_SESSION_NAME:-"PHPSESSID"}
 export PHP_SESSION_SAVE_HANDLER=${PHP_SESSION_SAVE_HANDLER:-""}
 export PHP_SESSION_SAVE_PATH=${PHP_SESSION_SAVE_PATH:-""}
@@ -149,12 +149,13 @@ if [ ! -f "/etc/tmpl/php/www.tmpl" ]; then
     echo 'restart';
 else
 
-    locales=($LOCALE_GEN)
-    for i in "${locales[@]}"; do
-        locale-gen $i;
+    # 개행, 콤마, 공백을 구분자로 사용하여 로케일 분리
+    echo -e "$LOCALE_GEN" | while read -r locale; do
+        if [ -n "$locale" ]; then
+            echo "Generating locale: $locale"
+            locale-gen "$locale"
+        fi
     done
-
-
 
     if [ ! -z "$PHP_LOG_LIMIT" ]; then
         export PHP_LOG_LIMIT_STRING="LOG_LIMIT=${PHP_LOG_LIMIT}"
@@ -178,6 +179,22 @@ else
         echo php_admin_value[session.name] = ${PHP_SESSION_NAME} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
+    if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
+        # sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.save_handler] = ${PHP_SESSION_SAVE_HANDLER} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
+    if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
+        if [[ ! "$PHP_SESSION_SAVE_PATH" =~ ":" ]]; then
+            mkdir -p "${PHP_SESSION_SAVE_PATH}/";
+            chown -R ${FPM_USER}:${FPM_GROUP} "${PHP_SESSION_SAVE_PATH}/";
+            chmod -R ug+rw "${PHP_SESSION_SAVE_PATH}/";
+        fi
+
+        # sed -i -e "s~.*session.save_path.*~session.save_path = ${PHP_SESSION_SAVE_PATH}~g" ${PHP_INI_DIR}/php.ini
+        echo php_admin_value[session.save_path] = ${PHP_SESSION_SAVE_PATH} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
+    fi
+
     if [ ! -z "$PHP_SESSION_GC_MAXLIFETIME" ]; then
         # sed -i -e "s~.*session.gc_maxlifetime.*~session.gc_maxlifetime = ${PHP_SESSION_GC_MAXLIFETIME}~g" ${PHP_INI_DIR}/php.ini
         echo php_admin_value[session.gc_maxlifetime] = ${PHP_SESSION_GC_MAXLIFETIME} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
@@ -196,22 +213,6 @@ else
     if [ ! -z "$PHP_MAX_INPUT_VARS" ]; then
         # sed -i -e "s~.*session.gc_divisor.*~session.gc_divisor = ${PHP_MAX_INPUT_VARS}~g" ${PHP_INI_DIR}/php.ini
         echo php_admin_value[max_input_vars] = ${PHP_MAX_INPUT_VARS} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    fi
-
-    if [ ! -z "$PHP_SESSION_SAVE_HANDLER" ]; then
-        # sed -i -e "s~.*session.save_handler.*~session.save_handler = ${PHP_SESSION_SAVE_HANDLER}~g" ${PHP_INI_DIR}/php.ini
-        echo php_admin_value[session.save_handler] = ${PHP_SESSION_SAVE_HANDLER} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
-    fi
-
-    if [ ! -z "$PHP_SESSION_SAVE_PATH" ]; then
-        if [[ ! "$PHP_SESSION_SAVE_PATH" =~ ":" ]]; then
-            mkdir -p "${PHP_SESSION_SAVE_PATH}/";
-            chown -R ${FPM_USER}:${FPM_GROUP} "${PHP_SESSION_SAVE_PATH}/";
-            chmod -R ug+rw "${PHP_SESSION_SAVE_PATH}/";
-        fi
-
-        # sed -i -e "s~.*session.save_path.*~session.save_path = ${PHP_SESSION_SAVE_PATH}~g" ${PHP_INI_DIR}/php.ini
-        echo php_admin_value[session.save_path] = ${PHP_SESSION_SAVE_PATH} >> ${PHP_INI_DIR}/php-fpm.d/www.conf
     fi
 
     if [ ! -z "$SLOWLOG_TIMEOUT" ]; then
@@ -395,8 +396,8 @@ stderr_logfile_maxbytes=0
     dockerize -template /etc/tmpl/nginx/cors.tmpl > /etc/nginx/cors.conf
 
     if is_off "$NGINX_CORS"; then
-        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.ssl.tmpl
-        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.tmpl
+        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.https.tmpl
+        sed -i -e "s~include /etc/nginx/cors.conf;~#include /etc/nginx/cors.conf;~g" /etc/tmpl/nginx/site.http.tmpl
     fi
 
     if is_off "$NGINX_ACCESS_LOG"; then
@@ -406,22 +407,20 @@ stderr_logfile_maxbytes=0
     mkdir -p /etc/nginx/site.d
 
     if not_off "$USE_SSL"; then
-        ORG_DOMAIN=$DOMAIN
-        IN=$DOMAIN
-        domains=$(echo $IN | tr ";" "\n")
+        domains=$(echo $SSL_DOMAINS | tr ";" "\n")
         for domainName in $domains
         do
             if [ ! -z "$domainName" ]; then
-                export DOMAIN=${domainName}
-                dockerize -template /etc/tmpl/nginx/site.ssl.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
+                export SSL_DOMAIN=${domainName}
+                dockerize -template /etc/tmpl/nginx/site.https.tmpl > /etc/nginx/site.d/${domainName}.ssl.conf
             fi
         done
-
-        export DOMAIN=${ORG_DOMAIN}
     fi
 
-    if [ "$USE_SSL" != "only" ]; then
-        dockerize -template /etc/tmpl/nginx/site.tmpl > /etc/nginx/site.d/default.conf
+    if [ "$USE_SSL" = "only" ]; then
+        dockerize -template /etc/tmpl/nginx/site.default.tmpl > /etc/nginx/site.d/zzz.default.conf
+    else
+        dockerize -template /etc/tmpl/nginx/site.http.tmpl > /etc/nginx/site.d/default.conf
     fi
 
     mkdir -p /etc/nginx/common.d/
@@ -440,7 +439,6 @@ stderr_logfile_maxbytes=0
         echo 0 > /proc/sys/kernel/core_uses_pid
         ulimit -c unlimited
     fi
-
 fi
 
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf

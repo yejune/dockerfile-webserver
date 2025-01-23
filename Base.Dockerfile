@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM --platform=$BUILDPLATFORM ubuntu:25.04
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -11,12 +11,18 @@ ARG PHP_GPGKEYS="528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146D
 ARG PHP_SHA256="5d65a11071b47669c17452fb336c290b67c101efb745c1dbe7525b5caf546ec6"
 
 ARG REPOGITORY_URL="archive.ubuntu.com"
-ARG RC_USER="patrickallaert"
+ARG RC_USER="calvinb"
 ARG ALPHA_USER="krakjoe"
 ARG GDB
 ARG BUILD_EXTENSIONS
 
-ARG DOCKERIZE_VERSION=0.6.1
+ARG FPM_USER="www-data"
+ARG FPM_GROUP="www-data"
+
+ENV FPM_USER="${FPM_USER}"
+ENV FPM_GROUP="${FPM_GROUP}"
+
+ARG DOCKERIZE_VERSION=0.7.0
 
 SHELL ["/bin/bash", "-c"]
 
@@ -35,7 +41,6 @@ ENV PHP_INI_DIR=/etc/php \
     SRC_DIR=/usr/src \
     USR_LOCAL_BIN_DIR=/usr/local/bin \
     USR_LIB_DIR=/usr/lib
-
 
 ENV DEFAULT_EXTENSIONS="\
         bcmath\
@@ -110,13 +115,21 @@ ENV DEFAULT_EXTENSIONS="\
 COPY files/ /
 
 RUN set -xe; \
+    echo $FPM_GROUP; \
+    echo $FPM_USER; \
     source /init.sh; \
     \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        apt-utils \
+        apt-transport-https \
+        tzdata \
+        locales \
+        && \
     # savedAptMark="$(apt-mark showmanual)"; \
-    apt-get update; \
-    apt-get upgrade -y; \
     \
-    DEPS="locales tzdata openssl ca-certificates wget curl ssh git apt-utils apt-transport-https xz-utils zip unzip gdb"; \
+    DEPS="openssl wget curl ssh git xz-utils zip unzip gdb vim"; \
     #DEPS="sudo ${ADD_DEPS}" \
     #ntp \
     \
@@ -160,8 +173,8 @@ RUN set -xe; \
     #service ntp restart; \
     \
     \
-    add-apt-repository -y ppa:maxmind/ppa; \
-    apt-get update; \
+    # add-apt-repository -y ppa:maxmind/ppa; \
+    # apt-get update; \
     apt-get install libmaxminddb0 libmaxminddb-dev mmdb-bin; \
     \
     # Install nginx
@@ -263,8 +276,8 @@ RUN set -xe; \
         # make sure invalid --configure-flags are fatal errors intead of just warnings
         --enable-option-checking=fatal \
         \
-        --with-fpm-user="${RUN_USER}" \
-        --with-fpm-group="${RUN_USER}" \
+        --with-fpm-user="${FPM_USER}" \
+        --with-fpm-group="${FPM_GROUP}" \
         \
         # --disable-cgi \
         # --disable-short-tags \
@@ -347,8 +360,16 @@ RUN set -xe; \
     \
     # Install filebeat
     cd "${SRC_DIR}"; \
-    wget-retry -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
-    echo "deb https://artifacts.elastic.co/packages/6.x/apt stable main" > /etc/apt/sources.list.d/elastic-6.x.list; \
+    # wget-retry -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -; \
+    # echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list; \
+    # GPG 키를 저장할 디렉토리 생성
+    mkdir -p /etc/apt/keyrings && \
+    # Elasticsearch GPG 키를 다운로드하고 적절한 형식으로 변환하여 저장
+    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | \
+    gpg --dearmor -o /etc/apt/keyrings/elastic.gpg && \
+    # 저장소 설정 파일 생성 (signed-by 옵션으로 GPG 키 위치 지정)
+    echo "deb [signed-by=/etc/apt/keyrings/elastic.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" \
+    > /etc/apt/sources.list.d/elastic-8.x.list && \
     apt-get update; \
     apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" filebeat; \
     \
@@ -383,12 +404,12 @@ RUN set -xe; \
     php -v; \
     php -m;
 
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/www/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/tmpl/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/etc/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/nginx/"
-RUN chown -Rf ${RUN_USER}:${RUN_USER} "/var/log/php/"
-RUN chown ${RUN_USER}:${RUN_USER} "/etc/environment"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/www/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/tmpl/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/nginx/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/log/nginx/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/var/log/php/"
+# RUN chown -Rf ${FPM_GROUP}:${FPM_USER} "/etc/environment"
 
 # RUN adduser --disabled-password --gecos '' docker
 # RUN adduser docker sudo

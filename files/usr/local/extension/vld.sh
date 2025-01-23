@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 
 
 ext-pcl vld-${EXTENSION_VLD_VERSION}

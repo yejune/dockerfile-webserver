@@ -1,2 +1,3 @@
+cd $PECL_SRC_DIR
 
 ext-pcl simdjson-${EXTENSION_SIMDJSON_VERSION}

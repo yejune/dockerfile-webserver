@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl psr-${EXTENSION_PSR_VERSION}

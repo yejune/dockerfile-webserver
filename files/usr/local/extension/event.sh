@@ -1,2 +1,4 @@
-ext-lib libevent-2.1 libevent-dev-2.1 libevent-openssl-2.1 
+cd $PECL_SRC_DIR
+
+ext-lib libevent libevent-dev libevent-openssl
 ext-pcl event-${EXTENSION_EVENT_VERSION}

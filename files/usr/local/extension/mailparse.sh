@@ -1,1 +1,2 @@
+cd $PECL_SRC_DIR
 ext-pcl mailparse-${EXTENSION_MAILPARSE_VERSION}

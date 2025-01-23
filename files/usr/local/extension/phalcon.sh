@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 # cd $PECL_SRC_DIR
 # wget-retry https://github.com/phalcon/cphalcon/archive/v${EXTENSION_PHALCON_VERSION}.tar.gz
 # tar -zxvf v${EXTENSION_PHALCON_VERSION}.tar.gz

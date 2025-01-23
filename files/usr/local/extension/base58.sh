@@ -1,3 +1,4 @@
+cd $PECL_SRC_DIR
 
 # ext-lib libbase58-dev
 
