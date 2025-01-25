@@ -92,10 +92,17 @@ ARG ZEPHIR_BRANCH=development
 SHELL ["/bin/bash", "-c"]
 
 
-RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
-        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/archive.ubuntu.com/g" /etc/apt/sources.list; \
-        sed -i "s/:\/\/${REPOGITORY_URL}/:\/\/security.ubuntu.com/g" /etc/apt/sources.list; \
-    fi
+# RUN if [ "archive.ubuntu.com" != "${REPOGITORY_URL}" ]; then \
+#         if [ -f "/etc/apt/sources.list.d/ubuntu.sources" ]; then \
+#             # 새로운 Ubuntu 버전용 (deb822 형식)
+#             sed -i "s/archive.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list.d/ubuntu.sources; \
+#             sed -i "s/security.ubuntu.com/${REPOGITORY_URL}/g" /etc/apt/sources.list.d/ubuntu.sources; \
+#         else \
+#             # 이전 Ubuntu 버전용 (전통적인 형식)
+#             sed -i "s/:\/\/archive.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+#             sed -i "s/:\/\/security.ubuntu.com/:\/\/${REPOGITORY_URL}/g" /etc/apt/sources.list; \
+#         fi; \
+#     fi
 
 ENV PHP_INI_DIR=/etc/php \
     PHP_CONF_DIR=/etc/php/conf.d \

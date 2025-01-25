@@ -46,7 +46,7 @@ build-command: ## Build image. Usage: make build-command TAG="7.2.x" PHP_VERSION
 		--no-cache \
 		--progress=plain \
 		--platform linux/$(PLATFORM) \
-		--tag yejune/webserver:$(PREFIX)$(TAG) \
+		--tag yejune/webserver:$(PLATFORM)-$(PREFIX)$(TAG) \
 		--build-arg ARCH="linux/$(PLATFORM)" \
 		--build-arg REPOGITORY_URL="$(REPOGITORY_URL)" \
 		--build-arg GDB="$(GDB)" \
@@ -132,7 +132,7 @@ build-base-command: ## Build PHP 8.0 base image
 		--no-cache \
 		--progress=plain \
 		--platform linux/$(PLATFORM) \
-		--tag yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base \
+		--tag yejune/webserver:$(PLATFORM)-$(PREFIX)$(PHP84_VERSION)-base \
 		--build-arg ARCH="linux/$(PLATFORM)" \
 		--build-arg RC_USER="$(RC_USER)" \
 		--build-arg ALPHA_USER="$(ALPHA_USER)" \
@@ -149,7 +149,7 @@ build-base-command: ## Build PHP 8.0 base image
 
 build-extend-command: ## Build PHP 8.0 extend images
 	@make build-command \
-		FROM="yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base" \
+		FROM="yejune/webserver:$(PLATFORM)-$(PREFIX)$(PHP84_VERSION)-base" \
 		TAG="$(PHP84_VERSION)" \
 		EXTENSIONS="$(CUSTOM_EXTENSIONS)" \
 		PHP_VERSION="$(PHP84_VERSION)" \
@@ -173,20 +173,20 @@ build-amd: ## Build PHP 8.0 images
 	@make push-command PLATFORM=amd64
 
 push-command: ## Push built PHP 8.4 images to Docker Hub
-	@docker push --platform linux/$(PLATFORM) yejune/webserver:$(PREFIX)$(PHP84_VERSION)-base
-	@docker push --platform linux/$(PLATFORM) yejune/webserver:$(PREFIX)$(PHP84_VERSION)
+	@docker push --platform linux/$(PLATFORM) yejune/webserver:$(PLATFORM)-$(PREFIX)$(PHP84_VERSION)-base
+	@docker push --platform linux/$(PLATFORM) yejune/webserver:$(PLATFORM)-$(PREFIX)$(PHP84_VERSION)
 
 test-command:
 	if [ ! -z "$(shell docker ps | grep 8112 | awk '{ print $(1) }')" ]; then docker rm -f test-webserver > /dev/null; fi
-	docker run --rm -d --name=test-webserver -p 8112:80 --platform linux/$(PLATFORM) yejune/webserver:$(PREFIX)$(TAG)
+	docker run --rm -d --name=test-webserver -p 8112:80 --platform linux/$(PLATFORM) yejune/webserver:$(PLATFORM)-$(PREFIX)$(TAG)
 	wget --tries=10 --no-check-certificate --spider http://localhost:8112 || sleep 5; wget --tries=10 --no-check-certificate --spider http://localhost:8112
 	curl --retry 10 --retry-delay 5 -L -I http://localhost:8112/ip.php | grep "200 OK"
 	docker kill test-webserver
 
 test:
-	@make test-command TAG="$(PHP84_VERSION)"
+	@make test-command PLATFORM="$(PLATFORM)" TAG="$(PHP84_VERSION)"
 test-base:
-	@make test-command TAG="$(PHP84_VERSION)-base"
+	@make test-command PLATFORM="$(PLATFORM)" TAG="$(PHP84_VERSION)-base"
 
 
 clean: ## Clean all containers and images on the system
