@@ -135,22 +135,41 @@ RUN set -xe; \
     echo $FPM_USER; \
     source /init.sh; \
     \
-    apt-get update && \
+    apt-get update; \
+    FIRST_DEV_DEPS="debconf dpkg-dev ca-certificates fontconfig"; \
+    apt-get install --no-install-recommends --no-install-suggests -y ${FIRST_DEV_DEPS}; \
+    dpkg --print-architecture; \
+    dpkg --configure -a; \
+    BUILD_ARCH="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
+    DEV_MULTI_ARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
+    echo "BUILD_ARCH: $BUILD_ARCH"; \
+    echo "DEV_MULTI_ARCH: $DEV_MULTI_ARCH"; \
+    if echo "$BUILD_ARCH" | grep -q "x86_64"; then \
+        # export ARCH=amd64; \
+        dpkg --add-architecture amd64 && apt-get update; \
+    elif echo "$BUILD_ARCH" | grep -q "arm64"; then \
+        # export ARCH=arm64; \
+        dpkg --add-architecture arm64 && apt-get update; \
+    else \
+        export ARCH=unknown; \
+    fi && \
+    echo "Detected Architecture: $ARCH"; \
     apt-get install -y --no-install-recommends \
-        ca-certificates \
         apt-utils \
         apt-transport-https \
         # tzdata \
         locales \
-        && \
+        software-properties-common \
+        ; \
     # savedAptMark="$(apt-mark showmanual)"; \
     \
     DEPS="openssl wget curl ssh git xz-utils zip unzip gdb vim"; \
     #DEPS="sudo ${ADD_DEPS}" \
     #ntp \
     \
-    DEV_DEPS="pkg-config autoconf dpkg-dev file g++ gcc make re2c bison software-properties-common"; \
+    DEV_DEPS="pkg-config autoconf file g++ gcc make re2c bison"; \
     \
+    # libpcre2-dev \
     LIB_DEPS=" \
         libc-dev \
         libpcre2-dev \
@@ -208,7 +227,7 @@ RUN set -xe; \
     # echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list; \
     # add-apt-repository -y ppa:nginx/stable; \
     # apt-get update; \
-    apt-get install --no-install-recommends --no-install-suggests -y -o Dpkg::Options::="--force-confold" nginx nginx-extras; \
+    apt-get install --no-install-recommends --no-install-suggests -y -f nginx nginx-extras; \
     # forward request and error logs to docker log collector
     ln -sf /dev/stdout /var/log/nginx/access.log; \
     #ln -sf /dev/stderr /var/log/nginx/error.log; \
@@ -260,8 +279,6 @@ RUN set -xe; \
     tar -Jxf $SRC_DIR/php.tar.xz -C "${PHP_SRC_DIR}" --strip-components=1; \
     cd "${PHP_SRC_DIR}"; \
     \
-    BUILD_ARCH="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
-    DEV_MULTI_ARCH="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
     \
     # https://bugs.php.net/bug.php?id=74125
 	if [ ! -d /usr/include/curl ]; then \
@@ -273,9 +290,9 @@ RUN set -xe; \
     # Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
     # Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
     # https://github.com/docker-library/php/issues/272
-    PHP_CFLAGS="-I${PHP_SRC_DIR} -fstack-protector-strong -fpic -fpie -O2"; \
+    PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"; \
     PHP_CPPFLAGS="$PHP_CFLAGS"; \
-    PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"; \
+    PHP_LDFLAGS="-Wl,-O1 -pie"; \
     if [ "on" == "${GDB}" ]; then \
         CFLAGS="-DDEBUG_ZEND=2 ${CFLAGS}"; \
 	fi; \
@@ -421,7 +438,7 @@ RUN set -xe; \
     rm -rf /init.sh; \
     { find /usr/local/bin /usr/local/sbin -type f -executable -exec strip --strip-all '{}' + || true; }; \
     apt-get clean; \
-    apt-get purge --yes --auto-remove ${DEV_DEPS} ${ADD_DEPS}; \
+    apt-get purge --yes --auto-remove ${DEV_DEPS}${FIRST_DEV_DEPS} ${ADD_DEPS}; \
     rm -rf $SRC_DIR/*; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
     php -v; \

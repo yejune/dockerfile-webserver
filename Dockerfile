@@ -1,5 +1,8 @@
-ARG FROM="yejune/webserver:noble-numbat-8.3.12-base"
-FROM ${FROM}
+# syntax=docker/dockerfile:1.7-labs
+
+ARG ARCH
+ARG FROM="yejune/webserver:plucky-puffin-8.4.3-base"
+FROM --platform=${ARCH} $FROM
 LABEL maintainer="k@yejune.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
